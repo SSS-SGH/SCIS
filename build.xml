@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+
+<project name="SCIS" basedir="." default="deployWar">
+
+	<property name="project" value="SCIS" />
+	<property name="ox3" value="true" />
+	<property file="../openxava.properties"/>
+	
+	<!-- 
+	Compile all .java and .groovy 
+	Not needed to call it if you work inside Eclipse
+	-->
+	<target name="compile"> 
+		<ant antfile="../OpenXava/build.xml" target="compile"/>
+	</target>	    	
+	
+	<!-- Build and deploy the application in war format -->	
+	<target name="deployWar">
+		<!-- In a directory -->
+		<ant antfile="../OpenXava/build.xml" target="deploy"/>
+		<!-- In a file (it does not work well on windows + tomcat)
+		<ant antfile="../OpenXava/build.xml" target="deployWar"/>
+		-->
+	</target>				
+	
+	<!--
+	Build the application in portlets format 
+	-->		
+	<target name="generatePortlets"> 
+		<ant antfile="../OpenXava/build.xml" target="generatePortlets"/>
+		<copy todir="../../" file="../../workspace.dist/${project}.dist/${project}.war" />
+		<!-- easier on MacOSX, because *.dist folders look like an installer -->
+	</target>
+	
+	<!--
+	Update this project with the latest OpenXava version present in the workspace.
+	It must be called just after update the OpenXava version.
+	-->
+	<target name="updateOX">
+		<ant antfile="../OpenXava/build.xml" target="updateOX"/>
+	</target>
+	
+	<!-- from OpenXava/build.xml, but in this file and with Envers (auditing / historisation) -->
+	<target name="defineHibernateTool">
+		<path id="jpatoolslib">
+			<path location="../OpenXava/lib/hibernate-tools.jar" />
+			<path location="../OpenXava/lib/freemarker.jar" />					 	
+		 	<path location="../OpenXava/lib/commons-logging.jar" />
+			<!-- Library from OpenXava in order to work the first time
+				before WEB-INF/lib of new project is populated -->
+		 	<fileset dir="../OpenXava/web/WEB-INF/lib">
+				<include name="**/*.jar"/>
+			</fileset>
+			<!-- Library of project to include custom libraries -->
+			<fileset dir="../${project}/web/WEB-INF/lib">
+				<include name="**/*.jar"/>
+			</fileset>			
+			<path location="../OpenXava/bin" />
+			<path location="${schema.path}" />
+		</path>			
+		
+		<taskdef name="hibernatetool" 
+			classname="org.hibernate.tool.ant.EnversHibernateToolTask" 
+			classpathref="jpatoolslib" />		
+	</target>
+	
+	<!--
+	Generates an SQL Script which can create the database
+	-->
+	<target name="generateSchemaScripts" depends="defineHibernateTool">
+		<property name="persistence.unit" value="junit"/>
+		<hibernatetool destdir="persistence/scripts">
+			<jpaconfiguration persistenceunit="${persistence.unit}"/>
+			<classpath>
+				<path location="web/WEB-INF/classes" />		  
+			</classpath>
+
+		 	<hbm2ddl export="false" drop="true" outputfilename="generateSchema.sql" />	
+		</hibernatetool>
+	</target>	
+	
+	<!--
+	Generates an SQL Script which can update the database based on the current state
+	-->
+	<target name="updateSchemaScripts" depends="defineHibernateTool">
+		<property name="persistence.unit" value="junit"/>
+		<property name="schema.path" value="../../tomcat/lib/postgresql-9.2-1002.jdbc4.jar"/>
+		<hibernatetool destdir="persistence/scripts">
+			<jpaconfiguration persistenceunit="${persistence.unit}"/>
+			<classpath>
+				<path location="web/WEB-INF/classes" />		  
+				<path location="${schema.path}" />
+			</classpath>
+
+		 	<hbm2ddl export="false" create="false" update="true" outputfilename="updateSchema.sql" />	
+		</hibernatetool>
+	</target>	
+	
+	<!--
+	Connects to your database and updates your schema in order to match to your current application.
+	(Also you can use directly 'hibernatetool' ant task)
+	-->
+	<target name="updateSchema" depends="defineHibernateTool">
+		<ant antfile="../OpenXava/build.xml" target="updateSchemaJPA">			
+			<property name="persistence.unit" value="junit"/>
+			<property name="schema.path" value="../../tomcat/lib/postgresql-9.2-1002.jdbc4.jar"/>
+		</ant>
+	</target>	
+	
+</project>

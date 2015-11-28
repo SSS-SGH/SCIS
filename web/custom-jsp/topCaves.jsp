@@ -1,0 +1,67 @@
+<%@ include file="../xava/imports.jsp"%>
+
+<%@ page import="java.util.List"%>
+<%@ page import="java.util.Locale"%>
+<%@ page import="org.apache.commons.lang.ObjectUtils"%>
+<%@ page import="ch.speleo.scis.model.karst.SpeleoObject"%>
+<%@ page import="ch.speleo.scis.business.TopCaves"%>
+
+		<%
+		TopCaves topCavesService = new TopCaves();
+		Locale locale = new Locale("de", "CH");
+		int nbCaves = 20;
+		int i=0;
+		%>
+
+	<h2><xava:message key="deepest_caves" /></h2>
+	<table>
+		<tr class="results-header portlet-section-header">
+			<th align="right"><xava:message key="place" /></th>
+			<th align="left" ><xava:message key="name" /></th>
+			<th align="right"><xava:message key="depthAndElevationComputed" /></th>
+			<th align="right"><xava:message key="systemNr" /></th>
+		</tr>
+		<%
+		List<SpeleoObject> deepestCaves = topCavesService.getDeepestCaves(nbCaves);
+		i=0;
+		for (SpeleoObject cave: deepestCaves) {
+			String styleClass = "results-row " + ((0==i%2)?"portlet-section-body":"portlet-section-alternate alt");
+			i++;
+		%>
+		<tr class="<%= styleClass %>">
+			<td align="right"><%= i %></td>
+			<td align="left" ><%= ObjectUtils.toString(cave.getName(), "") %></td>
+			<td align="right"><%= String.format(locale, "%,d", cave.getDepthAndElevationComputed()) %></td>
+			<td align="right"><%= ObjectUtils.toString(cave.getSystemNr(), "") %></td>
+		</tr>
+		<%
+		}
+		%>
+	</table>
+
+	<h2><xava:message key="longest_caves" /></h2>
+	<table>
+		<tr class="results-header portlet-section-header">
+			<th align="right"><xava:message key="place" /></th>
+			<th align="left" ><xava:message key="name" /></th>
+			<th align="right"><xava:message key="length" /></th>
+			<th align="right"><xava:message key="systemNr" /></th>
+		</tr>
+		<%
+		List<SpeleoObject> longestCaves = topCavesService.getLongestCaves(nbCaves);
+		i=0;
+		for (SpeleoObject cave: longestCaves) {
+			String styleClass = "results-row " + ((0==i%2)?"portlet-section-body":"portlet-section-alternate alt");
+			i++;
+		%>
+		<tr class="<%= styleClass %>">
+			<td align="right"><%= i %></td>
+			<td align="left" ><%= ObjectUtils.toString(cave.getName(), "") %></td>
+			<td align="right"><%= String.format(locale, "%,d", cave.getLength()) %></td>
+			<td align="right"><%= ObjectUtils.toString(cave.getSystemNr(), "") %></td>
+		</tr>
+		<%
+		}
+		%>
+	</table>
+
