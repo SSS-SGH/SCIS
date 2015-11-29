@@ -10,6 +10,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.ParameterizedType;
 import org.hibernate.usertype.UserType;
 
@@ -42,7 +43,7 @@ implements UserType, ParameterizedType {
 	public boolean isMutable() {
 		return true;
 	}
-	public Object nullSafeGet(ResultSet resultSet, String[] names, Object owner) throws HibernateException,
+	public Object nullSafeGet(ResultSet resultSet, String[] names, SessionImplementor sessionImplementor, Object owner) throws HibernateException,
 			SQLException {
 		String name = resultSet.getString(names[0]);
 		if (resultSet.wasNull())
@@ -58,7 +59,7 @@ implements UserType, ParameterizedType {
 		}
 		return enumSet;
 	}
-	public void nullSafeSet(PreparedStatement statement, Object value, int index) throws HibernateException,
+	public void nullSafeSet(PreparedStatement statement, Object value, int index, SessionImplementor sessionImplementor) throws HibernateException,
 			SQLException {
 		if (value == null) {
 			statement.setNull(index, Types.VARCHAR);

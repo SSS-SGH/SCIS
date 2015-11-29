@@ -6,6 +6,25 @@
    (filter?, row-style*, properties?, base-condition?, default-order?, (for-model* | except-for-model* | for-all-models) )
 >
 
+<!ELEMENT base-condition
+   (#PCDATA)
+>
+
+<!ELEMENT default-order
+   (#PCDATA)
+>
+
+<!ELEMENT properties
+   (#PCDATA)
+>
+
+<!ELEMENT set EMPTY>
+<!ATTLIST set
+ property CDATA #REQUIRED
+ from CDATA #IMPLIED
+ value CDATA #IMPLIED 
+>
+
 <!ELEMENT row-style EMPTY>
 <!ATTLIST row-style
  style CDATA #REQUIRED

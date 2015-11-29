@@ -224,7 +224,7 @@ dwr.engine.setPollType = function() { dwr.engine._debug("Manually setting the Po
 //==============================================================================
 
 /** The original page id sent from the server */
-dwr.engine._origScriptSessionId = "AE5F896A3748A8F3D6ACDE6288C34069";
+dwr.engine._origScriptSessionId = "DD5A51C586EBD1183D599DE69691B392";
 
 /** The session cookie name */
 dwr.engine._sessionCookieName = "JSESSIONID"; // JSESSIONID
@@ -393,8 +393,9 @@ dwr.engine._execute = function(path, scriptName, methodName, vararg_params) {
   batch.map[prefix + "scriptName"] = scriptName;
   batch.map[prefix + "methodName"] = methodName;
   batch.map[prefix + "id"] = batch.map.callCount;
+  var refctx = [];
   for (i = 0; i < args.length; i++) {
-    dwr.engine._serializeAll(batch, [], args[i], prefix + "param" + i);
+    dwr.engine._serializeAll(batch, refctx, args[i], prefix + "param" + i);
   }
 
   // Now we have finished remembering the call, we incr the call count
@@ -1024,7 +1025,7 @@ dwr.engine._clearUp = function(batch) {
   }
 
   // Timeout tidyup
-  if (batch.timeoutId) {
+  if (batch.timeoutId != null) {
     clearTimeout(batch.timeoutId);
     delete batch.timeoutId;
   }
@@ -1112,11 +1113,12 @@ dwr.engine._serializeAll = function(batch, referto, data, name) {
     batch.map[name] = "string:" + encodeURIComponent(data);
     break;
   case "object":
-    if (data instanceof String) batch.map[name] = "String:" + encodeURIComponent(data);
-    else if (data instanceof Boolean) batch.map[name] = "Boolean:" + data;
-    else if (data instanceof Number) batch.map[name] = "Number:" + data;
-    else if (data instanceof Date) batch.map[name] = "Date:" + data.getTime();
-    else if (data && data.join) batch.map[name] = dwr.engine._serializeArray(batch, referto, data, name);
+    var objstr = Object.prototype.toString.call(data);
+    if (objstr == "[object String]") batch.map[name] = "String:" + encodeURIComponent(data);
+    else if (objstr == "[object Boolean]") batch.map[name] = "Boolean:" + data;
+    else if (objstr == "[object Number]") batch.map[name] = "Number:" + data;
+    else if (objstr == "[object Date]") batch.map[name] = "Date:" + data.getTime();
+    else if (objstr == "[object Array]") batch.map[name] = dwr.engine._serializeArray(batch, referto, data, name);
     else batch.map[name] = dwr.engine._serializeObject(batch, referto, data, name);
     break;
   case "function":
@@ -1194,7 +1196,7 @@ dwr.engine._getObjectClassName = function(obj) {
   // browsers successfully match to the wrong class in the 
   // Object.toString() test we will do later
   if (obj && obj.constructor) {
-	for (var errorname in dwr.engine._errorClasses) {
+    for (var errorname in dwr.engine._errorClasses) {
       if (obj.constructor == dwr.engine._errorClasses[errorname]) return errorname;
     }
   }
@@ -1325,4 +1327,3 @@ dwr.engine._debug = function(message, stacktrace) {
     }
   }
 };
-

@@ -4,5 +4,6 @@
 String script = request.getParameter("script"); 
  
 boolean editable = "true".equals(request.getParameter("editable")); 
-boolean label = org.openxava.util.XavaPreferences.getInstance().isReadOnlyAsLabel(); 
+boolean label = org.openxava.util.XavaPreferences.getInstance().isReadOnlyAsLabel();
+boolean required = p.isRequired();
 %>

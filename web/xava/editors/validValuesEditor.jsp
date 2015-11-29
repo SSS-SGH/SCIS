@@ -5,9 +5,13 @@
 if (editable) { 
 %>
 <select id="<%=propertyKey%>" name="<%=propertyKey%>" tabindex="1" class=<%=style.getEditor()%> <%=script%> title="<%=p.getDescription(request)%>">
-	<option value="<%=baseIndex==0?"":"0"%>"></option>
+<% 
+    if (!required) {
+%>
+	    <option value="<%=baseIndex==0?"":"0"%>"></option>
 <%
-	java.util.Iterator it = validValuesProperty.validValuesLabels(request);
+    }
+    java.util.Iterator it = validValuesProperty.validValuesLabels();
 	for (int i = baseIndex; it.hasNext(); i++) {
 		String selected = value == i ?"selected":"";
 %>

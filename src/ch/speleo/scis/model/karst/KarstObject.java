@@ -6,8 +6,6 @@ import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -50,7 +48,6 @@ import ch.speleo.scis.model.common.Karstologist;
 @Entity
 @Table(name = "KARST_OBJECT")
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "OBJ_TYPE", discriminatorType = DiscriminatorType.STRING, length = 1)
 @Audited
 @Tab(properties = "name, translatedType, deleted", 
 	rowStyles = {@RowStyle(style="deletedData", property="deleted", value="true")})

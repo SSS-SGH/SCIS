@@ -68,6 +68,7 @@ for (Iterator it = previousViews.iterator(); it.hasNext(); ) {
 }
 
 tab.setRequest(request);
+tab.setErrors(errors); 
 if (manager.isListMode() || manager.isSplitMode() && manager.getDialogLevel() == 0) {   
 	tab.setModelName(manager.getModelName());
 	if (tab.getTabName() == null) { 
@@ -75,7 +76,7 @@ if (manager.isListMode() || manager.isSplitMode() && manager.getDialogLevel() ==
 	}
 }
 boolean hasProcessRequest = manager.hasProcessRequest(request);
-manager.preInitModule();
+manager.preInitModule(request); 
 if (manager.isXavaView(request)) { 
 	if (hasProcessRequest) {	
 		view.assignValuesToWebView();

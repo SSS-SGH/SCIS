@@ -1,16 +1,16 @@
-<%@page import="org.openxava.web.layout.LayoutFactory"%>
 <%@ include file="imports.jsp"%>
 
-<%@ page import="java.util.Collection" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="org.openxava.model.meta.MetaReference" %>
-<%@ page import="org.openxava.view.meta.MetaPropertyView" %>
-
-
+<%@page import="java.util.Collection" %>
+<%@page import="java.util.Map" %>
+<%@page import="org.openxava.model.meta.MetaReference" %>
+<%@page import="org.openxava.view.meta.MetaPropertyView" %>
 <%@page import="org.openxava.web.Ids"%>
 <%@page import="org.openxava.web.WebEditors"%>
+<%@page import="org.openxava.web.DescriptionsLists"%> 
+<%@page import="org.openxava.web.layout.LayoutFactory"%>
 <%@page import="org.openxava.util.XavaPreferences"%>
 <%@page import="org.openxava.util.Is"%>
+
 <jsp:useBean id="errors" class="org.openxava.util.Messages" scope="request"/>
 <jsp:useBean id="context" class="org.openxava.controller.ModuleContext" scope="session"/>
 <jsp:useBean id="style" class="org.openxava.web.style.Style" scope="request"/>
@@ -86,7 +86,7 @@ if (keys.size() == 1) {
 	}
 }
 else {	
-	propertyKey = referenceKey + "__KEY__";
+	propertyKey = referenceKey + DescriptionsLists.COMPOSITE_KEY_SUFFIX; 
 	Map values = null; 
 	if (!composite) { 
 		values = (Map) view.getValue(ref.getName());

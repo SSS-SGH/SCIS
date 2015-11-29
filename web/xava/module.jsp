@@ -121,8 +121,19 @@
 	<link rel="stylesheet" type="text/css" media="all" href="<%=contextPath%><%=cssFile%>?ox=<%=version%>"/>
 <%
 	}
-%> 	
-	
+%>
+	<%
+		File styleEditorsFolder = new File(realPath + "/xava/editors/style");		
+		String[] styleEditors = styleEditorsFolder.list();
+		Arrays.sort(styleEditors);
+		for (int i = 0; i < styleEditors.length; i++) {
+			if (styleEditors[i].endsWith(".css")) {
+	%>
+	<link href="<%=contextPath%>/xava/editors/style/<%=styleEditors[i]%>?ox=<%=version%>" rel="stylesheet" type="text/css">
+	<%
+			}
+		}
+	%>		
 	<script type='text/javascript' src='<%=contextPath%>/xava/js/dwr-engine.js?ox=<%=version%>'></script>
 	<script type='text/javascript' src='<%=contextPath%>/dwr/util.js?ox=<%=version%>'></script>
 	<script type='text/javascript' src='<%=contextPath%>/dwr/interface/Module.js?ox=<%=version%>'></script>
@@ -155,10 +166,13 @@
 		if (typeof jQuery != "undefined") {  
 			portalJQuery = jQuery;
 		}       
-	</script>				
-	<script type="text/javascript" src="<%=contextPath%>/xava/js/jquery.js?ox=<%=version%>"></script>
-	<script type="text/javascript" src="<%=contextPath%>/xava/js/jquery-ui.js?ox=<%=version%>"></script>	
-	<script type="text/javascript" src="<%=contextPath%>/xava/js/jquery.bgiframe.js?ox=<%=version%>"></script>
+	</script>
+	  
+	<script type="text/javascript" src="<%=contextPath%>/xava/js/jquery.js?ox=<%=version%>"></script>	 
+	<script type="text/javascript" src="<%=contextPath%>/xava/js/jquery-ui.js?ox=<%=version%>"></script>
+	<script type="text/javascript" src="<%=contextPath%>/xava/js/jquery.sorttable.js?ox=<%=version%>"></script>	
+	<script type="text/javascript" src="<%=contextPath%>/xava/js/jquery.ui.touch-punch.js?ox=<%=version%>"></script>
+	<script type='text/javascript' src='<%=contextPath%>/xava/js/typewatch.js?ox=<%=version%>'></script>
 	<%
 		File jsEditorsFolder = new File(realPath + "/xava/editors/js");		
 		String[] jsEditors = jsEditorsFolder.list();
@@ -208,16 +222,10 @@ if (manager.isResetFormPostNeeded()) {
 	<input id="<xava:id name='view_member'/>" type="hidden" value=""/>
 		
 	<%-- Layer for progress bar --%>
-	<div id='xava_processing_layer' style='position:absolute;top:100px;left:150px;display:none; z-index: 9999'>
-	<table cellspacing='0'>
-	   <tr class='<%=style.getProcessing()%>'>
-	       <td align='center' valign='middle' style='line-height:1.4;padding:25px 80px;border:2px solid #000'>
-	           <%=XavaResources.getString(request, "processing")%><br/>
-	           <img src='<%=contextPath%>/xava/images/processing.gif' name='xava_processingImage'/>
-	       </td>
-	   </tr>
-	</table>
-	</div>	 
+	<div id='xava_processing_layer' style='display:none;'>
+		<%=XavaResources.getString(request, "processing")%><br/>
+		<img src='<%=contextPath%>/<%=style.getProcessingImage()%>'/>
+	</div>	
 	<%=style.getCoreStartDecoration()%>
 	<div id="<xava:id name='core'/>" style="display: inline;" class="<%=style.getModule()%>">
 		<%			
@@ -277,8 +285,10 @@ if (manager.isResetFormPostNeeded()) {
 		openxava.hideFiltersMessage = '<xava:message key="hide_filters"/>';
 		openxava.selectedRowClass = '<%=style.getSelectedRow()%>';
 		openxava.currentRowClass = '<%=style.getCurrentRow()%>';
-		openxava.currentRowCellClass = '<%=style.getCurrentRowCell()%>';	
-		openxava.collectionWidthRatio = <%=style.getCollectionWidthRatio()%>;
+		openxava.currentRowCellClass = '<%=style.getCurrentRowCell()%>';
+		openxava.selectedListFormatClass = '<%=style.getSelectedListFormat()%>'; 
+		openxava.listAdjustment = <%=style.getListAdjustment()%>;
+		openxava.collectionAdjustment = <%=style.getCollectionAdjustment()%>;
 		openxava.closeDialogOnEscape = <%=browser != null && browser.indexOf("Firefox") >= 0 ? "false":"true"%>;		  
 		openxava.calendarAlign = '<%=browser != null && browser.indexOf("MSIE 6") >= 0 ? "tr"
 					: "Br"%>';
@@ -296,8 +306,7 @@ if (manager.isResetFormPostNeeded()) {
 		openxava.<%=initiated%> = true;
 	}	
 }
-window.onload = <%=onLoadFunction%>;
-setTimeout('<%=onLoadFunction%>()', 1000);
+<%=onLoadFunction%>();
 document.additionalParameters="<%=getAdditionalParameters(request)%>";
 </script>
 <% }

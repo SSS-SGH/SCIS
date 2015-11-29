@@ -23,8 +23,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.validator.ClassValidator;
-import org.hibernate.validator.InvalidValue;
 import org.openxava.jpa.XPersistence;
 
 import ch.speleo.scis.model.common.Commune;
@@ -314,14 +312,6 @@ public class ReaderHelper {
 	        //String propertyPath = violation.getPropertyPath().toString();
 	        //String message = violation.getMessage();
 	        validationViolations.add(violation.getMessage());
-	    }
-	
-	    // Hibernate validation
-	    @SuppressWarnings("unchecked")
-		ClassValidator<T> hValidator = new ClassValidator<T>((Class<T>) bean.getClass());
-	    InvalidValue[] invalidValues = hValidator.getInvalidValues(bean);
-	    for (InvalidValue invalidValue : invalidValues) {
-	    	validationViolations.add(invalidValue.toString());
 	    }
 	
 	    return validationViolations;

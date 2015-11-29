@@ -26,7 +26,7 @@ long dif=System.currentTimeMillis(); // to avoid browser caching
 <% if (gallery.isMaximized()) { 
 	String minimizeImage=!style.getMinimizeImage().startsWith("/")?request.getContextPath() + "/" + style.getMinimizeImage():style.getMinimizeImage(); 
 %>
-<xava:link action='Gallery.minimizeImage'><img src='<%=minimizeImage%>' border='0' align="absmiddle"/></xava:link>
+<xava:action action='Gallery.minimizeImage'/>
 <% } %>
 <%=style.getFrameActionsEndDecoration()%>
 <%=style.getFrameHeaderEndDecoration()%>
@@ -62,10 +62,10 @@ else {
 	<%=style.getFrameTitleStartDecoration()%>
 	&nbsp;
 	<%=style.getFrameTitleEndDecoration()%>
-	<%=style.getFrameActionsStartDecoration()%>	
-	<xava:link action='Gallery.maximizeImage' argv='<%="oid=" + image.getOid()%>'><img src='<%=maximizeImage%>' border='0' align="absmiddle"/></xava:link>	
+	<%=style.getFrameActionsStartDecoration()%>
+	<xava:action action='Gallery.maximizeImage' argv='<%="oid=" + image.getOid()%>'/>
 	<% if (!gallery.isReadOnly()) { %>
-	<xava:link action='Gallery.removeImage' argv='<%="oid=" + image.getOid()%>'><img src='<%=removeImage%>' border='0' align="absmiddle"/></xava:link>
+	<xava:action action='Gallery.removeImage' argv='<%="oid=" + image.getOid()%>'/>
 	<% } %>	
 	<%=style.getFrameActionsEndDecoration()%>
 	<%=style.getFrameHeaderEndDecoration()%>

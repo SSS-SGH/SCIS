@@ -16,6 +16,7 @@ if (Is.emptyString(editAction)) editAction = "Gallery.edit";
 
 <%@page import="org.openxava.util.Is"%><input id="<%=propertyKey%>" type="hidden" name="<%=propertyKey%>" value="<%=fvalue%>">
 
-<xava:image action='<%=editAction%>' argv='<%="galleryProperty=" + p.getName() + viewObjectArgv%>'/>
+<xava:action action='<%=editAction%>' argv='<%="galleryProperty=" + p.getName() + viewObjectArgv%>'/>
+
 
 

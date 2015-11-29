@@ -8,11 +8,12 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import javax.validation.Constraint;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.Property;
-import org.hibernate.validator.PropertyConstraint;
-import org.hibernate.validator.Validator;
-import org.hibernate.validator.ValidatorClass;
 
 
 /** Utilities for Swiss coordinates */
@@ -86,8 +87,8 @@ public class SwissCoordsUtils {
     	}
     }
 
-    /** Hibernate Constraint for a Swiss coordinate. */
-    @ValidatorClass(SwissCoordsValidator.class)
+    /** Constraint for a Swiss coordinate. */
+    @Constraint(validatedBy = SwissCoordsValidator.class)
     @Target({FIELD, METHOD})
     @Retention(RUNTIME)
     @Documented
@@ -97,9 +98,9 @@ public class SwissCoordsUtils {
     	String message() default "validator.SwissCoords";
     }
     
-    /** Hibernate Validator for a Swiss coordinate. To be used by Hibernate. */
+    /** Validator for a Swiss coordinate. */
     public static class SwissCoordsValidator
-    implements Validator<SwissCoords>, PropertyConstraint {
+    implements ConstraintValidator<SwissCoords, Object> {
     	
     	private Axis axis;
     	
@@ -107,7 +108,7 @@ public class SwissCoordsUtils {
 			this.axis = parameters.axis();
 		}
 
-		public boolean isValid(Object value) {
+		public boolean isValid(Object value, ConstraintValidatorContext context) {
 			if (value==null) return true;
 			Ranges ranges = getRanges(axis);
 			if ( value instanceof Double ) {
@@ -166,6 +167,7 @@ public class SwissCoordsUtils {
 	 *         and is inaccurate for points outside the mapped part of Switzerland. 
 	 */
 	public static Integer computeMapNr(int east, int north) {
+		// TODO Better use a GIS or a map overview, as inacurrate in all the special case. 
 		if (EAST_LV95.contains(east)) east = east - 2000000;
 		if (NORTH_LV95.contains(north)) north = north - 1000000;
 		int horizontalNr = (east - MAP_EAST_OF_FIRST) / MAP_WIDTH;
@@ -179,7 +181,7 @@ public class SwissCoordsUtils {
 	 * Compute the right-angle area of a map
 	 * @param mapNr Number of the 1:25'000 map from Swisstopo.
 	 * @return The area of the given map
-	 * @deprected Inacurrate in all the special case. Better use a GIS or a map overview. 
+	 * @deprecated Inacurrate in all the special case. Better use a GIS or a map overview. 
 	 */
 	/*public static AreaRect2D computeArea(Integer mapNr) {
 		int horizontalNr = mapNr.intValue() % (MAP_NR_HORIZONTAL);

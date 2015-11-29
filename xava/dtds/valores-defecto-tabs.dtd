@@ -6,6 +6,25 @@
    (filtro?, estilo-fila*, propiedades?, condicion-base?, orden-defecto?, (para-modelo* | excepto-para-modelo* | para-todos-los-modelos) )
 >
 
+<!ELEMENT condicion-base
+   (#PCDATA)
+>
+
+<!ELEMENT orden-defecto
+   (#PCDATA)
+>
+
+<!ELEMENT propiedades
+   (#PCDATA)
+>
+
+<!ELEMENT poner EMPTY>
+<!ATTLIST poner
+ propiedad CDATA #REQUIRED
+ desde CDATA #IMPLIED
+ valor CDATA #IMPLIED 
+>
+
 <!ELEMENT estilo-fila EMPTY>
 <!ATTLIST estilo-fila
  estilo CDATA #REQUIRED

@@ -22,3 +22,7 @@ In order to get a good look for jQuery UI widgets in Liferay
 .ie6 .ui-widget-overlay {
 	position: absolute;
 }
+
+.ui-dialog { 
+	z-index: 10001 !important ;
+}

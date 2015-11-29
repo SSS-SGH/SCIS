@@ -8,21 +8,18 @@
     <!-- Tomcat + PostgreSQL -->
     <persistence-unit name="default">
     	<provider>org.hibernate.ejb.HibernatePersistence</provider>
-    	<non-jta-data-source>java:comp/env/jdbc/SCISDS</non-jta-data-source>
+    	<non-jta-data-source>java://comp/env/jdbc/SCISDS</non-jta-data-source>
     	<!--class>org.openxava.session.GalleryImage</class-->
         <properties>
             <!-- database communication -->
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
             
             <!-- auditing / historisation (copied below) -->
+            <!--property name="org.hibernate.envers.audit_strategy" value="org.hibernate.envers.strategy.ValidityAuditStrategy" /-->
             <property name="org.hibernate.envers.audit_table_suffix" value="_HIST" />
             <property name="org.hibernate.envers.store_data_at_delete" value="true" />
-            <property name="hibernate.ejb.event.post-insert" value="org.hibernate.ejb.event.EJB3PostInsertEventListener,org.hibernate.envers.event.AuditEventListener" />
-            <property name="hibernate.ejb.event.post-update" value="org.hibernate.ejb.event.EJB3PostUpdateEventListener,org.hibernate.envers.event.AuditEventListener" />
-            <property name="hibernate.ejb.event.post-delete" value="org.hibernate.ejb.event.EJB3PostDeleteEventListener,org.hibernate.envers.event.AuditEventListener" />
-            <property name="hibernate.ejb.event.pre-collection-update" value="org.hibernate.envers.event.AuditEventListener" />
-            <property name="hibernate.ejb.event.pre-collection-remove" value="org.hibernate.envers.event.AuditEventListener" />
-            <property name="hibernate.ejb.event.post-collection-recreate" value="org.hibernate.envers.event.AuditEventListener" />
+            
+            <property name="hibernate.connection.release_mode" value="after_transaction"/>
 
         </properties>
     </persistence-unit>    
@@ -50,14 +47,11 @@
 			<property name="hibernate.connection.url" value="jdbc:hsqldb:file:../data/sgharchiv_dev_scis"/-->
 
             <!-- auditing / historisation (copied above) -->
+            <!--property name="org.hibernate.envers.audit_strategy" value="org.hibernate.envers.strategy.ValidityAuditStrategy" /-->
             <property name="org.hibernate.envers.audit_table_suffix" value="_HIST" />
             <property name="org.hibernate.envers.store_data_at_delete" value="true" />
-            <property name="hibernate.ejb.event.post-insert" value="org.hibernate.ejb.event.EJB3PostInsertEventListener,org.hibernate.envers.event.AuditEventListener" />
-            <property name="hibernate.ejb.event.post-update" value="org.hibernate.ejb.event.EJB3PostUpdateEventListener,org.hibernate.envers.event.AuditEventListener" />
-            <property name="hibernate.ejb.event.post-delete" value="org.hibernate.ejb.event.EJB3PostDeleteEventListener,org.hibernate.envers.event.AuditEventListener" />
-            <property name="hibernate.ejb.event.pre-collection-update" value="org.hibernate.envers.event.AuditEventListener" />
-            <property name="hibernate.ejb.event.pre-collection-remove" value="org.hibernate.envers.event.AuditEventListener" />
-            <property name="hibernate.ejb.event.post-collection-recreate" value="org.hibernate.envers.event.AuditEventListener" />
+            
+            <property name="hibernate.connection.release_mode" value="after_transaction"/>
         </properties>
     </persistence-unit> 
         
@@ -75,14 +69,9 @@
 			<property name="hibernate.connection.password" value=""/><!-- do not publish the password -->
 
             <!-- auditing / historisation (copied above) -->
+            <!--property name="org.hibernate.envers.audit_strategy" value="org.hibernate.envers.strategy.ValidityAuditStrategy" /-->
             <property name="org.hibernate.envers.audit_table_suffix" value="_HIST" />
             <property name="org.hibernate.envers.store_data_at_delete" value="true" />
-            <property name="hibernate.ejb.event.post-insert" value="org.hibernate.ejb.event.EJB3PostInsertEventListener,org.hibernate.envers.event.AuditEventListener" />
-            <property name="hibernate.ejb.event.post-update" value="org.hibernate.ejb.event.EJB3PostUpdateEventListener,org.hibernate.envers.event.AuditEventListener" />
-            <property name="hibernate.ejb.event.post-delete" value="org.hibernate.ejb.event.EJB3PostDeleteEventListener,org.hibernate.envers.event.AuditEventListener" />
-            <property name="hibernate.ejb.event.pre-collection-update" value="org.hibernate.envers.event.AuditEventListener" />
-            <property name="hibernate.ejb.event.pre-collection-remove" value="org.hibernate.envers.event.AuditEventListener" />
-            <property name="hibernate.ejb.event.post-collection-recreate" value="org.hibernate.envers.event.AuditEventListener" />
         </properties>
     </persistence-unit> 
         

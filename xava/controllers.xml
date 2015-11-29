@@ -17,14 +17,14 @@
 		
 		<action name="delete" mode="detail" confirm="true"
 			class="ch.speleo.scis.ui.actions.MarkDeletedAction"
-			image="delete.gif"
+			icon="delete"
 			keystroke="Control D"/>
 		<action name="deleteSelected" mode="list" confirm="true"
 			class="ch.speleo.scis.ui.actions.MarkDeletedSelectedAction"
 			keystroke="Control D"/>
 		<action name="deleteRow" mode="NONE" confirm="true"
 			class="ch.speleo.scis.ui.actions.MarkDeletedSelectedAction"
-			image="delete.gif"
+			icon="delete"
 			in-each-row="true"/>
 							
 	</controller>

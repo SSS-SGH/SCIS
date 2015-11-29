@@ -17,29 +17,34 @@ org.openxava.controller.ModuleManager manager = (org.openxava.controller.ModuleM
 manager.setSession(session);
 String controllerName = request.getParameter("controller");
 String image = request.getParameter("image");
-String id = Ids.decorate(request, "sc-" + controllerName);
-String containerId = Ids.decorate(request, "sc-container-" + controllerName);
-String buttonId = Ids.decorate(request, "sc-button-" + controllerName);
-String imageId = Ids.decorate(request, "sc-image-" + controllerName);
-String aId = Ids.decorate(request, "sc-a-" + controllerName);
-String spanId = Ids.decorate(request, "sc-span-" + controllerName);
+String icon = request.getParameter("icon"); 
+String mode = request.getParameter("xava_mode"); 
+if (mode == null) mode = manager.isSplitMode()?"detail":manager.getModeName();
+// add the mode in the ids to fix problem on the split mode
+String id = Ids.decorate(request, "sc-" + controllerName + "_" + mode);
+String containerId = Ids.decorate(request, "sc-container-" + controllerName + "_" + mode);
+String buttonId = Ids.decorate(request, "sc-button-" + controllerName + "_" + mode);
+String imageId = Ids.decorate(request, "sc-image-" + controllerName + "_" + mode);
+String aId = Ids.decorate(request, "sc-a-" + controllerName + "_" + mode);
+String spanId = Ids.decorate(request, "sc-span-" + controllerName + "_" + mode);
 %>
 <span id='<%=containerId%>'>
-	<span id='<%=buttonId%>' class="<%=style.getButtonBarButton()%>">
+	<span id='<%=buttonId%>' class="<%=style.getButtonBarButton()%> <%=style.getSubcontrollerButton()%>">
 		<a 
 			id ='<%=aId%>'
 			href="javascript:openxava.subcontroller('<%=id%>','<%=containerId%>','<%=buttonId%>','<%=imageId%>','<%=aId%>','<%=spanId%>')" 
 			>
+			<% if (!Is.emptyString(icon) && (style.isUseIconsInsteadOfImages() || Is.emptyString(image))) { %>
+			<i class="mdi mdi-<%=icon%>"></i>
+			<% } else { %>
 			<span
 				id='<%=spanId%>' 
 				style="padding:4px; background: url(<%=request.getContextPath()%>/<%=style.getImagesFolder()%>/<%=image%>) no-repeat 5px 50%;">				
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;		
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			</span>
+			<% } %>
 			<%= Labels.get(controllerName)%>
-			<img  
-				id='<%=imageId%>' 
-				src='<%=request.getContextPath()%>/<%=style.getImagesFolder()%>/ascending3.gif'/>
-			&nbsp;
+			<i id='<%=imageId%>' class="mdi mdi-menu-down"></i>&nbsp;
 		</a>
 	</span>
 	
@@ -48,8 +53,6 @@ String spanId = Ids.decorate(request, "sc-span-" + controllerName);
 		<%
 		MetaController controller = MetaControllers.getMetaController(controllerName);
 		Collection actions = controller.getMetaActions();
-		String mode = request.getParameter("xava_mode"); 
-		if (mode == null) mode = manager.isSplitMode()?"detail":manager.getModeName();
 		java.util.Iterator actionsIt = actions.iterator();
 		while(actionsIt.hasNext()){
 			MetaAction action = (MetaAction)actionsIt.next();

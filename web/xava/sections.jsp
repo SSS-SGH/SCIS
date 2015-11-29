@@ -60,13 +60,11 @@ int activeSection = view.getActiveSection();
 		<%
 			String viewName = viewObject + "_section" + activeSection;
 			context.put(request, viewName, view.getSectionView(activeSection));
-		%>			
-		<table width='100%' cellspacing="0" border="0" cellpadding="2"><tr><td>
+		%>		
 		<jsp:include page="detail.jsp"> 
 			<jsp:param name="viewObject" value="<%=viewName%>" />
 			<jsp:param name="representsSection" value="true" />
-		</jsp:include>				
-		</td></tr></table>
+		</jsp:include>
 	</td></tr>	
 </table>
 <br>

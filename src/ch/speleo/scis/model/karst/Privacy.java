@@ -12,7 +12,7 @@ import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.Audited;
-import org.hibernate.validator.NotEmpty;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.openxava.annotations.Depends;
 import org.openxava.annotations.DisplaySize;
 import org.openxava.annotations.Hidden;

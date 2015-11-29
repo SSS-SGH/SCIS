@@ -8,7 +8,6 @@ import java.util.LinkedList;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -17,8 +16,8 @@ import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
-import org.hibernate.validator.Max;
-import org.hibernate.validator.Min;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import org.openxava.annotations.AsEmbedded;
 import org.openxava.annotations.Depends;
 import org.openxava.annotations.DisplaySize;
@@ -47,7 +46,6 @@ import ch.speleo.scis.persistence.utils.SimpleQueries;
     uniqueConstraints = {
 		@UniqueConstraint(columnNames = "SYSTEM_NR", name="UNIQUE_SPELEO_OBJECT_SYSTEM_NR")
 	})
-@DiscriminatorValue("S")
 @Audited
 @Tab(properties = "systemNr, name, type, deleted", 
 	rowStyles = {@RowStyle(style="deletedData", property="deleted", value="true")})

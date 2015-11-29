@@ -51,25 +51,39 @@ String propertyPrefix = propertyPrefixAccumulated == null?collectionName + ".":p
 			<jsp:param name="rowAction" value="<%=lineAction%>"/>	
 			<jsp:param name="viewObject" value="<%=viewName%>"/>
 		</jsp:include>
-	<% } else if (collectionView.isCollectionCalculated()) { %>
-		<%@include file="../calculatedCollectionList.jsp" %>
-	<% } else { %>
+	<%
+		} else if (collectionView.isCollectionFromModel()) {
+	%>
+		<%@include file="../collectionFromModel.jsp" %>
+	<%
+		} else {
+	%>
 		<%@include file="../collectionList.jsp" %>
-	<% } %>
-<% } catch (Exception ex) { %>
+	<%
+		}
+	%>
+<%
+	} catch (Exception ex) {
+%>
 </td></tr>
 <tr><td class='<%=style.getErrors()%>'>
 <%=ex.getLocalizedMessage()%>
-<% } %>
-</td></tr>
-<% } // of: if (XavaPreferences...  %>
 <%
-// New
+	}
+%>
+</td></tr>
+<%
+	} // of: if (XavaPreferences...
+%>
+<%
+	// New
 if (view.displayDetailInCollection(collectionName)) {
 	context.put(request, viewName, collectionView);
 %>
 <tr class=<%=style.getCollectionListActions()%>><td colspan="<%=subview.getMetaPropertiesList().size()+1%>" class=<%=style.getCollectionListActions()%>>
-<% if (collectionEditable) { %>
+<%
+	if (collectionEditable) {
+%>
 <jsp:include page="../barButton.jsp">
 	<jsp:param name="action" value="<%=subview.getNewCollectionElementAction()%>"/>
 	<jsp:param name="argv" value='<%="viewObject="+viewName%>'/>
@@ -79,23 +93,25 @@ if (view.displayDetailInCollection(collectionName)) {
 	<jsp:param name="argv" value='<%="viewObject="+viewName%>'/>
 </jsp:include>
 
-<% } %>
-<% 
-Iterator itListActions = subview.getActionsNamesList().iterator();
+<%
+	}
+%>
+<%
+	Iterator itListActions = subview.getActionsNamesList().iterator();
 while (itListActions.hasNext()) {
 %>
 <jsp:include page="../barButton.jsp">
 	<jsp:param name="action" value="<%=itListActions.next().toString()%>"/>
 	<jsp:param name="argv" value='<%="viewObject="+viewName%>'/>
 </jsp:include>
-<%	
-} // while list actions
+<%
+	} // while list actions
 %>
 
 
 </td></tr>
-<%		
-}
+<%
+	}
 else {
 %>
 <td></td>
@@ -112,22 +128,22 @@ else {
 		request.setAttribute(valueKey, subview.getValue(p.getName()));		
 		String script = "";
 		if (it.hasNext()) {
-			if (subview.throwsPropertyChanged(p)) {			
-				script = "onchange='openxava.throwPropertyChanged(\"" + 
-						app + "\", \"" + 
-						module + "\", \"" +
-						propertyKey + "\")'";
-			}
+	if (subview.throwsPropertyChanged(p)) {			
+		script = "onchange='openxava.throwPropertyChanged(\"" + 
+				app + "\", \"" + 
+				module + "\", \"" +
+				propertyKey + "\")'";
+	}
 		}
 		else {
-			script = "onblur='openxava.executeAction(\"" + app + "\", \"" + module + "\", \"\", false, \"" + subview.getSaveCollectionElementAction() + "\", \"" + argv + "\")'";
+	script = "onblur='openxava.executeAction(\"" + app + "\", \"" + module + "\", \"\", false, \"" + subview.getSaveCollectionElementAction() + "\", \"" + argv + "\")'";
 		}
 		Object value = request.getAttribute(propertyKey + ".value");
 		if (WebEditors.mustToFormat(p, view.getViewName())) {
-			String fvalue = WebEditors.format(request, p, value, errors, view.getViewName());
-			request.setAttribute(propertyKey + ".fvalue", fvalue);
-		}		
-	%>
+	String fvalue = WebEditors.format(request, p, value, errors, view.getViewName());
+	request.setAttribute(propertyKey + ".fvalue", fvalue);
+		}
+%>
 	<td>
 		<jsp:include page="<%=WebEditors.getUrl(p, view.getViewName())%>">
 			<jsp:param name="propertyKey" value="<%=propertyKey%>"/>
@@ -136,21 +152,29 @@ else {
 		</jsp:include>
 	</td>
 	<%
+		}
 	}
-}
-%>
+	%>
 
 </tr>
-<% if (!XavaPreferences.getInstance().isDetailOnBottomInCollections()) { %>
+<%
+	if (!XavaPreferences.getInstance().isDetailOnBottomInCollections()) {
+%>
 <tr><td>
-<% try { %>
-	<% if (!Is.emptyString(listEditor)) { %> 		
+<%
+	try {
+%>
+	<%
+		if (!Is.emptyString(listEditor)) {
+	%> 		
 		<jsp:include page="<%=listEditor%>">
 			<jsp:param name="rowAction" value="<%=lineAction%>"/>	
 			<jsp:param name="viewObject" value="<%=viewName%>"/>
 		</jsp:include>
-	<% } else if (collectionView.isCollectionCalculated()) { %>
-		<%@include file="../calculatedCollectionList.jsp" %>
+	<%
+		} else if (collectionView.isCollectionFromModel()) {
+	%>
+		<%@include file="../collectionFromModel.jsp" %>
 	<% } else { %>
 		<%@include file="../collectionList.jsp" %>
 	<% } %>

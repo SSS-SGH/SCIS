@@ -12,7 +12,7 @@ String align = p.isNumber()?"right":"left";
 boolean editable="true".equals(request.getParameter("editable"));
 String disabled=editable?"":"disabled";
 String script = request.getParameter("script");
-int rows = Math.min(p.getSize() / 80 + 1, 10);
+int rows = p.getSize() / 80 + 1;
 script = script + " onkeyup='return openxava.limitLength(event, " + p.getSize() + ")' ";
 boolean rich = Is.equalAsStringIgnoreCase("true", request.getParameter("rich"));
 String cssClass = rich?"ox-ckeditor":style.getEditor(); 

@@ -5,7 +5,7 @@
 	display: none;
 	font-size: 0.1px;
 	position: absolute;
-	z-index: 999; /* tmp Probarlo en LF5 y LF6 */
+	z-index: 999; 
 }
 
 .xava_resizable .ui-resizable-e {

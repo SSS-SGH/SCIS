@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -17,7 +16,7 @@ import org.apache.commons.lang.text.StrBuilder;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
-import org.hibernate.validator.Length;
+import org.hibernate.validator.constraints.Length;
 import org.openxava.annotations.DefaultValueCalculator;
 import org.openxava.annotations.Depends;
 import org.openxava.annotations.DisplaySize;
@@ -55,7 +54,6 @@ import ch.speleo.scis.persistence.utils.SimpleQueries;
 		@UniqueConstraint(columnNames = {"CANTON_BARON", "COMMUNE_BARON_NR", "CAVE_BARON_NR"}, name="UNIQUE_GROUND_OBJECT_BARON_NR"), 
 		@UniqueConstraint(columnNames = "PRIVACY_ID") 
 	})
-@DiscriminatorValue("E")
 @Audited
 @Tab(properties = "inventoryNr, baronNr, name, type, speleoObject.systemNr, deleted", 
 	rowStyles = {@RowStyle(style="deletedData", property="deleted", value="true")})

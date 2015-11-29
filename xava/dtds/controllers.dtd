@@ -2,6 +2,7 @@
 <!ATTLIST subcontroller
  controller CDATA #REQUIRED
  image CDATA #IMPLIED
+ icon CDATA #IMPLIED
  mode (detail|list|ALL|NONE) "ALL"
 >
 
@@ -26,6 +27,7 @@
  description CDATA #IMPLIED
  mode (detail|list|ALL|NONE) "ALL"
  image CDATA #IMPLIED
+ icon CDATA #IMPLIED
  keystroke CDATA #IMPLIED
  class CDATA #REQUIRED
  hidden (true|false) "false"

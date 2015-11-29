@@ -16,6 +16,14 @@
     
     <create creator="new" javascript="View">
       <param name="class" value="org.openxava.web.dwr.View"/>
+    </create>
+    
+    <create creator="new" javascript="Modules">
+      <param name="class" value="com.openxava.naviox.web.dwr.Modules"/>
+    </create>
+    
+    <create creator="new" javascript="Folders">
+      <param name="class" value="com.openxava.naviox.web.dwr.Folders"/>
     </create>    
     
     <convert converter="bean" match="org.openxava.web.dwr.Result"/>    
@@ -23,21 +31,4 @@
         
   </allow>
   
-    <signatures>
-  		<![CDATA[
-  			import java.util.Map;
-  			import javax.servlet.http.HttpServletRequest;
-  			import javax.servlet.http.HttpServletResponse;  			
-  			Module.request(
-  				HttpServletRequest request, 
-  				HttpServletResponse response, 
-  				String application, String module, String additionalParameters, 
-  				Map<String, String> values, 
-  				Map<String, String> multipleValues, 
-  				String [] selected,
-  				String [] deselected,
-  				Boolean firstRequest);
-  		]]>
-	</signatures>  
-
 </dwr>

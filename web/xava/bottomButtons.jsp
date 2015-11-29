@@ -10,13 +10,7 @@ manager.setSession(session);
 boolean buttonBar = !"false".equalsIgnoreCase(request.getParameter("buttonBar"));
 String mode = request.getParameter("xava_mode"); 
 if (mode == null) mode = manager.isSplitMode()?"detail":manager.getModeName(); 
-%>
- 
-<button name="xava.DEFAULT_ACTION" type="submit" 
-	onclick="openxava.executeAction('<%=request.getParameter("application")%>', '<%=request.getParameter("module")%>', '', false, '<%=manager.getDefaultActionQualifiedName()%>')"
-	style="padding: 0; border: none; background-color:transparent; size: 0"></button>
- 
-<% 
+
 String defaultAction = null; 
 if (manager.isDetailMode()) { 
 	defaultAction = manager.getDefaultActionQualifiedName();
@@ -32,10 +26,14 @@ while (it.hasNext()) {
 	MetaAction action = (MetaAction) it.next();
 	if (action.isHidden()) continue;
 	if (action.getQualifiedName().equals(defaultAction)) continue;
-	if (action.appliesToMode(mode) && (!buttonBar || !action.hasImage())) {   
+	if (action.appliesToMode(mode) && (!buttonBar || !(action.hasImage() ||  action.hasIcon()))) { 	
 	%>
 	<xava:button action="<%=action.getQualifiedName()%>"/>
 	<%
 	}
 }
 %>
+
+<button name="xava.DEFAULT_ACTION" type="submit" 
+	onclick="openxava.executeAction('<%=request.getParameter("application")%>', '<%=request.getParameter("module")%>', '', false, '<%=manager.getDefaultActionQualifiedName()%>')"
+	style="padding: 0; border: none; background-color:transparent; size: 0"></button>

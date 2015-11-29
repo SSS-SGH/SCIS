@@ -29,7 +29,9 @@ JSR-168 and WSRP and needed by OpenXava.
 	position: absolute;	
 }
 
-
+.xava_handle {
+	cursor: move;
+}
 
 .liferay4-selected-row td {
 	background: #BFC2E4;
@@ -136,11 +138,17 @@ TD.frame {
 	font-size: 10pt;
 }
 
-.processing {
+#xava_processing_layer {
+	position:absolute;
+	right: calc(50% - 120px);
+	top: 50%;	
 	font-weight: normal; 
 	background: #eeeeee;
+	z-index: 999999999;
+	line-height:1.4;
+	padding:25px 80px;
+	border:2px solid #000;
 }
-
 
 .jetspeed2-list-info, TR.jetspeed2-list-info, TD.jetspeed2-list-info {
 	font-size: x-small;
@@ -335,12 +343,17 @@ TD.list-title {
 	text-decoration: none;	
 }
 
-.ox-button-bar .ox-button-bar-button a:hover, .ox-button-bar-mode-button:hover {
+.ox-button-bar .ox-button-bar-button a:hover, 
+.ox-button-bar-mode-button:hover, .ox-list-formats i:hover, .ox-chart-type i:hover {  
 	border: 1px solid #A7CEDF;	
 	background-color: #DFF4FF;
 	color: #346799; 
 	padding: 4px 4px 4px 0px;
 	text-decoration: none;   
+}
+
+.ox-button-bar-button a span {
+	padding: 6px;
 }
 
 .ox-button-bar-mode-button:focus {
@@ -372,6 +385,67 @@ TD.list-title {
 	border-color: #B7C0C2;
 }
 
+.ox-button-bar-button span {
+	margin-right: -7px;  
+}
+
+i {
+	vertical-align: middle; 
+}
+
+.ox-image-link i {
+	font-size: 140%;
+	padding: 4px;
+}
+
+.ox-button-bar .ox-button-bar-button i, .ox-collection-list-actions i {
+	margin-left: 5px; 
+	font-size: 140%;
+	vertical-align: -2px; 
+}
+
+.ox-list-formats i {
+	margin-left: -5px;	 
+	font-size: 150%;
+	padding: 5px;
+	border: 1px solid transparent;   
+}
+
+.ox-list-formats i:hover {
+	padding: 5px;  
+}
+
+.ox-list-formats a, .ox-chart-type a { 
+	text-decoration: none;
+}
+
+.ox-list-formats i, .ox-image-link i, .ox-chart-type i {  
+	color: #9EA8AD;
+}
+
+.ox-list-formats i:hover, .ox-image-link i:hover  {   
+	color: #346799;
+}
+
+.ox-selected-list-format i, .ox-selected-list-format:hover i {
+	color: #000; 
+	background: white;
+	border-radius: 2px;
+	padding: 5px;
+	border: 1px solid #C6C6C6;	
+	box-shadow: 0px 0px 5px #CCCCCC inset;  
+}
+
+a.ox-selected-list-format, a.ox-selected-list-format:hover {
+	pointer-events: none;
+   	cursor: default;
+}
+
+.ox-total-row i {
+	font-size: 120%;
+	margin-right: -6px;
+}
+
 .ox-button-bar a:focus {
 	outline: none;
 }
@@ -391,7 +465,7 @@ TD.list-title {
 }
 
 .ox-label { 
-	text-align: right; 
+	text-align: left; 
 }
 
 .ox-frame-totals {
@@ -413,11 +487,12 @@ TD.list-title {
 
 .ui-dialog { 
 	width: auto; 
+	z-index: 999;
 }
 		
 /* ---------- Styling for Default Layout Painter ---------- */
 .ox-layout-label-cell {
-	text-align:right;
+	text-align:left;
 }
 
 .ox-layout-data-cell {
@@ -429,10 +504,15 @@ TD.list-title {
 }
 
 /* ---------- Styling for Subcontrollers ---------- */
+.ox-subcontroller-button  .mdi-menu-down {
+	margin: 0px !important; 
+	margin-right: -5px !important;
+}
 
 div.ox-subcontroller {
 	padding: 0;
 	margin: 0;
+	margin-top: 26px; 
 	position: absolute; 
 	clear: both; 
 	background-color: rgb(246, 248, 251); 
@@ -450,7 +530,7 @@ div.ox-subcontroller table{
 
 div.ox-subcontroller table tr td{
 	float: right;
-	width: 97%;	/* con 100% se expande mucho */
+	width: 97%;	
 	text-align: left;
 	background-color: rgb(246, 248, 251);
 	z-index: 999; 
@@ -466,4 +546,107 @@ div.ox-subcontroller table tr td a{
 
 span.ox-subcontroller-select a{
 	border: 1px solid #A7CEDF !important;
+}
+
+.ox-charts {
+	width: 0px;
+}
+
+.ct-chart {
+	margin-top: -5px;
+	margin-left: -25px;
+}
+
+.ox-charts .portlet-topper { 
+	display: none;
+
+}
+
+.ox-charts .portlet { 
+	margin-bottom: 5px;
+	margin-right: 0px;
+	padding: 10px 0px 3px 10px; 
+	border-radius: 0;
+	-moz-border-radius: 0px;
+	-webkit-border-radius: 0px;	
+	border: none;
+	box-shadow: none; 
+	-moz-box-shadow: none; 
+	-webkit-box-shadow: none; 
+}
+
+.ox-chart-x-column select {
+	position: relative;
+	left: 780px;
+	top: -27px;
+	width: 180px; 
+}
+
+.ox-chart-type {
+	margin-left: 20px;
+}
+
+.ox-chart-type i { 
+	padding: 5px;
+	border: 1px solid transparent;
+	font-size: 200%;   
+}
+
+.ox-chart-type i:hover { 
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;	
+	padding: 5px;
+	box-shadow: 0px 1px 3px #CCCCCC; 
+	-moz-box-shadow: 0px 1px 3px #CCCCCC; 
+	-webkit-box-shadow: 0px 1px 3px #CCCCCC;
+}
+
+.ox-selected-chart-type i { 
+	color: #000; 
+	background: white;
+	border-radius: 3px;
+	padding: 5px;
+	border: 1px solid #C6C6C6;	
+	box-shadow: 0px 0px 7px #CCCCCC inset;  
+}
+
+.ox-charts .portlet-section-header { 
+	display: none;
+}
+
+.ox-charts td, .ox-charts tr, .ox-charts table { 
+	border: none !important;
+	background-color: transparent !important;
+}
+
+
+.ox-charts .ox-element-collection {
+	width: 200px;
+	margin-left: -32px;
+	margin-right: -25px;
+}
+
+.ox-charts .ox-element-collection i {
+	margin-right: -15px;
+}
+
+.ox-charts .ox-element-collection select {
+	width: 120px;
+}
+
+#xava_search_columns {  
+	margin-bottom: 5px;
+}
+
+#xava_search_columns_text { 
+	width: calc(100% - 10px); 
+	padding: 5px;
+	background-image: url("/html/icons/search.png");
+	background-position: calc(100% - 5px);
+	background-repeat: no-repeat;
+	border-radius: 15px;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	outline: 0;
 }

@@ -18,7 +18,7 @@ String restoreImage=!style.getRestoreImage().startsWith("/")?request.getContextP
 		<img src="<%=minimizeImage%>" border=0 align="absmiddle"/>
 	</a>
 </span> 
-<span id="<%=frameShowId%>"' <%=showStyle%>>
+<span id="<%=frameShowId%>" <%=showStyle%>>
 	<a href="javascript:openxava.showFrame('<%=frameId%>')">
 		<img src="<%=restoreImage%>" border=0 align="absmiddle"/>
 	</a>
