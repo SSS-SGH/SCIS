@@ -11,6 +11,7 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import javax.validation.Payload;
 
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.Property;
@@ -96,7 +97,9 @@ public class SwissCoordsUtils {
     	/** the axis to constraint */
     	Axis axis();
     	String message() default "validator.SwissCoords";
-    }
+        Class<?>[] groups() default {};
+        Class<? extends Payload>[] payload() default {};
+   }
     
     /** Validator for a Swiss coordinate. */
     public static class SwissCoordsValidator

@@ -8,7 +8,8 @@
 	
 	<controller name="CollectionScis">	
 		<!--extends controller="Typical"/-->
-		<action name="add" image="search.gif"
+		<action name="add" 
+			icon="search"
 			class="org.openxava.actions.GoAddElementsToCollectionAction"/>					
 	</controller>
 	

@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 import org.hibernate.envers.Audited;
+import org.openxava.annotations.DefaultValueCalculator;
+import org.openxava.calculators.FalseCalculator;
 
 /**
  * Class representing a generic technical Identity for the database together with a "deleted" flag.
@@ -23,12 +25,13 @@ extends GenericIdentity {
      * Flag indicating if the karst object is deleted or not.
      */
     @Column(name = "DELETED", nullable = false)
-    private boolean deleted = false;
+    @DefaultValueCalculator(FalseCalculator.class)
+    private Boolean deleted;
 
     /**
      * @return if the entity has been marked as deleted.
      */
-    public boolean isDeleted() {
+    public boolean getDeleted() {
         return deleted;
     }
     /**

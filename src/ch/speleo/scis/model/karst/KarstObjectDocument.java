@@ -14,12 +14,14 @@ import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.Audited;
+import org.openxava.annotations.DefaultValueCalculator;
 import org.openxava.annotations.DescriptionsList;
 import org.openxava.annotations.Hidden;
 import org.openxava.annotations.ReferenceView;
 import org.openxava.annotations.Stereotype;
 import org.openxava.annotations.View;
 import org.openxava.annotations.Views;
+import org.openxava.calculators.FalseCalculator;
 
 import ch.speleo.scis.model.common.GenericIdentity;
 import ch.speleo.scis.model.common.Karstologist;
@@ -68,13 +70,15 @@ extends GenericIdentity implements Serializable {
      * if this document is (among others) a rolled map. 
      */
     @Column(name = "ROLLED_MAP", nullable = true)
-    private boolean rolledMap = false;
+    @DefaultValueCalculator(FalseCalculator.class)
+    private Boolean rolledMap;
     
     /**
      * if this document is (among others) in a suspension folder. 
      */
     @Column(name = "SUSPENSION_FOLDER", nullable = true)
-    private boolean suspensionFolder = false;
+    @DefaultValueCalculator(FalseCalculator.class)
+    private Boolean suspensionFolder;
 
     
 	/**
@@ -114,20 +118,20 @@ extends GenericIdentity implements Serializable {
     /**
      * @return if this document is (among others) a rolled map. 
      */
-	public boolean isRolledMap() {
+	public Boolean getRolledMap() {
 		return rolledMap;
 	}
-	public void setRolledMap(boolean rolledMap) {
+	public void setRolledMap(Boolean rolledMap) {
 		this.rolledMap = rolledMap;
 	}
 
     /**
      * @return if this document is (among others) in a suspension folder. 
      */
-	public boolean isSuspensionFolder() {
+	public Boolean getSuspensionFolder() {
 		return suspensionFolder;
 	}
-	public void setSuspensionFolder(boolean suspensionFolder) {
+	public void setSuspensionFolder(Boolean suspensionFolder) {
 		this.suspensionFolder = suspensionFolder;
 	}
 	

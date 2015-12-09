@@ -33,6 +33,7 @@ import org.openxava.annotations.Stereotype;
 import org.openxava.annotations.Tab;
 import org.openxava.annotations.View;
 import org.openxava.calculators.CurrentDateCalculator;
+import org.openxava.calculators.TrueCalculator;
 import org.openxava.util.Labels;
 
 import ch.speleo.scis.model.common.GenericIdentityWithDeleted;
@@ -125,7 +126,8 @@ extends GenericIdentityWithDeleted implements Serializable {
      * Has been verified after the import.
      */
     @Column(name = "VERIFIED", nullable = false)
-    private boolean verified = true;
+    @DefaultValueCalculator(TrueCalculator.class)
+    private Boolean verified;
 
     /**
      * Empty constructor.
@@ -243,11 +245,11 @@ extends GenericIdentityWithDeleted implements Serializable {
 		return Labels.get(text);
 	}
 	
-	public boolean isVerified() {
+	public Boolean getVerified() {
 		return verified;
 	}
 
-	public void setVerified(boolean verified) {
+	public void setVerified(Boolean verified) {
 		this.verified = verified;
 	}
 	
