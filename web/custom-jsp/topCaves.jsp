@@ -3,6 +3,7 @@
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Locale"%>
 <%@ page import="org.apache.commons.lang.ObjectUtils"%>
+<%@ page import="org.openxava.util.Labels"%>
 <%@ page import="ch.speleo.scis.model.karst.SpeleoObject"%>
 <%@ page import="ch.speleo.scis.business.TopCaves"%>
 
@@ -17,9 +18,9 @@
 	<table>
 		<tr class="results-header portlet-section-header">
 			<th align="right"><xava:message key="place" /></th>
-			<th align="left" ><xava:message key="name" /></th>
-			<th align="right"><xava:message key="depthAndElevationComputed" /></th>
-			<th align="right"><xava:message key="systemNr" /></th>
+			<th align="left" ><xava:label key="name" /></th>
+			<th align="right"><xava:label key="depthAndElevation" /></th>
+			<th align="right"><xava:label key="systemNr" /></th>
 		</tr>
 		<%
 		List<SpeleoObject> deepestCaves = topCavesService.getDeepestCaves(nbCaves);
@@ -43,9 +44,9 @@
 	<table>
 		<tr class="results-header portlet-section-header">
 			<th align="right"><xava:message key="place" /></th>
-			<th align="left" ><xava:message key="name" /></th>
-			<th align="right"><xava:message key="length" /></th>
-			<th align="right"><xava:message key="systemNr" /></th>
+			<th align="left" ><xava:label key="name" /></th>
+			<th align="right"><xava:label key="length" /></th>
+			<th align="right"><xava:label key="systemNr" /></th>
 		</tr>
 		<%
 		List<SpeleoObject> longestCaves = topCavesService.getLongestCaves(nbCaves);

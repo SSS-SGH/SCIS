@@ -137,6 +137,23 @@
   </tag>         
 
   <tag>
+    <name>label</name>
+    <tagclass>org.openxava.web.taglib.LabelTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info>Shows the label from key using Labels class for obtaining translation</info>
+    <attribute>
+       <name>key</name>
+       <required>true</required>
+       <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+       <name>qualified</name>
+       <required>false</required>
+       <rtexprvalue>true</rtexprvalue>
+    </attribute>    
+  </tag>         
+
+  <tag>
     <name>descriptionsList</name>
     <tagclass>org.openxava.web.taglib.DescriptionsListTag</tagclass>
     <bodycontent>empty</bodycontent>
