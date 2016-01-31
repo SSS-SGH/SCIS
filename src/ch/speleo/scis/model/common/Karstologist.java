@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.text.StrBuilder;
 import org.hibernate.envers.Audited;
 import org.openxava.annotations.Depends;
 import org.openxava.annotations.DisplaySize;
@@ -125,7 +126,7 @@ extends GenericIdentityWithDeleted implements Serializable {
 	@Depends("initials, firstname, lastname")
 	@LabelFormat(value = LabelFormatType.NO_LABEL, forViews = "short")
     public String getInitialsAndName() {
-        StringBuilder text = new StringBuilder();
+        StrBuilder text = new StrBuilder();
         text.append("<").append(initials).append("> ");
         text.append(firstname).append(" ").append(lastname);
         return text.toString();
