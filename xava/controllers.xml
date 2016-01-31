@@ -30,4 +30,10 @@
 							
 	</controller>
 	
+	<controller name="ReadOnlyScis">	
+		<extends controller="Search"/>
+		<extends controller="Navigation"/>
+		<extends controller="Print"/>
+	</controller>
+	
 </controllers>
