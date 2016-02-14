@@ -36,4 +36,8 @@
 		<extends controller="Print"/>
 	</controller>
 	
+	<controller name="Geo">	
+		<action name="goToSwissMap" hidden="true" class="ch.speleo.scis.ui.actions.GoToSwissmapAction"/>
+	</controller>
+	
 </controllers>

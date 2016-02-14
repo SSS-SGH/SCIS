@@ -71,7 +71,18 @@ public class SwissCoordsUtils {
 			return "CH1903+";
 		else
 			return null;
-	}    
+	}
+	
+	public static Integer toLV03(Integer coord, Axis axis) {
+    	switch(axis) {
+    	case EAST:
+    		return (EAST_LV95.contains(coord))? coord - 2000000 : coord;
+    	case NORTH:
+    		return (NORTH_LV95.contains(coord))? coord - 1000000 : coord;
+    	default: 
+    		return coord;
+    	}
+	}
     
     /** Gives the possible ranges (CH1903 and CH1903+) for a swiss coordinate. 
      */
@@ -171,8 +182,8 @@ public class SwissCoordsUtils {
 	 */
 	public static Integer computeMapNr(int east, int north) {
 		// TODO Better use a GIS or a map overview, as inacurrate in all the special case. 
-		if (EAST_LV95.contains(east)) east = east - 2000000;
-		if (NORTH_LV95.contains(north)) north = north - 1000000;
+		east = SwissCoordsUtils.toLV03(east, Axis.EAST);
+		north = SwissCoordsUtils.toLV03(north, Axis.NORTH);
 		int horizontalNr = (east - MAP_EAST_OF_FIRST) / MAP_WIDTH;
 		// horizonal map nr are between 0 and 19 (even sometimes 19bis in GR)
 		horizontalNr = Math.min(Math.max(horizontalNr, 0), MAP_NR_HORIZONTAL - 1); 
@@ -180,7 +191,7 @@ public class SwissCoordsUtils {
 		return new Integer(MAP_OFSET_25K + (MAP_NR_HORIZONTAL * verticalNr) + horizontalNr);
 	}
 	
-    /**
+    /*
 	 * Compute the right-angle area of a map
 	 * @param mapNr Number of the 1:25'000 map from Swisstopo.
 	 * @return The area of the given map
@@ -194,6 +205,5 @@ public class SwissCoordsUtils {
 		                      MAP_NORTH_OF_FIRST - (MAP_HEIGHT * verticalNr), 
 		                      MAP_NORTH_OF_FIRST - (MAP_HEIGHT * (verticalNr + 1)));
 	}*/
-	
 
 }

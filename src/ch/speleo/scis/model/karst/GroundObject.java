@@ -18,6 +18,7 @@ import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 import org.hibernate.validator.constraints.Length;
+import org.openxava.annotations.Action;
 import org.openxava.annotations.Collapsed;
 import org.openxava.annotations.DefaultValueCalculator;
 import org.openxava.annotations.Depends;
@@ -64,7 +65,7 @@ import ch.speleo.scis.persistence.utils.SimpleQueries;
 @Views({ 
 	@View(name = "Short", members = "inventoryNr, baronNr, name, type, deleted"), 
 	@View(members = "definition [name; inventoryNr, nextInventoryNrs; cantonBaron, communeBaronNr, caveBaronNr; type; comment; deleted], " +
-			"location [locationAccuracy; commune; coordEast; coordNorth, mapNr; coordAltitude]; " +
+			"location [locationAccuracy; commune; coordEast, mapNr; coordNorth; coordAltitude]; " +
 			"verified; manager; creationDate, lastModifDate; literature; dataHistory; privacy; document; speleoObject; " + 
 			"auditedValues") 
 })
@@ -99,6 +100,7 @@ extends KarstObject implements Serializable {
      */
     @Column(name = "COORD_NORTH", nullable = true, precision=7)
     @SwissCoords(axis = Axis.NORTH)
+    @Action(value="Geo.goToSwissMap", alwaysEnabled=true)
     private Integer coordNorth;
     /**
      * Altitude of the ground object.
