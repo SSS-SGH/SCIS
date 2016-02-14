@@ -662,11 +662,11 @@ else {
 <select id="<xava:id name='<%=id + "_rowCount"%>'/>" class=<%=style.getEditor()%>
 	onchange="openxava.setPageRowCount('<%=request.getParameter("application")%>', '<%=request.getParameter("module")%>', '<%=collection==null?"":collection%>', this)">
 	<% 
-	int [] rowCounts = { 5, 10, 12, 15, 20 }; // The peformance with more than 20 rows is poor for page reloading
+	int [] rowCounts = { 5, 10, 12, 15, 20, 50, 100 }; // The peformance with more than 20 rows is poor for page reloading
 	for (int i=0; i<rowCounts.length; i++) {
 		String selected = rowCounts[i] == tab.getPageRowCount()?"selected='selected'":""; 	
 	%>	
-	<option value="<%=rowCounts[i]%>" <%=selected %>><%=rowCounts[i]%></option>
+	<option value="<%=rowCounts[i]%>" <%=selected %>><%=rowCounts[i]%><%=(rowCounts[i]>20)?"!":""%></option>
 	<%
 	}
 	%>
