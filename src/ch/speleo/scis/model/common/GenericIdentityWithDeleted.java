@@ -15,7 +15,7 @@ import org.openxava.calculators.FalseCalculator;
 @MappedSuperclass
 @Audited
 public abstract class GenericIdentityWithDeleted 
-extends GenericIdentity {
+extends GenericIdentityWithRevision {
     /**
      * Serial version UID.
      */

@@ -1,10 +1,20 @@
 package ch.speleo.scis.model.common;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.envers.RevisionType;
+import org.openxava.annotations.ListProperties;
+import org.openxava.annotations.Tab;
+import org.openxava.annotations.View;
+import org.openxava.util.Labels;
+
+import ch.speleo.scis.persistence.utils.SimpleQueries;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +22,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NoResultException;
 import javax.persistence.Table;
 
 /**
@@ -22,13 +33,18 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "REVISION_CHANGE")
+@Tab(properties = "revision.modificationDate, revision.username, action, entityNameTranslated, businessId", 
+		defaultOrder="${revision.modificationDate} desc")
+@View(members = "revision; entityNameTranslated, businessId; changesOfEntity")
 public class RevisionChanges implements Serializable {
+	
+	private static final Log loger = LogFactory.getLog(RevisionChanges.class);
 	
     /**
      * Serial version UID.
 	 */
 	private static final long serialVersionUID = -1130923507850036872L;
-
+	
 	/**
      * Database ID.
      */
@@ -109,6 +125,14 @@ public class RevisionChanges implements Serializable {
 	}
 	
 	/**
+	 * @return The translation of the object's type, if it exists, otherwise of the class name
+	 */
+	public String getEntityNameTranslated() {
+		String classSimpleName = entityClassName.substring(entityClassName.lastIndexOf("."));
+		return Labels.get(classSimpleName);
+	}
+	
+	/**
 	 * @return the id of the changed entity
 	 */
 	public Long getEntityId() {
@@ -127,6 +151,22 @@ public class RevisionChanges implements Serializable {
 			logger.warn("entity id '"+entityId+"' couldn't be recognize as a number (Long or Integer)");
 		}
 	}
+	
+	public String getBusinessId() {
+		try {
+			Class<?> entityClass = Class.forName(entityClassName);
+			if (Identifiable.class.isAssignableFrom(entityClass) && GenericIdentity.class.isAssignableFrom(entityClass)) {
+				Object object = SimpleQueries.getByUniqueField(entityClass, "id", entityId);
+				Identifiable identifiable = (Identifiable) object;
+				return identifiable.getBusinessId();
+			}
+		} catch (ClassNotFoundException e) {
+			loger.warn(String.format("Cannot get businessId on %s with id %s cause %s", entityClassName, entityId, e.toString()));
+		} catch (NoResultException e) {
+			loger.warn(String.format("Cannot get businessId on %s with id %s cause %s", entityClassName, entityId, e.toString()));
+		}
+		return null;
+	}
 
 	/**
 	 * @return the action type (add, modify or delete)
@@ -140,7 +180,24 @@ public class RevisionChanges implements Serializable {
 	public void setAction(RevisionType action) {
 		this.action = action;
 	}
-
+	
+    @ListProperties("revision.modificationDate, revision.username, action")
+	public Collection<RevisionChanges> getChangesOfEntity() {
+		return getChangesOfEntity(entityClassName, entityId);
+	}
+	private static Collection<RevisionChanges> getChangesOfEntity(String entityClassName, Object entityId) {
+    	List<RevisionChanges> relatedChanges = SimpleQueries.getMultipleResults(
+				" while searching related Changes ", 
+				RevisionChanges.class, 
+				"entityClassName=? and entityId=?", 
+				entityClassName, entityId);
+		Collections.sort(relatedChanges, new ModifDateComparator());
+		return relatedChanges;
+	}
+	public static Collection<RevisionChanges> getByEntity(Class<?> entityClass, Object entityId) {
+		return getChangesOfEntity(entityClass.getCanonicalName(), entityId);
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -182,4 +239,11 @@ public class RevisionChanges implements Serializable {
 		return id.equals(other.id);
 	}
     
+    static class ModifDateComparator implements Comparator<RevisionChanges> {
+
+		public int compare(RevisionChanges revChanges1, RevisionChanges revChanges2) {
+			return revChanges1.getRevision().getModificationDate().compareTo(revChanges2.getRevision().getModificationDate());
+		}
+    	
+    }
 }

@@ -2,6 +2,7 @@ package ch.speleo.scis.model.karst;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,13 +18,16 @@ import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 import org.hibernate.validator.constraints.Length;
+import org.openxava.annotations.Collapsed;
 import org.openxava.annotations.DefaultValueCalculator;
 import org.openxava.annotations.Depends;
 import org.openxava.annotations.DisplaySize;
+import org.openxava.annotations.ListProperties;
 import org.openxava.annotations.NoCreate;
 import org.openxava.annotations.NoFrame;
 import org.openxava.annotations.NoModify;
 import org.openxava.annotations.NoSearch;
+import org.openxava.annotations.ReadOnly;
 import org.openxava.annotations.ReferenceView;
 import org.openxava.annotations.RowStyle;
 import org.openxava.annotations.Stereotype;
@@ -58,10 +62,11 @@ import ch.speleo.scis.persistence.utils.SimpleQueries;
 @Tab(properties = "inventoryNr, baronNr, name, type, speleoObject.systemNr, deleted", 
 	rowStyles = {@RowStyle(style="deletedData", property="deleted", value="true")})
 @Views({ 
-	@View(name = "short", members = "inventoryNr, baronNr, name, type, deleted"), 
+	@View(name = "Short", members = "inventoryNr, baronNr, name, type, deleted"), 
 	@View(members = "definition [name; inventoryNr, nextInventoryNrs; cantonBaron, communeBaronNr, caveBaronNr; type; comment; deleted], " +
 			"location [locationAccuracy; commune; coordEast; coordNorth, mapNr; coordAltitude]; " +
-			"verified; manager; creationDate, lastModifDate; literature; dataHistory; privacy; document; speleoObject; ") 
+			"verified; manager; creationDate, lastModifDate; literature; dataHistory; privacy; document; speleoObject; " + 
+			"auditedValues") 
 })
 public class GroundObject 
 extends KarstObject implements Serializable {
@@ -81,7 +86,7 @@ extends KarstObject implements Serializable {
     @Column(name = "TYPE", nullable = true, length=1)
     @Type(type=CodedEnumType.CLASSNAME,
 		parameters={ @Parameter(name=CodedEnumType.TYPE, value=GroundObjectTypeEnum.CLASSNAME)})
-	@DisplaySize(value=10, forViews="short") 
+	@DisplaySize(value=10, forViews="Short") 
 	private GroundObjectTypeEnum type;
     /**
      * East coordinate (Y for geometers, X for matematicians) of the ground object.
@@ -116,7 +121,7 @@ extends KarstObject implements Serializable {
      */
     @OneToOne(optional = true, cascade = {CascadeType.ALL}, orphanRemoval=true)
     @JoinColumn(name = "PRIVACY_ID", nullable = true, unique = true)
-    @ReferenceView(value = "short")
+    @ReferenceView(value = "Short")
     @NoSearch
     private Privacy privacy;
     /**
@@ -125,7 +130,7 @@ extends KarstObject implements Serializable {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "COMMUNE_ID", nullable = true)
     @NoCreate @NoModify
-    @ReferenceView(value = "short")
+    @ReferenceView(value = "Short")
     @NoFrame
     private Commune commune;
     /**
@@ -148,7 +153,7 @@ extends KarstObject implements Serializable {
      */
     @ManyToOne
     @JoinColumn(name = "SPELEO_OBJECT_ID", nullable = true)
-    @ReferenceView(value = "short")
+    @ReferenceView(value = "Short")
     private SpeleoObject speleoObject;
     
 
@@ -352,6 +357,15 @@ extends KarstObject implements Serializable {
      */
     public void setSpeleoObject(SpeleoObject speleoObject) {
         this.speleoObject = speleoObject;
+    }
+
+    @ListProperties("revision.modificationDate, revision.username, deleted, inventoryNr, baronNr, name, type, comment, " +
+    		"locationAccuracy, commune.name, coordEast, coordNorth, coordAltitude, verified, manager.initialsAndName, " +
+    		"literature, dataHistory, privacy.startDate, privacy.endDate, speleoObject.systemNr")
+    @ReadOnly
+    @Collapsed 
+    public Collection<GroundObject> getAuditedValues() {
+    	return loadAuditedValues(GroundObject.class);
     }
 
 	@Override

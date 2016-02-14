@@ -9,6 +9,10 @@ import org.hibernate.envers.RevisionEntity;
 import org.hibernate.envers.RevisionNumber;
 import org.hibernate.envers.RevisionTimestamp;
 import org.hibernate.envers.RevisionType;
+import org.openxava.annotations.ListProperties;
+import org.openxava.annotations.Stereotype;
+import org.openxava.annotations.View;
+import org.openxava.annotations.Views;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -30,6 +34,10 @@ import ch.speleo.scis.persistence.audit.EntityTrackingRevisionListenerImpl;
 @Entity
 @Table(name = "REVISION")
 @RevisionEntity(EntityTrackingRevisionListenerImpl.class)
+@Views({
+		@View(members = "modificationDate; username; modifiedEntities"),
+		@View(name = "Short", members = "modificationDate; username")
+})
 public class Revision {
 
     /**
@@ -46,6 +54,7 @@ public class Revision {
      */
     @Column(name = "MODIF_DATE", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
+    @Stereotype("DATETIME")
     @RevisionTimestamp
     private Date modificationDate;
 
@@ -59,6 +68,7 @@ public class Revision {
      * The entities modified for this revision. 
      */
     @OneToMany(mappedBy="revision", cascade={CascadeType.PERSIST, CascadeType.REMOVE})
+    @ListProperties("action, entityNameTranslated, businessId")
     private Collection<RevisionChanges> modifiedEntities =
                                               new LinkedList<RevisionChanges>();
 

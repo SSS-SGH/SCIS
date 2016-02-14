@@ -33,7 +33,7 @@ import ch.speleo.scis.model.common.GenericIdentity;
 @Table(name = "PRIVACY")
 @Audited
 @Views({
-	@View(name = "short", extendsView = "DEFAULT"), 
+	@View(name = "Short", extendsView = "DEFAULT"), 
 	@View(members = "startDate, endDate, privateNow; protector; reason")
 })
 public class Privacy 
@@ -71,8 +71,8 @@ extends GenericIdentity implements Serializable {
      */
     //@ManyToOne
     //@JoinColumn(name = "PROTECTOR_ID", nullable = true)
-    //@DescriptionsList(forViews="short", descriptionProperties="initials, firstname, lastname")
-    //@ReferenceView(value = "short")
+    //@DescriptionsList(forViews="Short", descriptionProperties="initials, firstname, lastname")
+    //@ReferenceView(value = "Short")
     @Column(name = "PROTECTOR", nullable = true, length=50)    
     private String protector;
     

@@ -30,7 +30,7 @@ import ch.speleo.scis.model.common.Karstologist;
 @Table(name = "KARST_OBJECT_DOCUMENT")
 @Audited
 @Views({
-	@View(name = "short", members = "transmissionDate, rolledMap, suspensionFolder; contact; remarks; "), 
+	@View(name = "Short", members = "transmissionDate, rolledMap, suspensionFolder; contact; remarks; "), 
 	@View(members = "transmissionDate, rolledMap, suspensionFolder; object; contact; remarks; ")
 })
 public class KarstObjectDocument
@@ -46,7 +46,7 @@ extends GenericIdentity implements Serializable {
 	 */
 	@OneToOne() //optional = false to temporary save it
     @JoinColumn(name = "OBJECT_ID") // nullable=true to temporary save it
-    @ReferenceView(value = "short")
+    @ReferenceView(value = "Short")
 	private KarstObject object;
 	
 	/**
@@ -54,8 +54,8 @@ extends GenericIdentity implements Serializable {
 	 */
     @ManyToOne
     @JoinColumn(name = "CONTACT_ID", nullable = true)
-    @DescriptionsList(forViews="short", descriptionProperties="initials, firstname, lastname")
-    @ReferenceView(value = "short")
+    @DescriptionsList(forViews="Short", descriptionProperties="initials, firstname, lastname")
+    @ReferenceView(value = "Short")
 	private Karstologist contact;
     
     @Column(name = "TRANSMISSION_DATE", nullable = true)

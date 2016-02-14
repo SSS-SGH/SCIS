@@ -52,7 +52,7 @@ import ch.speleo.scis.model.common.Karstologist;
 @Audited
 @Tab(properties = "name, translatedType, deleted", 
 	rowStyles = {@RowStyle(style="deletedData", property="deleted", value="true")})
-@View(name = "short", members = "name, translatedType, deleted")
+@View(name = "Short", members = "name, translatedType, deleted")
 public class KarstObject 
 extends GenericIdentityWithDeleted implements Serializable {
     /**
@@ -64,7 +64,7 @@ extends GenericIdentityWithDeleted implements Serializable {
      * Name of the karst object.
      */
     @Column(name = "NAME", length=100, nullable = false)
-	@DisplaySize(value=50, forViews="short") 
+	@DisplaySize(value=50, forViews="Short") 
     @Required
     private String name;
     /**
@@ -78,7 +78,7 @@ extends GenericIdentityWithDeleted implements Serializable {
      */
     @ManyToOne
     @JoinColumn(name = "MANAGER_ID", nullable = true)
-    @ReferenceView(value = "short")
+    @ReferenceView(value = "Short")
     private Karstologist manager;
     /**
      * Date when the karst object ...
@@ -112,7 +112,7 @@ extends GenericIdentityWithDeleted implements Serializable {
      * Document(s) available for this object. 
      */
     @OneToOne(mappedBy = "object", optional = true, cascade = {CascadeType.ALL}, orphanRemoval=true)
-    @ReferenceView(value = "short")
+    @ReferenceView(value = "Short")
     @AsEmbedded
     private KarstObjectDocument document;
     /**

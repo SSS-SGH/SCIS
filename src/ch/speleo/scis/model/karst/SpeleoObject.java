@@ -19,12 +19,14 @@ import org.hibernate.envers.Audited;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import org.openxava.annotations.AsEmbedded;
+import org.openxava.annotations.Collapsed;
 import org.openxava.annotations.Depends;
 import org.openxava.annotations.DisplaySize;
 import org.openxava.annotations.LabelFormat;
 import org.openxava.annotations.LabelFormatType;
 import org.openxava.annotations.ListAction;
 import org.openxava.annotations.ListProperties;
+import org.openxava.annotations.ReadOnly;
 import org.openxava.annotations.RowStyle;
 import org.openxava.annotations.Stereotype;
 import org.openxava.annotations.Tab;
@@ -50,10 +52,11 @@ import ch.speleo.scis.persistence.utils.SimpleQueries;
 @Tab(properties = "systemNr, name, type, deleted", 
 	rowStyles = {@RowStyle(style="deletedData", property="deleted", value="true")})
 @Views({ 
-	@View(name = "short", members = "systemNr, name, type, deleted"), 
+	@View(name = "Short", members = "systemNr, name, type, deleted"), 
 	@View(members = "definition [name; systemNr; type; documentationState; comment; deleted] " +
 			"dimensions [length; depth; elevation; depthAndElevation, depthAndElevationComputed]; " +
-			"verified; manager; creationDate, lastModifDate; literature; dataHistory; document; entrances; ") 
+			"verified; manager; creationDate, lastModifDate; literature; dataHistory; document; entrances; " + 
+			"auditedValues") 
 })
 public class SpeleoObject 
 extends KarstObject implements Serializable {
@@ -73,7 +76,7 @@ extends KarstObject implements Serializable {
     @Column(name = "TYPE", nullable = true, length=1)
     @Type(type=CodedEnumType.CLASSNAME,
     	parameters={ @Parameter(name=TYPE, value=SpeleoObjectTypeEnum.CLASSNAME)})
-	@DisplaySize(value=10, forViews="short") 
+	@DisplaySize(value=10, forViews="Short") 
     private SpeleoObjectTypeEnum type;
     /**
      * Length of the speleo object.
@@ -242,6 +245,14 @@ extends KarstObject implements Serializable {
         this.entrances = entrances;
     }
 
+    @ListProperties("revision.modificationDate, revision.username, deleted, systemNr, name, type, documentationState, " +
+    		"length, depth, elevation, depthAndElevation, verified; manager.initialsAndName, literature, dataHistory")
+    @ReadOnly
+    @Collapsed 
+    public Collection<SpeleoObject> getAuditedValues() {
+    	return loadAuditedValues(SpeleoObject.class);
+    }
+
     @Override
 	protected void writeFields(StringBuilder builder) {
 		super.writeFields(builder);
@@ -263,17 +274,6 @@ extends KarstObject implements Serializable {
         
     public static SpeleoObject getBySystemNr(Integer systemNr) {
     	return SimpleQueries.getByUniqueField(SpeleoObject.class, "systemNr", systemNr);
-    	/*if (systemNr == null) throw new IllegalArgumentException("systemNr to search should not be null");
-    	TypedQuery<SpeleoObject> query = 
-    			XPersistence.getManager().createQuery("from SpeleoObject where systemNr = ?", 
-    					SpeleoObject.class);
-    	query.setParameter(1, systemNr);
-    	try {
-    		return query.getSingleResult();
-    	} catch (PersistenceException e) { // or a subtype
-			throw new PersistenceException(e.getClass().getSimpleName() + 
-					" while searching SpeleoObject with systemNr " + systemNr, e);
-		}*/
     }
 
 }

@@ -1,6 +1,7 @@
 package ch.speleo.scis.model.common;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,10 +10,13 @@ import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.text.StrBuilder;
 import org.hibernate.envers.Audited;
+import org.openxava.annotations.Collapsed;
 import org.openxava.annotations.Depends;
 import org.openxava.annotations.DisplaySize;
 import org.openxava.annotations.LabelFormat;
 import org.openxava.annotations.LabelFormatType;
+import org.openxava.annotations.ListProperties;
+import org.openxava.annotations.ReadOnly;
 import org.openxava.annotations.Required;
 import org.openxava.annotations.RowStyle;
 import org.openxava.annotations.Tab;
@@ -35,12 +39,11 @@ import ch.speleo.scis.persistence.utils.SimpleQueries;
 @Tab(properties = "initials, firstname, lastname, deleted", 
 	rowStyles = {@RowStyle(style="deletedData", property="deleted", value="true")})
 @Views({
-	@View(name = "short", members = "initials, firstname, lastname"),
-	//@View(name = "short", members = "initialsAndName"),
-	@View(members = "initials; firstname; lastname; club; comment; deleted")
+	@View(name = "Short", members = "initials, firstname, lastname"),
+	@View(members = "initials; firstname; lastname; club; comment; deleted; auditedValues")
 	})
 public class Karstologist 
-extends GenericIdentityWithDeleted implements Serializable {
+extends GenericIdentityWithDeleted implements Serializable, Identifiable {
     /**
      * Serial version UID.
      */
@@ -124,14 +127,18 @@ extends GenericIdentityWithDeleted implements Serializable {
      * @return initials, first and last name of the karstologist.
      */
 	@Depends("initials, firstname, lastname")
-	@LabelFormat(value = LabelFormatType.NO_LABEL, forViews = "short")
+	@LabelFormat(value = LabelFormatType.NO_LABEL, forViews = "Short")
     public String getInitialsAndName() {
         StrBuilder text = new StrBuilder();
         text.append("<").append(initials).append("> ");
         text.append(firstname).append(" ").append(lastname);
         return text.toString();
     }
-    /**
+	@Depends("initials, firstname, lastname")
+	public String getBusinessId() {
+		return getInitialsAndName();
+	}
+   /**
      * @return club in which the karstologist is registred.
      */
     public String getClub() {
@@ -156,7 +163,14 @@ extends GenericIdentityWithDeleted implements Serializable {
         this.comment = comment;
     }
     
-	@Override
+    @ListProperties("revision.modificationDate, revision.username, deleted, initials, firstname, lastname, club, comment")
+    @ReadOnly
+    @Collapsed 
+    public Collection<Karstologist> getAuditedValues() {
+    	return loadAuditedValues(Karstologist.class);
+    }
+
+    @Override
 	protected void writeFields(StringBuilder builder) {
 		super.writeFields(builder);
 		builder.append(", initials=");
@@ -173,17 +187,6 @@ extends GenericIdentityWithDeleted implements Serializable {
 	
     public static Karstologist getByInitials(String initials) {
     	return SimpleQueries.getByUniqueField(Karstologist.class, "initials", initials);
-    	/*if (initials == null) throw new IllegalArgumentException("initials to search should not be null");
-    	TypedQuery<Karstologist> query = 
-    			XPersistence.getManager().createQuery("from Karstologist where initials = ?", 
-    					Karstologist.class);
-    	query.setParameter(1, initials);
-    	try {
-    		return query.getSingleResult();
-    	} catch (PersistenceException e) { // or a subtype
-			throw new PersistenceException(e.getClass().getSimpleName() + 
-					" while searching Karstologist with initials " + initials, e);
-		}*/
     }
     
 }

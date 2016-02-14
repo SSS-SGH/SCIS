@@ -8,6 +8,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import org.hibernate.envers.Audited;
+import org.openxava.annotations.Depends;
 import org.openxava.annotations.DisplaySize;
 import org.openxava.annotations.Required;
 import org.openxava.annotations.RowStyle;
@@ -30,9 +31,9 @@ import ch.speleo.scis.persistence.utils.SimpleQueries;
 @Audited
 @Tab(properties = "fsoNr, name, canton, deleted", 
 	rowStyles = {@RowStyle(style="deletedData", property="deleted", value="true")})
-@View(name = "short", members = "fsoNr, name")
+@View(name = "Short", members = "fsoNr, name")
 public class Commune 
-extends GenericIdentityWithDeleted implements Serializable {
+extends GenericIdentityWithDeleted implements Serializable, Identifiable {
     /**
      * Serial version UID.
      */
@@ -49,7 +50,7 @@ extends GenericIdentityWithDeleted implements Serializable {
      * Name of the commune.
      */
     @Column(name = "NAME", nullable = false, length=50)
-	@DisplaySize(value=30, forViews="short") 
+	@DisplaySize(value=30, forViews="Short") 
     private String name;
     
     /**
@@ -133,6 +134,10 @@ extends GenericIdentityWithDeleted implements Serializable {
 	 */
 	public void setBaronNr(String baronNr) {
 		this.baronNr = baronNr;
+	}
+	@Depends("name")
+	public String getBusinessId() {
+		return getName();
 	}
 	@Override
 	protected void writeFields(StringBuilder builder) {
