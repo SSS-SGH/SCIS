@@ -14,6 +14,7 @@ import org.openxava.annotations.Required;
 import org.openxava.annotations.RowStyle;
 import org.openxava.annotations.Tab;
 import org.openxava.annotations.View;
+import org.openxava.annotations.Views;
 
 import ch.speleo.scis.persistence.utils.SimpleQueries;
 
@@ -31,7 +32,10 @@ import ch.speleo.scis.persistence.utils.SimpleQueries;
 @Audited
 @Tab(properties = "fsoNr, name, canton, deleted", 
 	rowStyles = {@RowStyle(style="deletedData", property="deleted", value="true")})
-@View(name = "Short", members = "fsoNr, name")
+@Views({
+	@View(name = "Short", members = "fsoNr, name"), 
+	@View(members = "fsoNr; name; district; canton; baronNr")
+})
 public class Commune 
 extends GenericIdentityWithDeleted implements Serializable, Identifiable {
     /**

@@ -5,10 +5,10 @@
 <%@ page import="org.apache.commons.lang.ObjectUtils"%>
 <%@ page import="org.openxava.util.Labels"%>
 <%@ page import="ch.speleo.scis.model.karst.SpeleoObject"%>
-<%@ page import="ch.speleo.scis.business.TopCaves"%>
+<%@ page import="ch.speleo.scis.business.Podium"%>
 
 		<%
-		TopCaves topCavesService = new TopCaves();
+		Podium podiumService = new Podium();
 		Locale locale = new Locale("de", "CH");
 		int nbCaves = 20;
 		int i=0;
@@ -23,7 +23,7 @@
 			<th align="right"><xava:label key="systemNr" /></th>
 		</tr>
 		<%
-		List<SpeleoObject> deepestCaves = topCavesService.getDeepestCaves(nbCaves);
+		List<SpeleoObject> deepestCaves = podiumService.getDeepestCaves(nbCaves);
 		i=0;
 		for (SpeleoObject cave: deepestCaves) {
 			String styleClass = "results-row " + ((0==i%2)?"portlet-section-body":"portlet-section-alternate alt");
@@ -49,7 +49,7 @@
 			<th align="right"><xava:label key="systemNr" /></th>
 		</tr>
 		<%
-		List<SpeleoObject> longestCaves = topCavesService.getLongestCaves(nbCaves);
+		List<SpeleoObject> longestCaves = podiumService.getLongestCaves(nbCaves);
 		i=0;
 		for (SpeleoObject cave: longestCaves) {
 			String styleClass = "results-row " + ((0==i%2)?"portlet-section-body":"portlet-section-alternate alt");

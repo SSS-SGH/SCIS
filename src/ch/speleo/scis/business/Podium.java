@@ -11,7 +11,7 @@ import org.openxava.util.XSystem;
 
 import ch.speleo.scis.model.karst.SpeleoObject;
 
-public class TopCaves {
+public class Podium {
 	
 	public static final int NB_RESULT_PER_DEFAULT = 10;
 	
@@ -22,11 +22,11 @@ public class TopCaves {
 		XPersistence.setPersistenceUnit("junit"); 
 		Locale.setDefault(Locale.ENGLISH);
 
-		TopCaves topCaves = new TopCaves();
-		System.out.println(formatedListOfCaves(topCaves.getLongestCaves(20), "length"));
-		System.out.println(formatedListOfCaves(topCaves.getDeepestCaves(20), "depthAndElevationComputed"));
+		Podium podium = new Podium();
+		System.out.println(formatedListOfCaves(podium.getLongestCaves(20), "length"));
+		System.out.println(formatedListOfCaves(podium.getDeepestCaves(20), "depthAndElevationComputed"));
 	}
-	static String formatedListOfCaves(List<SpeleoObject> caves, String criteria) {
+	private static String formatedListOfCaves(List<SpeleoObject> caves, String criteria) {
 		StrBuilder str = new StrBuilder();
 		int i=0;
 		for (SpeleoObject cave: caves) {

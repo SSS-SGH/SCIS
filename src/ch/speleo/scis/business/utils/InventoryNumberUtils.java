@@ -29,7 +29,7 @@ public class InventoryNumberUtils {
 		StrBuilder queryStrB = new StrBuilder();
 		queryStrB.append(" select max(").append(FIELD_NAME).append(") + 1");
 		queryStrB.append(" from ").append(CLASS_NAME);
-		queryStrB.append(" where ").append(FIELD_NAME).append(" between ? and ?");
+		queryStrB.append(" where ").append(FIELD_NAME).append(" between :minValue and :maxValue");
 		queryStr = queryStrB.toString();
 	}
 	
@@ -38,8 +38,8 @@ public class InventoryNumberUtils {
 	 */
 	public static int getNextUnusedNumber(Range range) {
 		Query query = XPersistence.getManager().createQuery(queryStr);
-		query.setParameter(1, range.getMin());
-		query.setParameter(2, range.getMax());
+		query.setParameter("minValue", range.getMin());
+		query.setParameter("maxValue", range.getMax());
 		Object result = query.getSingleResult();
 		if (result == null) 
 			return range.getMin();
