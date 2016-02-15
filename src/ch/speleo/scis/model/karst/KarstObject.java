@@ -24,6 +24,7 @@ import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.openxava.annotations.AsEmbedded;
 import org.openxava.annotations.DefaultValueCalculator;
+import org.openxava.annotations.Depends;
 import org.openxava.annotations.DisplaySize;
 import org.openxava.annotations.ReadOnly;
 import org.openxava.annotations.ReferenceView;
@@ -37,6 +38,7 @@ import org.openxava.calculators.TrueCalculator;
 import org.openxava.util.Labels;
 
 import ch.speleo.scis.model.common.GenericIdentityWithDeleted;
+import ch.speleo.scis.model.common.Identifiable;
 import ch.speleo.scis.model.common.Karstologist;
 
 /**
@@ -54,7 +56,7 @@ import ch.speleo.scis.model.common.Karstologist;
 	rowStyles = {@RowStyle(style="deletedData", property="deleted", value="true")})
 @View(name = "Short", members = "name, translatedType, deleted")
 public class KarstObject 
-extends GenericIdentityWithDeleted implements Serializable {
+extends GenericIdentityWithDeleted implements Serializable, Identifiable {
     /**
      * Serial version UID.
      */
@@ -140,6 +142,10 @@ extends GenericIdentityWithDeleted implements Serializable {
     public String getName() {
         return name;
     }
+	@Depends("name")
+	public String getBusinessId() {
+		return getName();
+	}
     /**
      * @param name name of the karst object.
      */
