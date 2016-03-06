@@ -14,10 +14,11 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.text.StrBuilder;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
-import org.hibernate.validator.constraints.Length;
+import org.hibernate.envers.NotAudited;
 import org.openxava.annotations.Action;
 import org.openxava.annotations.Collapsed;
 import org.openxava.annotations.DefaultValueCalculator;
@@ -150,6 +151,12 @@ extends KarstObject implements Serializable {
      */
     @Column(name = "CAVE_BARON_NR", nullable = true, precision=8)
     private Integer caveBaronNr;
+    /**
+     * Full identifier of the entrance (according to Baron's numbering system).
+     */
+    @Formula("concat(CANTON_BARON, case when (CANTON_BARON is null or CANTON_BARON = '') then '' else ' ' end, COMMUNE_BARON_NR, '/', CAVE_BARON_NR)")
+	@NotAudited
+    private String baronNr;
     /**
      * Connected speleo object.
      */
@@ -336,16 +343,8 @@ extends KarstObject implements Serializable {
 	public void setCaveBaronNr(Integer caveBaronNr) {
 		this.caveBaronNr = caveBaronNr;
 	}
-	@Length(max=17)
-	@Depends("cantonBaron, communeBaronNr, caveBaronNr")
 	public String getBaronNr() {
-		StringBuilder sb = new StringBuilder();
-		if(cantonBaron!=null) sb.append(cantonBaron);
-		sb.append(" ");
-		if(communeBaronNr!=null) sb.append(communeBaronNr);
-		sb.append("/");
-		if(caveBaronNr!=null) sb.append(caveBaronNr);
-		return sb.toString();
+		return baronNr;
 	}
 	
 	/**
