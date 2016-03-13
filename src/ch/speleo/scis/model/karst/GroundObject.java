@@ -24,6 +24,7 @@ import org.openxava.annotations.Collapsed;
 import org.openxava.annotations.DefaultValueCalculator;
 import org.openxava.annotations.Depends;
 import org.openxava.annotations.DisplaySize;
+import org.openxava.annotations.LabelStyle;
 import org.openxava.annotations.ListProperties;
 import org.openxava.annotations.NoCreate;
 import org.openxava.annotations.NoFrame;
@@ -140,16 +141,19 @@ extends KarstObject implements Serializable {
 	 * The canton of 1974 (reference of Baron's list) where the entrance is located.
 	 */
 	@Column(name = "CANTON_BARON", nullable = true, length=2)
+	@LabelStyle(value="CantonBaronLabelInDetail", forViews="DEFAULT")
 	private String cantonBaron;
 	/**
      * The commune of 1974 (reference of Baron's list) where the entrance is located.
      */
     @Column(name = "COMMUNE_BARON_NR", nullable = true, precision=5)
+	@LabelStyle(value="CommuneBaronLabelInDetail", forViews="DEFAULT")
     private Integer communeBaronNr;
     /**
      * Cave number of the entrance on a commune (according to Baron's numbering system).
      */
     @Column(name = "CAVE_BARON_NR", nullable = true, precision=8)
+	@LabelStyle(value="CaveBaronLabelInDetail", forViews="DEFAULT")
     private Integer caveBaronNr;
     /**
      * Full identifier of the entrance (according to Baron's numbering system).

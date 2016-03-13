@@ -1,3 +1,22 @@
 /*
 Put here your own style
 */
+
+.deletedData
+{
+    text-decoration: line-through;
+}
+
+/* Specialities for Baron Nr in Detail view*/ 
+.CantonBaronLabelInDetail span {
+	display: none;
+}
+.CommuneBaronLabelInDetail {
+	display: none;
+}
+.CaveBaronLabelInDetail {
+	display: none;
+}
+.CaveBaronLabelInDetail + span:before {
+	content: '/';
+}
