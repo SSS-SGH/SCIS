@@ -12,14 +12,16 @@ import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.Audited;
-import org.hibernate.validator.constraints.NotEmpty;
 import org.openxava.annotations.Depends;
 import org.openxava.annotations.DisplaySize;
+import org.openxava.annotations.Editor;
+import org.openxava.annotations.EntityValidator;
 import org.openxava.annotations.Hidden;
-import org.openxava.annotations.Required;
 import org.openxava.annotations.View;
 import org.openxava.annotations.Views;
+import org.openxava.annotations.PropertyValue;
 
+import ch.speleo.scis.business.utils.PrivacyValidator;
 import ch.speleo.scis.model.common.GenericIdentity;
 
 /**
@@ -33,8 +35,14 @@ import ch.speleo.scis.model.common.GenericIdentity;
 @Table(name = "PRIVACY")
 @Audited
 @Views({
-	@View(name = "Short", extendsView = "DEFAULT"), 
+	@View(name = "Short", members = "privateNow, reason"), 
 	@View(members = "startDate, endDate, privateNow; protector; reason")
+})
+@EntityValidator(value=PrivacyValidator.class, properties={
+	@PropertyValue(name="startDate"),
+	@PropertyValue(name="endDate"),
+	@PropertyValue(name="reason"),
+	@PropertyValue(name="protector")
 })
 public class Privacy 
 extends GenericIdentity implements Serializable {
@@ -48,7 +56,7 @@ extends GenericIdentity implements Serializable {
      */
     @Column(name = "START_DATE", nullable = false)
     @Temporal(TemporalType.DATE)
-    @Required
+    //@Required
     private Date startDate;
     
     /**
@@ -62,7 +70,7 @@ extends GenericIdentity implements Serializable {
      * Why we decided to protect the given karst object.
      */
     @Column(name = "REASON", nullable = false)    
-    @Required @NotEmpty
+    //@Required @NotEmpty
 	@DisplaySize(value=100) 
     private String reason;
     
@@ -132,6 +140,7 @@ extends GenericIdentity implements Serializable {
      * @return if the protection is currently active.
      */
 	@Depends("startDate, endDate")
+	@Editor("BooleanYesNoCombo")
     public boolean isPrivateNow() {
 		return isPrivate(Calendar.getInstance());
     }
@@ -139,7 +148,7 @@ extends GenericIdentity implements Serializable {
      * @return if the protection is active at a given time.
      */
     public boolean isPrivate(Calendar refTime) {
-		if (startDate != null || startDate.after(refTime.getTime())) 
+		if (startDate == null || startDate.after(refTime.getTime())) 
 			return false; // not private yet
 		if (endDate == null)
 			return true; 
@@ -148,7 +157,7 @@ extends GenericIdentity implements Serializable {
     	// privacy till end of day at 23:59:59
     	end.add(Calendar.DAY_OF_MONTH, 1);
     	end.add(Calendar.SECOND, -1);
-    	return end.compareTo(refTime) < 0;
+    	return end.compareTo(refTime) > 0;
     }
 	
 	@Hidden
@@ -156,10 +165,10 @@ extends GenericIdentity implements Serializable {
 		return startDate == null && 
 		       endDate == null && 
 		       StringUtils.isBlank(reason) && 
-		       protector == null;
+		       StringUtils.isBlank(protector);
 	}
     
-    @Override
+   @Override
 	protected void writeFields(StringBuilder builder) {
 		super.writeFields(builder);
 		builder.append(", startDate=");

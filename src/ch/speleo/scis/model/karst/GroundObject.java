@@ -20,6 +20,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.openxava.annotations.Action;
+import org.openxava.annotations.AsEmbedded;
 import org.openxava.annotations.Collapsed;
 import org.openxava.annotations.DefaultValueCalculator;
 import org.openxava.annotations.Depends;
@@ -29,7 +30,6 @@ import org.openxava.annotations.ListProperties;
 import org.openxava.annotations.NoCreate;
 import org.openxava.annotations.NoFrame;
 import org.openxava.annotations.NoModify;
-import org.openxava.annotations.NoSearch;
 import org.openxava.annotations.ReadOnly;
 import org.openxava.annotations.ReferenceView;
 import org.openxava.annotations.RowStyle;
@@ -125,8 +125,7 @@ extends KarstObject implements Serializable {
      */
     @OneToOne(optional = true, cascade = {CascadeType.ALL}, orphanRemoval=true)
     @JoinColumn(name = "PRIVACY_ID", nullable = true, unique = true)
-    @ReferenceView(value = "Short")
-    @NoSearch
+    @AsEmbedded
     private Privacy privacy;
     /**
      * The commune (administrative district of a town) where the entrance is located.
