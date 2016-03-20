@@ -2,14 +2,13 @@
 
 <!DOCTYPE controllers SYSTEM "dtds/controllers.dtd">
 
-<!-- OpenXavaTest -->
-
 <controllers> 
 	
 	<controller name="CollectionScis">	
 		<!--extends controller="Typical"/-->
 		<action name="add" 
-			icon="search"
+			icon="magnify"
+			image="search.gif"
 			class="org.openxava.actions.GoAddElementsToCollectionAction"/>					
 	</controller>
 	
@@ -19,6 +18,7 @@
 		<action name="delete" mode="detail" confirm="true"
 			class="ch.speleo.scis.ui.actions.MarkDeletedAction"
 			icon="delete"
+			image="delete.gif"
 			keystroke="Control D"/>
 		<action name="deleteSelected" mode="list" confirm="true"
 			class="ch.speleo.scis.ui.actions.MarkDeletedSelectedAction"
@@ -26,6 +26,7 @@
 		<action name="deleteRow" mode="NONE" confirm="true"
 			class="ch.speleo.scis.ui.actions.MarkDeletedSelectedAction"
 			icon="delete"
+			image="delete.gif"
 			in-each-row="true"/>
 							
 	</controller>

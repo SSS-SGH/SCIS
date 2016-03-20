@@ -1,0 +1,29 @@
+
+Modifications to OpenXava Framework:
+====================================
+
+
+Show more than 20 elements in the list
+--------------------------------------
+Edit listEditor.jsp and search rowCounts
+extends the list with more values:
+	int [] rowCounts = { 5, 10, 12, 15, 20, 50, 100 }; // The peformance with more than 20 rows is poor for page reloading
+
+
+Filter on empty numbers
+-----------------------
+See patch attached to
+https://sourceforge.net/p/openxava/feature-requests/512/
+
+
+Bug when filtering on empty
+---------------------------
+See patch attached to
+https://sourceforge.net/p/openxava/bugs/625/
+
+
+JSP Tag for translating Labels
+------------------------------
+See patch attached to
+https://sourceforge.net/p/openxava/feature-requests/474/
+
