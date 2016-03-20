@@ -1,7 +1,6 @@
 package ch.speleo.scis.model.common;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.MappedSuperclass;
@@ -9,7 +8,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 import org.hibernate.envers.Audited;
-import org.openxava.annotations.ListProperties;
 import org.openxava.annotations.ReadOnly;
 import org.openxava.annotations.ReferenceView;
 
@@ -24,11 +22,11 @@ import ch.speleo.scis.persistence.utils.SimpleQueries;
 @Audited
 public abstract class GenericIdentityWithRevision 
 extends GenericIdentity {
-    /**
-     * Serial version UID.
-     */
-    private static final long serialVersionUID = 85073371290935232L;
 
+	private static final long serialVersionUID = 85073371290935232L;
+
+	public final static String AUDIT_VIEW_NAME = "Audit";
+	
     /**
      * Revision information from the audit, filled if loaded with the audit.
      * @see #loadAuditedValues(Class)
@@ -36,31 +34,27 @@ extends GenericIdentity {
     @Transient @OneToOne 
     @ReferenceView(value = "Short")
     @ReadOnly
-    private Revision revision;
+    private RevisionInfo revision;
 
-    public Revision getRevision() {
+    public RevisionInfo getRevision() {
 		return revision;
 	}
 
-    public void setRevision(Revision revision) {
+    public void setRevision(RevisionInfo revision) {
 		this.revision = revision;
 	}
 
-    protected <T extends GenericIdentityWithRevision> List<T> loadAuditedValues(Class<T> entityClass) {
+    protected <T extends GenericIdentityWithRevision> List<T> loadAuditedValues() {
+    	Class<? extends GenericIdentityWithRevision> entityClass = this.getClass();
     	List<Object[]> auditedValues = SimpleQueries.getAuditedInfosOfEntity(entityClass, getId());
     	List<T> result = new ArrayList<T>(auditedValues.size());
     	for (Object[] auditElement: auditedValues) {
     		T element = (T) auditElement[0];
-    		element.revision = (Revision) auditElement[1];
+    		Revision revision = (Revision) auditElement[1];
+    		element.revision = new RevisionInfo(revision);
     		result.add(element);
     	}
     	return result;
     }
-
-    @ListProperties("revision.modificationDate, revision.username, action")
-    @ReadOnly
-	public Collection<RevisionChanges> getChanges() {
-		return RevisionChanges.getByEntity(this.getClass(), getId());
-	}
 
 }

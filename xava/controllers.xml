@@ -29,6 +29,11 @@
 			image="delete.gif"
 			in-each-row="true"/>
 							
+		<action name="showAudit" mode="detail" 
+			class="ch.speleo.scis.ui.actions.ShowAuditAction"
+			icon="watch"
+			image="report.gif"/>
+							
 	</controller>
 	
 	<controller name="ReadOnlyScis">	

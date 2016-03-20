@@ -19,7 +19,6 @@ import org.hibernate.envers.Audited;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import org.openxava.annotations.AsEmbedded;
-import org.openxava.annotations.Collapsed;
 import org.openxava.annotations.Depends;
 import org.openxava.annotations.DisplaySize;
 import org.openxava.annotations.LabelFormat;
@@ -34,6 +33,7 @@ import org.openxava.annotations.View;
 import org.openxava.annotations.Views;
 import org.openxava.util.Labels;
 
+import ch.speleo.scis.model.common.GenericIdentityWithRevision;
 import ch.speleo.scis.persistence.typemapping.CodedEnumType;
 import ch.speleo.scis.persistence.utils.SimpleQueries;
 
@@ -55,8 +55,8 @@ import ch.speleo.scis.persistence.utils.SimpleQueries;
 	@View(name = "Short", members = "systemNr, name, type, deleted"), 
 	@View(members = "definition [name; systemNr; type; documentationState; comment; deleted] " +
 			"dimensions [length; depth; elevation; depthAndElevation, depthAndElevationComputed]; " +
-			"verified; manager; creationDate, lastModifDate; literature; dataHistory; document; entrances; " + 
-			"auditedValues") 
+			"verified; manager; creationDate, lastModifDate; literature; dataHistory; document; entrances; "),
+	@View(name=GenericIdentityWithRevision.AUDIT_VIEW_NAME, members = " auditedValues")
 })
 public class SpeleoObject 
 extends KarstObject implements Serializable {
@@ -248,9 +248,8 @@ extends KarstObject implements Serializable {
     @ListProperties("revision.modificationDate, revision.username, deleted, systemNr, name, type, documentationState, " +
     		"length, depth, elevation, depthAndElevation, verified; manager.initialsAndName, literature, dataHistory")
     @ReadOnly
-    @Collapsed 
     public Collection<SpeleoObject> getAuditedValues() {
-    	return loadAuditedValues(SpeleoObject.class);
+    	return loadAuditedValues();
     }
 
     @Override

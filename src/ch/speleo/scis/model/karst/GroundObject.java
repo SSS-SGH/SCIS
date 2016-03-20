@@ -44,6 +44,7 @@ import ch.speleo.scis.business.utils.InventoryNumberUtils;
 import ch.speleo.scis.business.utils.SwissCoordsUtils;
 import ch.speleo.scis.business.utils.SwissCoordsUtils.SwissCoords;
 import ch.speleo.scis.model.common.Commune;
+import ch.speleo.scis.model.common.GenericIdentityWithRevision;
 import ch.speleo.scis.persistence.typemapping.CodedEnumType;
 import ch.speleo.scis.persistence.utils.SimpleQueries;
 
@@ -68,8 +69,8 @@ import ch.speleo.scis.persistence.utils.SimpleQueries;
 	@View(name = "Short", members = "inventoryNr, baronNr, name, type, deleted"), 
 	@View(members = "definition [name; inventoryNr, nextInventoryNrs; cantonBaron, communeBaronNr, caveBaronNr; type; comment; deleted], " +
 			"location [locationAccuracy; commune; coordEast, mapNr; coordNorth; coordAltitude]; " +
-			"verified; manager; creationDate, lastModifDate; literature; dataHistory; privacy; document; speleoObject; " + 
-			"auditedValues") 
+			"verified; manager; creationDate, lastModifDate; literature; dataHistory; privacy; document; speleoObject; "),
+	@View(name=GenericIdentityWithRevision.AUDIT_VIEW_NAME, members = " auditedValues")
 })
 public class GroundObject 
 extends KarstObject implements Serializable {
@@ -367,9 +368,8 @@ extends KarstObject implements Serializable {
     		"locationAccuracy, commune.name, coordEast, coordNorth, coordAltitude, verified, manager.initialsAndName, " +
     		"literature, dataHistory, privacy.startDate, privacy.endDate, speleoObject.systemNr")
     @ReadOnly
-    @Collapsed 
     public Collection<GroundObject> getAuditedValues() {
-    	return loadAuditedValues(GroundObject.class);
+    	return loadAuditedValues();
     }
 
 	@Override

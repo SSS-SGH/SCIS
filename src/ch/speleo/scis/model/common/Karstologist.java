@@ -1,7 +1,7 @@
 package ch.speleo.scis.model.common;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,9 +10,9 @@ import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.text.StrBuilder;
 import org.hibernate.envers.Audited;
-import org.openxava.annotations.Collapsed;
 import org.openxava.annotations.Depends;
 import org.openxava.annotations.DisplaySize;
+import org.openxava.annotations.Hidden;
 import org.openxava.annotations.LabelFormat;
 import org.openxava.annotations.LabelFormatType;
 import org.openxava.annotations.ListProperties;
@@ -40,7 +40,8 @@ import ch.speleo.scis.persistence.utils.SimpleQueries;
 	rowStyles = {@RowStyle(style="deletedData", property="deleted", value="true")})
 @Views({
 	@View(name = "Short", members = "initials, firstname, lastname"),
-	@View(members = "initials; firstname; lastname; club; comment; deleted; auditedValues")
+	@View(members = "initials; firstname; lastname; club; comment; deleted"),
+	@View(name=GenericIdentityWithRevision.AUDIT_VIEW_NAME, members = " auditedValues")
 	})
 public class Karstologist 
 extends GenericIdentityWithDeleted implements Serializable, Identifiable {
@@ -135,6 +136,7 @@ extends GenericIdentityWithDeleted implements Serializable, Identifiable {
         return text.toString();
     }
 	@Depends("initials, firstname, lastname")
+	@Hidden
 	public String getBusinessId() {
 		return getInitialsAndName();
 	}
@@ -165,9 +167,8 @@ extends GenericIdentityWithDeleted implements Serializable, Identifiable {
     
     @ListProperties("revision.modificationDate, revision.username, deleted, initials, firstname, lastname, club, comment")
     @ReadOnly
-    @Collapsed 
-    public Collection<Karstologist> getAuditedValues() {
-    	return loadAuditedValues(Karstologist.class);
+    public List<Karstologist> getAuditedValues() {
+    	return loadAuditedValues();
     }
 
     @Override

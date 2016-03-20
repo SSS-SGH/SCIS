@@ -35,8 +35,8 @@ import ch.speleo.scis.persistence.audit.EntityTrackingRevisionListenerImpl;
 @Table(name = "REVISION")
 @RevisionEntity(EntityTrackingRevisionListenerImpl.class)
 @Views({
-		@View(members = "modificationDate; username; modifiedEntities"),
-		@View(name = "Short", members = "modificationDate; username")
+		@View(members = "modificationDate, username; modifiedEntities"),
+		@View(name = "Short", members = "modificationDate, username")
 })
 public class Revision {
 

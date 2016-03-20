@@ -10,6 +10,7 @@ import javax.persistence.UniqueConstraint;
 import org.hibernate.envers.Audited;
 import org.openxava.annotations.Depends;
 import org.openxava.annotations.DisplaySize;
+import org.openxava.annotations.Hidden;
 import org.openxava.annotations.Required;
 import org.openxava.annotations.RowStyle;
 import org.openxava.annotations.Tab;
@@ -140,6 +141,7 @@ extends GenericIdentityWithDeleted implements Serializable, Identifiable {
 		this.baronNr = baronNr;
 	}
 	@Depends("name")
+	@Hidden
 	public String getBusinessId() {
 		return getName();
 	}

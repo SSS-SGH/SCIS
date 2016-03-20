@@ -26,6 +26,7 @@ import org.openxava.annotations.AsEmbedded;
 import org.openxava.annotations.DefaultValueCalculator;
 import org.openxava.annotations.Depends;
 import org.openxava.annotations.DisplaySize;
+import org.openxava.annotations.Hidden;
 import org.openxava.annotations.ReadOnly;
 import org.openxava.annotations.ReferenceView;
 import org.openxava.annotations.Required;
@@ -143,6 +144,7 @@ extends GenericIdentityWithDeleted implements Serializable, Identifiable {
         return name;
     }
 	@Depends("name")
+	@Hidden
 	public String getBusinessId() {
 		return getName();
 	}
