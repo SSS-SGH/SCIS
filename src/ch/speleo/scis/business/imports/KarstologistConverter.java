@@ -23,6 +23,7 @@ extends EntityConverter<Karstologist> {
         if (row.length >= 5) {
             karstologist.setComment(row[4]);
         }
+        karstologist.setDeleted(false);
         return karstologist;
     }
 
@@ -34,7 +35,7 @@ extends EntityConverter<Karstologist> {
     public boolean check(Karstologist karstologist) {
     	boolean valid = super.check(karstologist);
     	try {
-    		int initialsLength = Karstologist.class.getField("initials").getAnnotation(Column.class).length();
+    		int initialsLength = Karstologist.class.getDeclaredField("initials").getAnnotation(Column.class).length();
     		if (karstologist.getInitials() != null && karstologist.getInitials().length() > initialsLength) {
         		helper.error(Karstologist.class, getIdentifier(karstologist), 
             			"initials", "too long value '"+karstologist.getInitials()+"', cannot import");

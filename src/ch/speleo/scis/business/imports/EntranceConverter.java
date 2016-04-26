@@ -54,7 +54,7 @@ extends EntityConverter<GroundObject> {
 	        	GroundObject.getByBaronNr(entrance.getCantonBaron(), entrance.getCommuneBaronNr(), entrance.getCaveBaronNr());
 	        	// expected is a NoResultException, otherwise there is a duplicate
 	        	helper.error(GroundObject.class, getIdentifier(entrance), 
-	        			"caveBaronNr", "already existing baron number '"+entrance.getBaronNr()+"', will be let empty");
+	        			"caveBaronNr", "already existing baron number '"+entrance.getCantonBaron()+" "+entrance.getCommuneBaronNr()+"/"+entrance.getCaveBaronNr()+"', will be let empty");
 	        	entrance.setCaveBaronNr(null);
 	        } catch (NoResultException e) { /* that's right */ }
         }

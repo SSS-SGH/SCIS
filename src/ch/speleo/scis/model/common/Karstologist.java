@@ -187,7 +187,12 @@ extends GenericIdentityWithDeleted implements Serializable, Identifiable {
 	}
 	
     public static Karstologist getByInitials(String initials) {
-    	return SimpleQueries.getByUniqueField(Karstologist.class, "initials", initials);
+    	if (initials == null) 
+    		throw new IllegalArgumentException("initials of "+Karstologist.class.getSimpleName()+" to search for should not be null");
+    	StrBuilder msg = new StrBuilder();
+    	msg.append(" while searching not deleted ").append(Karstologist.class.getSimpleName());
+    	msg.append(" with ").append("initials").append(" = " ).append(initials);
+    	return SimpleQueries.getSingleResult(msg.toString(), Karstologist.class, "initials = ? and deleted = false", initials);
     }
     
 }

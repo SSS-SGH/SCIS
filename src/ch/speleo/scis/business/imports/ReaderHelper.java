@@ -146,6 +146,8 @@ public class ReaderHelper {
     		return null;
     	else if (input.contains("."))
     		return new SimpleDateFormat("dd.MM.yyyy").parse(input.trim());
+    	else if (input.contains("/"))
+    		return new SimpleDateFormat("MM/dd/yyyy").parse(input.trim());
     	else 
     		return new SimpleDateFormat("dd MM yyyy").parse(input.trim());
     }
@@ -161,6 +163,7 @@ public class ReaderHelper {
     			missingInitials.add(initials);
         		Karstologist karstologist = new Karstologist();
         		karstologist.setInitials(initials);
+        		karstologist.setDeleted(false);
     			List<String> validationMessages = getValidationViolations(karstologist);
     			for (String validationMessage: validationMessages) {
     				logger.error("unvalid "+karstologist+" cause "+validationMessage);

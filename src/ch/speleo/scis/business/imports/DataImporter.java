@@ -43,7 +43,8 @@ public class DataImporter {
             ////importer.read(new ExcelReader(importFolder+"communes_x.xls"), new CommuneConverter(), true);
 
 			// karstologists
-            //importer.read(new ExcelReader(importFolder+"karstologists.xls"), new KarstologistConverter(), true);
+            //importer.read(new ExcelReader(importFolder+"karstologists_praezis.xls"), new KarstologistConverter(), true);
+            //importer.read(new ExcelReader(importFolder+"karstologists_jd_new.xls", 2), new KarstologistConverter(), true);
 
 			// ground objects; problem with too big inventory nr, see with PH if relevant
             //importer.read(new ExcelReader(importFolder+"ground_objects.xls"), new GroundObjectConverter(), true);
@@ -57,8 +58,10 @@ public class DataImporter {
             // caves, Zentralschweiz
             //importer.read(new ExcelReader(importFolder+"Cave_Zentral_2015-04-13.xls"), 
             //		new SpeleoObjectConverter(), true);
-            importer.read(new ExcelReader(importFolder+"Cavites_VD_VS_FR_BE_export.xls", 1), 
-            		new SpeleoObjectConverter(), false);
+            //importer.read(new ExcelReader(importFolder+"Cavites_VD_VS_FR_BE_export.xls", 1), 
+            //		new SpeleoObjectConverter(), false);
+            importer.read(new ExcelReader(importFolder+"Inventaire-Ouest_2016-04-21.xls", 1), 
+            		new SpeleoObjectConverter(), true);
             
             // entrances, trial with old data
             //importer.read(new TabulatedTextReader(importFolder+"caves_all.txt", "MacRoman"), 
@@ -69,8 +72,10 @@ public class DataImporter {
             // entrances, Zentralschweiz
             //importer.read(new ExcelReader(importFolder+"Cave_Zentral_2015-04-13.xls"), 
             //		new EntranceConverter(), true);
-            importer.read(new ExcelReader(importFolder+"Cavites_VD_VS_FR_BE_export.xls", 1), 
-            		new EntranceConverter(), false);
+            //importer.read(new ExcelReader(importFolder+"Cavites_VD_VS_FR_BE_export.xls", 1), 
+            //		new EntranceConverter(), false);
+            importer.read(new ExcelReader(importFolder+"Inventaire-Ouest_2016-04-21.xls", 1), 
+            		new EntranceConverter(), true);
 
             // documents
             //importer.read(new TabulatedTextReader(importFolder+"documents.txt", "MacRoman"), 
