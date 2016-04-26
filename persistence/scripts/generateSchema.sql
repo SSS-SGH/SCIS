@@ -43,7 +43,7 @@ create table KARST_OBJECT (ID int8 not null, DELETED bool not null, COMMENT varc
 create table KARST_OBJECT_DOCUMENT (ID int8 not null, REMARKS varchar(255), ROLLED_MAP bool, SUSPENSION_FOLDER bool, TRANSMISSION_DATE date, CONTACT_ID int8, OBJECT_ID int8, primary key (ID));
 create table KARST_OBJECT_DOCUMENT_HIST (ID int8 not null, REV int4 not null, REVTYPE int2, REMARKS varchar(255), ROLLED_MAP bool, SUSPENSION_FOLDER bool, TRANSMISSION_DATE date, CONTACT_ID int8, OBJECT_ID int8, primary key (ID, REV));
 create table KARST_OBJECT_HIST (ID int8 not null, REV int4 not null, REVTYPE int2, DELETED bool, COMMENT varchar(50000), CREATED_DATE date, DATA_HISTORY varchar(500), LITERATURE varchar(500), NAME varchar(100), VERIFIED bool, MANAGER_ID int8, primary key (ID, REV));
-create table PRIVACY (ID int8 not null, END_DATE date, PROTECTOR varchar(50), REASON varchar(255) not null, START_DATE date not null, primary key (ID));
+create table PRIVACY (ID int8 not null, END_DATE date, PROTECTOR varchar(50), REASON varchar(255), START_DATE date, primary key (ID));
 create table PRIVACY_HIST (ID int8 not null, REV int4 not null, REVTYPE int2, END_DATE date, PROTECTOR varchar(50), REASON varchar(255), START_DATE date, primary key (ID, REV));
 create table REVISION (REV_ID int4 not null, MODIF_DATE timestamp not null, USERNAME varchar(30), primary key (REV_ID));
 create table REVISION_CHANGE (ID int8 not null, ACTION int4 not null, ENTITY_CLASS_NAME varchar(255) not null, ENTITY_ID int8, ENTITY_NAME varchar(255) not null, REVISION_ID int4 not null, primary key (ID));
