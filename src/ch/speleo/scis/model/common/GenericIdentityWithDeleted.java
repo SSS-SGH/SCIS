@@ -26,7 +26,7 @@ extends GenericIdentityWithRevision {
      */
     @Column(name = "DELETED", nullable = false)
     @DefaultValueCalculator(FalseCalculator.class)
-    private Boolean deleted;
+    private Boolean deleted = Boolean.FALSE;
 
     /**
      * @return if the entity has been marked as deleted.
