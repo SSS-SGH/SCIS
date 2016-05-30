@@ -7,7 +7,7 @@
              
     <!-- Tomcat + PostgreSQL -->
     <persistence-unit name="default">
-    	<provider>org.hibernate.ejb.HibernatePersistence</provider>
+    	<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     	<non-jta-data-source>java://comp/env/jdbc/SCISDS</non-jta-data-source>
     	<!--class>org.openxava.session.GalleryImage</class-->
         <properties>
@@ -19,14 +19,12 @@
             <property name="org.hibernate.envers.audit_table_suffix" value="_HIST" />
             <property name="org.hibernate.envers.store_data_at_delete" value="true" />
             
-            <property name="hibernate.connection.release_mode" value="after_transaction"/>
-
         </properties>
     </persistence-unit>    
         
     <!-- JUnit & Ant -->
     <persistence-unit name="junit">
-    	<provider>org.hibernate.ejb.HibernatePersistence</provider>
+    	<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <properties>
             <!-- database communication -->
             <!-- PostgreSQL -->
@@ -51,13 +49,13 @@
             <property name="org.hibernate.envers.audit_table_suffix" value="_HIST" />
             <property name="org.hibernate.envers.store_data_at_delete" value="true" />
             
-            <property name="hibernate.connection.release_mode" value="after_transaction"/>
+            <property name="hibernate.hbm2ddl.auto" value="update" /><!-- only for testing or developing -->
         </properties>
     </persistence-unit> 
         
     <!-- JUnit & Ant -->
     <persistence-unit name="remote">
-    	<provider>org.hibernate.ejb.HibernatePersistence</provider>
+    	<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <properties>
             <!-- database communication -->
             <!-- PostgreSQL -->
