@@ -8,22 +8,36 @@ Show more than 20 elements in the list
 Edit listEditor.jsp and search rowCounts
 extends the list with more values:
 	int [] rowCounts = { 5, 10, 12, 15, 20, 50, 100 }; // The peformance with more than 20 rows is poor for page reloading
-
+See commit dc7940746baa527bb06fa840b1606f2c4551615e
 
 Filter on empty numbers
 -----------------------
 See patch attached to
 https://sourceforge.net/p/openxava/feature-requests/512/
+See commit 85e3cabcca94cafee27990a112da9fe40d6d74f2 in comparatorsCombo.jsp (and listEditor.jsp)
 
 
 Bug when filtering on empty
 ---------------------------
 See patch attached to
 https://sourceforge.net/p/openxava/bugs/625/
+in OpenXava/src/org/openxava/tab/Tab.java line 513
+				else if (!Is.emptyString(this.conditionValues[i]) && !EMPTY_COMPARATOR.equals(this.conditionComparators[i]) && !NOT_EMPTY_COMPARATOR.equals(this.conditionComparators[i])) {
+
+
+Search ignoring booleans
+---------------------------
+Quick & simple solution is to patch the booleanEditor.jsp
+See commit 85e3cabcca94cafee27990a112da9fe40d6d74f2
+Better solution to be implemented with
+https://sourceforge.net/p/openxava/feature-requests/517/
+See commit 85e3cabcca94cafee27990a112da9fe40d6d74f2 in booleanEditor.jsp
 
 
 JSP Tag for translating Labels
 ------------------------------
 See patch attached to
 https://sourceforge.net/p/openxava/feature-requests/474/
+Integrated with OpenXava 5.5
+See commit 4e1de79f4b00b96e1a3d845c0385b45a7566f3cf in openxava.tld
 
