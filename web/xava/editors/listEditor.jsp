@@ -369,7 +369,7 @@ while (it.hasNext()) {
 <%
 if (tab.isRowsHidden()) {
 %>
-	<tr id="nodata"><td align="center">
+	<tr id="nodata"><td colspan="0" align="center">
 	<xava:link action="List.showRows" argv="<%=collectionArgv%>"/>
 	</td></tr>
 <%
@@ -560,7 +560,7 @@ for (int c=0; c<model.getColumnCount(); c++) {
 }
 else {
 %>
-<tr id="nodata"><td class="<%=totalSize==0?style.getMessages():style.getErrors()%>">
+<tr id="nodata"><td colspan="0" class="<%=totalSize==0?style.getMessages():style.getErrors()%>">
 <% if (totalSize == 0) { %>
 <b><xava:message key="no_objects"/></b>
 <% } else { %>

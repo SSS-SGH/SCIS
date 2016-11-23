@@ -73,8 +73,6 @@ else {
 	<option value="<%=Tab.ENDS_COMPARATOR%>" <%=endsWith%>><xava:message key="<%=Tab.ENDS_COMPARATOR%>"/></option>
 	<option value="<%=Tab.CONTAINS_COMPARATOR%>" <%=contains%>><xava:message key="<%=Tab.CONTAINS_COMPARATOR%>"/></option>	
 	<option value="<%=Tab.NOT_CONTAINS_COMPARATOR%>" <%=notContains%>><xava:message key="<%=Tab.NOT_CONTAINS_COMPARATOR%>"/></option>
-	<option value="<%=Tab.EMPTY_COMPARATOR%>" <%=empty%>><xava:message key="<%=Tab.EMPTY_COMPARATOR%>"/></option>
-	<option value="<%=Tab.NOT_EMPTY_COMPARATOR%>" <%=notEmpty%>><xava:message key="<%=Tab.NOT_EMPTY_COMPARATOR%>"/></option>
 	<%
 	}
 	%>
@@ -84,12 +82,12 @@ else {
 	<option value="<%=Tab.LE_COMPARATOR%>" <%=le%>><=</option>	
 	<option value="<%=Tab.GT_COMPARATOR%>" <%=gt%>>></option>
 	<option value="<%=Tab.LT_COMPARATOR%>" <%=lt%>><</option>
+	<option value="<%=Tab.EMPTY_COMPARATOR%>" <%=empty%>><xava:message key="<%=Tab.EMPTY_COMPARATOR%>"/></option>
+	<option value="<%=Tab.NOT_EMPTY_COMPARATOR%>" <%=notEmpty%>><xava:message key="<%=Tab.NOT_EMPTY_COMPARATOR%>"/></option>
 	
 	<%
 	if (isDate) {
 	%>
-	<option value="<%=Tab.EMPTY_COMPARATOR%>" <%=empty%>><xava:message key="<%=Tab.EMPTY_COMPARATOR%>"/></option>
-	<option value="<%=Tab.NOT_EMPTY_COMPARATOR%>" <%=notEmpty%>><xava:message key="<%=Tab.NOT_EMPTY_COMPARATOR%>"/></option>
 	<option value="<%=Tab.YEAR_COMPARATOR%>" <%=year%>><xava:message key="<%=Tab.YEAR_COMPARATOR%>"/></option>
 	<option value="<%=Tab.MONTH_COMPARATOR%>" <%=month%>><xava:message key="<%=Tab.MONTH_COMPARATOR%>"/></option>
 	<option value="<%=Tab.YEAR_MONTH_COMPARATOR%>" <%=yearMonth%>><xava:message key="<%=Tab.YEAR_MONTH_COMPARATOR%>"/></option>
