@@ -80,7 +80,6 @@ extends EntityConverter<GroundObject> {
         // coordinates
     	ConversionResult<Integer> coordEastResult = helper.toCoordinate(row[8]);
     	if (coordEastResult.getResult() != null) {
-    		entrance.setCoordEast(coordEastResult.getResult());
     		if (coordEastResult.getMessage() != null)
     			helper.warn(GroundObject.class, getIdentifier(entrance),
     					"coordinate", coordEastResult.getMessage());
@@ -91,7 +90,6 @@ extends EntityConverter<GroundObject> {
     	}
     	ConversionResult<Integer> coordNorthResult = helper.toCoordinate(row[9]);
     	if (coordNorthResult.getResult() != null) {
-    		entrance.setCoordNorth(coordNorthResult.getResult());
     		if (coordNorthResult.getMessage() != null)
     			helper.warn(GroundObject.class, getIdentifier(entrance),
     					"coordinate", coordNorthResult.getMessage());
@@ -101,45 +99,47 @@ extends EntityConverter<GroundObject> {
     					"coordinate", coordNorthResult.getMessage());
     	}
     	if ( (  // east sounds like north, north doesn't sound like north
-    			entrance.getCoordEast() != null && SwissCoordsUtils.NORTH.contains(entrance.getCoordEast()) &&
-    			(entrance.getCoordNorth() == null || !SwissCoordsUtils.NORTH.contains(entrance.getCoordNorth()))
-    	   ) || ( // north sounds like east, east doesn't sound like eath
-    			entrance.getCoordNorth() != null && SwissCoordsUtils.EAST.contains(entrance.getCoordNorth()) &&
-    			(entrance.getCoordEast() == null || !SwissCoordsUtils.EAST.contains(entrance.getCoordEast()))
+    			coordEastResult.getResult() != null && SwissCoordsUtils.NORTH.contains(coordEastResult.getResult()) &&
+    			(coordNorthResult.getResult() == null || !SwissCoordsUtils.NORTH.contains(coordNorthResult.getResult()))
+    	   ) || ( // north sounds like east, east doesn't sound like east
+    			   coordNorthResult.getResult() != null && SwissCoordsUtils.EAST.contains(coordNorthResult.getResult()) &&
+    			(coordEastResult.getResult() == null || !SwissCoordsUtils.EAST.contains(coordEastResult.getResult()))
     	   ) ) {
         	logger.debug("inverted East and North coords for Entrance "+entrance.getInventoryNr()+", will be swapped");
-        	//helper.warn(Entrance.class, getIdentifier(entrance), 
-        	//		"coordinate", "East coord < North coord, will be swapped");
-        	Integer coordNorthCorrected = entrance.getCoordEast();
-        	entrance.setCoordEast(entrance.getCoordNorth());
-        	entrance.setCoordNorth(coordNorthCorrected);
+        	ConversionResult<Integer> coordNorthCorrected = coordEastResult;
+        	coordEastResult = coordNorthResult;
+        	coordNorthResult = coordNorthCorrected;
     	}
-        if (entrance.getCoordEast() != null && !SwissCoordsUtils.EAST.contains(entrance.getCoordEast())) {
-        	helper.error(GroundObject.class, getIdentifier(entrance), 
-					"coordinate", "invalid east coordinate "+entrance.getCoordEast()+", will be let empty");
-        	entrance.setCoordEast(null);
+        if (coordEastResult.getResult() != null) {
+        	if (!SwissCoordsUtils.EAST.contains(coordEastResult.getResult())) 
+	        	helper.error(GroundObject.class, getIdentifier(entrance), 
+						"coordinate", "invalid east coordinate "+coordEastResult.getResult()+", will be let empty");
+        	else 
+        		entrance.setCoordEast(coordEastResult.getResult());
         }
-        if (entrance.getCoordNorth() != null && !SwissCoordsUtils.NORTH.contains(entrance.getCoordNorth())) {
-        	helper.error(GroundObject.class, getIdentifier(entrance), 
-					"coordinate", "invalid north coordinate "+entrance.getCoordNorth()+", will be let empty");
-        	entrance.setCoordNorth(null);
+        if (coordNorthResult.getResult() != null) {
+        	if (!SwissCoordsUtils.NORTH.contains(coordNorthResult.getResult())) 
+        		helper.error(GroundObject.class, getIdentifier(entrance), 
+        				"coordinate", "invalid north coordinate "+coordNorthResult.getResult()+", will be let empty");
+        	else 
+        		entrance.setCoordNorth(coordNorthResult.getResult());
         }
     	ConversionResult<Integer> coordAltitudeResult = helper.toCoordinate(row[10]);
     	if (coordAltitudeResult.getResult() != null) {
-    		entrance.setCoordAltitude(coordAltitudeResult.getResult());
     		if (coordAltitudeResult.getMessage() != null)
     			helper.warn(GroundObject.class, getIdentifier(entrance),
     					"altitude", coordAltitudeResult.getMessage());
+            if (!SwissCoordsUtils.ALTITUDE.contains(coordAltitudeResult.getResult())) {
+            	helper.error(GroundObject.class, getIdentifier(entrance), 
+    					"altitude", "invalid altitude "+coordAltitudeResult.getResult()+", will be let empty");
+            } else {
+        		entrance.setCoordAltitude(coordAltitudeResult.getResult());
+            }
     	} else {
     		if (coordAltitudeResult.getMessage() != null)
             	helper.error(GroundObject.class, getIdentifier(entrance), 
     					"altitude", coordAltitudeResult.getMessage());
     	}
-        if (entrance.getCoordAltitude() != null && !SwissCoordsUtils.ALTITUDE.contains(entrance.getCoordAltitude())) {
-        	helper.error(GroundObject.class, getIdentifier(entrance), 
-					"altitude", "invalid altitude "+entrance.getCoordAltitude()+", will be let empty");
-        	entrance.setCoordAltitude(null);
-        }
         // location accuracy
         try {
         	entrance.setLocationAccuracy(helper.toLocationAccuracyEnum(row[13]));
