@@ -110,6 +110,7 @@ public class EntitiesReader {
         		}
         	} else /* don't save in DB, only read the input */ {
         		nbCompleted++;
+        		XPersistence.rollback();
         	}
 		}
 		reader.close();

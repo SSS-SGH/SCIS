@@ -82,16 +82,16 @@ extends EntityConverter<SpeleoObject> {
         	speleoObject.setDepthAndElevation(null);
         }
         // length
-    	ConversionResult<Integer> lengthResult = helper.toIntegerFlexible(row[12]);
+    	ConversionResult<Integer> lengthResult = helper.toIntegerFlexible(row[1]);
     	if (lengthResult.getResult() != null) {
-    		speleoObject.setLength(lengthResult.getResult());
     		if (lengthResult.getMessage() != null)
     			helper.warn(SpeleoObject.class, getIdentifier(speleoObject),
-    					"length", lengthResult.getMessage() + " for '"+row[12]+"'");
-    		if (speleoObject.getLength() < 0) {
-    			speleoObject.setLength(null);
+    					"length", lengthResult.getMessage() + " for '"+row[1]+"'");
+    		if (lengthResult.getResult() < 0) {
             	helper.error(SpeleoObject.class, getIdentifier(speleoObject), 
-    					"length", "number cannot be negative but is '"+row[12]+"', will be let empty");
+    					"length", "number cannot be negative but is '"+row[1]+"', will be let empty");
+    		} else {
+        		speleoObject.setLength(lengthResult.getResult());
     		}
     	} else {
     		if (lengthResult.getMessage() != null)
