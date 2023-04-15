@@ -4,6 +4,7 @@
 
 	<property name="project" value="SCIS" />
 	<property name="ox3" value="true" />
+	<property name="openxava.base.dir" value=".."/> <!-- Change if you want OpenXava and Addons in another folder -->
 	<property file="../openxava.properties"/>
 	
 	<!-- 
@@ -11,23 +12,40 @@
 	Not needed to call it if you work inside Eclipse
 	-->
 	<target name="compile"> 
-		<ant antfile="../OpenXava/build.xml" target="compile"/>
+		<ant antfile="${openxava.base.dir}/OpenXava/build.xml" target="compile"/>
 	</target>	    	
 	
-	<!-- Build and deploy the application in war format -->	
+	<!-- 
+	Build and deploy the application in war format. 
+	It deploys it on the Tomcat included in OpenXava distribution, 
+	to deploy to other location modify the tomcat.dir property of workspace/openxava.properties.
+	-->	
 	<target name="deployWar">
 		<!-- In a directory -->
-		<ant antfile="../OpenXava/build.xml" target="deploy"/>
+		<ant antfile="${openxava.base.dir}/OpenXava/build.xml" target="deploy"/>
 		<!-- In a file (it does not work well on windows + tomcat)
-		<ant antfile="../OpenXava/build.xml" target="deployWar"/>
+		<ant antfile="${openxava.base.dir}/OpenXava/build.xml" target="deployWar"/>
 		-->
+	</target>
+	
+	<!-- 
+	Build the application in war format.
+	Leaves the war in the workspace.dist/YourApplication.dist folder.
+	 -->	
+	<target name="createWar">
+		<jar jarfile="web/WEB-INF/lib/${project}-secrets.jar" basedir="${openxava.base.dir}/Secrets"/>
+		<ant antfile="${openxava.base.dir}/OpenXava/build.xml" target="createWar"/>
+		<jar jarfile="../${project}.dist/${project}.war" basedir="web"/>
+		<copy todir="../" file="..//${project}.dist/${project}.war" />
+		<!-- easier on MacOSX, because *.dist folders look like an installer -->
 	</target>				
+
 	
 	<!--
 	Build the application in portlets format 
 	-->		
 	<target name="generatePortlets"> 
-		<ant antfile="../OpenXava/build.xml" target="generatePortlets"/>
+		<ant antfile="${openxava.base.dir}/OpenXava/build.xml" target="generatePortlets"/>
 		<copy todir="../../" file="../../workspace.dist/${project}.dist/${project}.war" />
 		<!-- easier on MacOSX, because *.dist folders look like an installer -->
 	</target>
@@ -37,74 +55,19 @@
 	It must be called just after update the OpenXava version.
 	-->
 	<target name="updateOX">
-		<ant antfile="../OpenXava/build.xml" target="updateOX"/>
+		<ant antfile="${openxava.base.dir}/OpenXava/build.xml" target="updateOX"/>
 	</target>
-	
-	<!-- from OpenXava/build.xml, but in this file and with Envers (auditing / historisation) -->
-	<target name="defineHibernateTool">
-		<path id="jpatoolslib">
-			<path location="../OpenXava/lib/hibernate-tools.jar" />
-			<path location="../OpenXava/lib/freemarker.jar" />					 	
-		 	<path location="../OpenXava/lib/commons-logging.jar" />
-			<!-- Library from OpenXava in order to work the first time
-				before WEB-INF/lib of new project is populated -->
-		 	<fileset dir="../OpenXava/web/WEB-INF/lib">
-				<include name="**/*.jar"/>
-			</fileset>
-			<!-- Library of project to include custom libraries -->
-			<fileset dir="../${project}/web/WEB-INF/lib">
-				<include name="**/*.jar"/>
-			</fileset>			
-			<path location="../OpenXava/bin" />
-			<path location="${schema.path}" />
-		</path>			
-		
-		<taskdef name="hibernatetool" 
-			classname="org.hibernate.tool.ant.EnversHibernateToolTask" 
-			classpathref="jpatoolslib" />		
-	</target>
-	
-	<!--
-	Generates an SQL Script which can create the database
-	-->
-	<target name="generateSchemaScripts" depends="defineHibernateTool">
-		<property name="persistence.unit" value="junit"/>
-		<hibernatetool destdir="persistence/scripts">
-			<jpaconfiguration persistenceunit="${persistence.unit}"/>
-			<classpath>
-				<path location="web/WEB-INF/classes" />		  
-			</classpath>
-
-		 	<hbm2ddl export="false" drop="true" outputfilename="generateSchema.sql" />	
-		</hibernatetool>
-	</target>	
-	
-	<!--
-	Generates an SQL Script which can update the database based on the current state
-	-->
-	<target name="updateSchemaScripts" depends="defineHibernateTool">
-		<property name="persistence.unit" value="junit"/>
-		<property name="schema.path" value="../../tomcat/lib/postgresql-9.2-1002.jdbc4.jar"/>
-		<hibernatetool destdir="persistence/scripts">
-			<jpaconfiguration persistenceunit="${persistence.unit}"/>
-			<classpath>
-				<path location="web/WEB-INF/classes" />		  
-				<path location="${schema.path}" />
-			</classpath>
-
-		 	<hbm2ddl export="false" create="false" update="true" outputfilename="updateSchema.sql" />	
-		</hibernatetool>
-	</target>	
 	
 	<!--
 	Connects to your database and updates your schema in order to match to your current application.
-	(Also you can use directly 'hibernatetool' ant task)
+	Remember to give value to schema.path with the path of the JDBC driver jar for your database.
 	-->
-	<target name="updateSchema" depends="defineHibernateTool">
-		<ant antfile="../OpenXava/build.xml" target="updateSchemaJPA">			
+	<target name="updateSchema">
+		<ant antfile="${openxava.base.dir}/OpenXava/build.xml" target="updateSchemaJPA">			
 			<property name="persistence.unit" value="junit"/>
-			<property name="schema.path" value="../../tomcat/lib/postgresql-9.2-1002.jdbc4.jar"/>
+			<property name="schema.path" value="../OpenXava/lib/hsqldb.jar"/>
 		</ant>
 	</target>	
 	
+						
 </project>

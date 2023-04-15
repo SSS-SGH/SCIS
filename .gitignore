@@ -12,3 +12,9 @@
 hs_err_pid*
 
 **/.DS_Store
+
+/temp/*
+/data/*
+/i18n/portlets/*
+
+/.settings/*
