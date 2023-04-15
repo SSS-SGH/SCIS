@@ -7,7 +7,7 @@
 <%
 if (errors.contains()) {
 %>
-<div class='<%=style.getMessagesWrapper()%>'>
+<div class='<%=style.getErrorsWrapper()%>'>
 <table id="<xava:id name='errors_table'/>">
 <%
 	java.util.Iterator it = errors.getStrings(request).iterator();
@@ -15,6 +15,7 @@ if (errors.contains()) {
 %>
 <tr><td class='<%=style.getErrors()%>'>
 <%=style.getErrorStartDecoration()%>
+<i class="mdi mdi-close" style="cursor: pointer;" onclick="$(this).parent().fadeOut()"></i>
 <%=it.next()%>
 <%=style.getErrorEndDecoration()%>
 </td></tr>

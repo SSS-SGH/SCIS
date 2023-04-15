@@ -1,24 +1,18 @@
 package ch.speleo.scis.ui.actions;
 
-import org.openxava.actions.IForwardAction;
-import org.openxava.actions.IPropertyAction;
-import org.openxava.controller.Environment;
-import org.openxava.util.Messages;
-import org.openxava.view.View;
-
-import ch.speleo.scis.business.utils.Axis;
-import ch.speleo.scis.business.utils.SwissCoordsUtils;
+import org.openxava.actions.*;
+import org.openxava.controller.*;
+import org.openxava.util.*;
+import org.openxava.view.*;
 
 public class GoToSwissmapAction implements IForwardAction, IPropertyAction {
 	
 	private View view;
 	 
 	public String getForwardURI() {
-		Integer coordEast = (Integer) view.getValue("coordEast");
-		Integer coordNorth = (Integer) view.getValue("coordNorth");
+		Number coordEast = (Number) view.getValue("coordEastLv95");
+		Number coordNorth = (Number) view.getValue("coordNorthLv95");
 		if (coordEast != null && coordNorth != null) {
-			coordEast = SwissCoordsUtils.toLV03(coordEast, Axis.EAST);
-			coordNorth = SwissCoordsUtils.toLV03(coordNorth, Axis.NORTH);
 		    return "http://map.geo.admin.ch/?crosshair=marker&Y="+coordEast+"&X="+coordNorth+"&zoom=6";
 		} else {
 			return null;

@@ -39,6 +39,9 @@
  takes-long (true|false) "false"
  confirm (true|false) "false"
  in-each-row (true|false) "false"
+ process-selected-items (true|false) "false"
+ available-on-new (true|false) "true"
+ loses-changed-data (true|false) "false"
 >
 
 <!ELEMENT use-object EMPTY>
@@ -56,11 +59,14 @@
 <!ELEMENT extends EMPTY>
 <!ATTLIST extends
  controller CDATA #REQUIRED
+ excluded-actions CDATA #IMPLIED
 >
 
-<!ELEMENT controller (extends*, action*, subcontroller*)>
+<!ELEMENT controller (extends*, (action|subcontroller)*)>
 <!ATTLIST controller
  name CDATA #REQUIRED
  label CDATA #IMPLIED
+ image CDATA #IMPLIED
+ icon CDATA #IMPLIED
 >
-<!ELEMENT controllers (env-var*, object*, controller+)>
+<!ELEMENT controllers (env-var*, object*, controller*)>

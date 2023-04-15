@@ -1,19 +1,19 @@
 package ch.speleo.scis.ui.actions;
 
-import java.util.Map;
+import java.util.*;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openxava.actions.ViewBaseAction;
-import org.openxava.util.ElementNotFoundException;
+import org.apache.commons.logging.*;
+import org.openxava.actions.*;
+import org.openxava.util.*;
 
-import ch.speleo.scis.model.common.GenericIdentityWithRevision;
+import ch.speleo.scis.model.common.*;
 
 public class ShowAuditAction extends ViewBaseAction {
+
+	private static final Log logger = LogFactory.getLog(ShowAuditAction.class);
 	
 	private static String DEFAULT_VIEW_NAME = "";
 
-	private static final Log logger = LogFactory.getLog(ShowAuditAction.class);
 
     public void execute() throws Exception {
     	

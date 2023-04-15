@@ -11,30 +11,15 @@
 <jsp:useBean id="style" class="org.openxava.web.style.Style" scope="request"/>
 <jsp:useBean id="context" class="org.openxava.controller.ModuleContext" scope="session"/>
 
-<%
-String propertyKey = request.getParameter("propertyKey");
-String [] fvalues = (String []) request.getAttribute(propertyKey + ".fvalue");
-java.util.Collection actions = java.util.Arrays.asList(fvalues);
-boolean editable="true".equals(request.getParameter("editable"));
-String disabled=editable?"":"disabled";
-String script = request.getParameter("script");
-String agent = (String) request.getAttribute("xava.portlet.user-agent");
-if (null != agent && agent.indexOf("MSIE")>=0) {
-    script = org.openxava.util.Strings.change(script, "onchange", "onclick");
-}
-String viewObject = request.getParameter("viewObject");
-viewObject = (viewObject == null || viewObject.equals(""))?"xava_view":viewObject;
-View view = (View) context.get(request, viewObject);
-String moduleName = view.getValueString("module.name");
-String applicationName = request.getParameter("application"); 
-MetaModule module = MetaApplications.getMetaApplication(applicationName).getMetaModule(moduleName);
-int i=0;
-%>
+<%@ include file="commonDefinitions.jsp" %> 
+
 <table width="100%"><tr>
 <%
+java.util.Collection actions = java.util.Arrays.asList(fvalues); 
+int i=0; 
 for (Object ocontroller: module.getControllersNames()) {
 	MetaController controller = MetaControllers.getMetaController((String) ocontroller);
-	for (Object oaction: controller.getAllNotHiddenMetaActions()) {
+	for (Object oaction: controller.getAllNotHiddenMetaActionsRecursive()) { 
 		MetaAction action = (MetaAction) oaction;
 		if (action.getMetaController().getName().equals("Navigation")) continue;
 		String checked = actions.contains(action.getQualifiedName())?"checked='true'":"";
@@ -54,6 +39,7 @@ for (Object ocontroller: module.getControllersNames()) {
 	}
 }
 %>
+<%@ include file="collectionActions.jsp" %>
 </tr></table>
 <% 
 if (!editable) { 

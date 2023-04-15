@@ -84,19 +84,34 @@ public class SwissCoordsUtils {
     	}
 	}
     
-    /** Gives the possible ranges (CH1903 and CH1903+) for a swiss coordinate. 
-     */
-    public static Ranges getRanges(Axis axis) {
+	public static Integer toLV95(Integer coord, Axis axis) {
     	switch(axis) {
     	case EAST:
-    		return EAST;
+    		return (EAST_LV95.contains(coord))? coord : coord + 2000000;
     	case NORTH:
-    		return NORTH;
+    		return (NORTH_LV95.contains(coord))? coord : coord + 1000000;
+    	default: 
+    		return coord;
+    	}
+	}
+    
+    /** Gives the possible ranges (CH1903 and CH1903+) for a swiss coordinate. 
+     */
+    public static Ranges getRanges(Axis axis, CoordsSystem coordsSystem) {
+    	switch(axis) {
+    	case EAST:
+    		return coordsSystem == CoordsSystem.LV95 ? new Ranges(EAST_LV95) : coordsSystem == CoordsSystem.LV03 ? new Ranges(EAST_LV03) : EAST;
+    	case NORTH:
+    		return coordsSystem == CoordsSystem.LV95 ? new Ranges(NORTH_LV95) : coordsSystem == CoordsSystem.LV03 ? new Ranges(NORTH_LV03) : NORTH;
     	case ALTITUDE:
     		return ALTITUDE;
     	default: 
     		return EMPTY;
     	}
+    }
+
+    public static enum CoordsSystem {
+    	ANY, LV03, LV95
     }
 
     /** Constraint for a Swiss coordinate. */
@@ -107,6 +122,7 @@ public class SwissCoordsUtils {
     public static @interface SwissCoords {
     	/** the axis to constraint */
     	Axis axis();
+    	CoordsSystem coordsSystem() default CoordsSystem.ANY;
     	String message() default "validator.SwissCoords";
         Class<?>[] groups() default {};
         Class<? extends Payload>[] payload() default {};
@@ -117,14 +133,16 @@ public class SwissCoordsUtils {
     implements ConstraintValidator<SwissCoords, Object> {
     	
     	private Axis axis;
+    	private CoordsSystem coordsSystem;
     	
 		public void initialize(SwissCoords parameters) {
 			this.axis = parameters.axis();
+			this.coordsSystem = parameters.coordsSystem();
 		}
 
 		public boolean isValid(Object value, ConstraintValidatorContext context) {
 			if (value==null) return true;
-			Ranges ranges = getRanges(axis);
+			Ranges ranges = getRanges(axis, coordsSystem);
 			if ( value instanceof Double ) {
 				return ranges.contains((Double) value);
 			}
@@ -140,7 +158,7 @@ public class SwissCoordsUtils {
 		public void apply(Property property) {
 			Column col = (Column) property.getColumnIterator().next();
 			StringBuilder check = new StringBuilder();
-			Ranges ranges = getRanges(axis);
+			Ranges ranges = getRanges(axis, coordsSystem);
 			for (Range range: ranges.getRanges()) {
 				if(check.length() > 0) 
 					check.append(" or ");
@@ -164,16 +182,17 @@ public class SwissCoordsUtils {
 	/** Height [m] of a swiss 1:25'000 map */
 	protected static final int MAP_HEIGHT = 12000;
 	/** East coordinate [m]  of the first (left-most) swiss 1:25'000 map*/
-	protected static final int MAP_EAST_OF_FIRST = 480000;
+	protected static final int MAP_EAST_OF_FIRST = 2480000;
 	/** North coordinate [m]  of the first (top-most) swiss 1:25'000 map*/
-	protected static final int MAP_NORTH_OF_FIRST = 302000;
-	/** Maximal number of maps horizontaly */
+	protected static final int MAP_NORTH_OF_FIRST = 1302000;
+	/** Maximal number of maps horizontally */
 	protected static final int MAP_NR_HORIZONTAL = 20;
 	/** Offset for the number of swiss 1:25'000 map */
 	protected static final int MAP_OFSET_25K = 1000;
 
 	/**
-	 * Compute the map number on which a given point is. 
+	 * Compute the map number as of Swisstopo on which a given point is, for standard map. 
+	 * Better use a GIS or a map overview, as inaccurate in all the special cases. 
 	 * @param east   East coordinate in the CH1903 or CH1903+ reference system
 	 * @param north  North coordinate in the CH1903 or CH1903+ reference system
 	 * @return Number of the 1:25'000 map from Swisstopo. 
@@ -181,29 +200,13 @@ public class SwissCoordsUtils {
 	 *         and is inaccurate for points outside the mapped part of Switzerland. 
 	 */
 	public static Integer computeMapNr(int east, int north) {
-		// TODO Better use a GIS or a map overview, as inacurrate in all the special case. 
-		east = SwissCoordsUtils.toLV03(east, Axis.EAST);
-		north = SwissCoordsUtils.toLV03(north, Axis.NORTH);
+		east = SwissCoordsUtils.toLV95(east, Axis.EAST);
+		north = SwissCoordsUtils.toLV95(north, Axis.NORTH);
 		int horizontalNr = (east - MAP_EAST_OF_FIRST) / MAP_WIDTH;
-		// horizonal map nr are between 0 and 19 (even sometimes 19bis in GR)
+		// horizontal map nr are between 0 and 19 (even sometimes 19bis in GR)
 		horizontalNr = Math.min(Math.max(horizontalNr, 0), MAP_NR_HORIZONTAL - 1); 
 		int verticalNr = (MAP_NORTH_OF_FIRST - north) / MAP_HEIGHT;
-		return new Integer(MAP_OFSET_25K + (MAP_NR_HORIZONTAL * verticalNr) + horizontalNr);
+		return (MAP_OFSET_25K + (MAP_NR_HORIZONTAL * verticalNr) + horizontalNr);
 	}
 	
-    /*
-	 * Compute the right-angle area of a map
-	 * @param mapNr Number of the 1:25'000 map from Swisstopo.
-	 * @return The area of the given map
-	 * @deprecated Inacurrate in all the special case. Better use a GIS or a map overview. 
-	 */
-	/*public static AreaRect2D computeArea(Integer mapNr) {
-		int horizontalNr = mapNr.intValue() % (MAP_NR_HORIZONTAL);
-		int verticalNr = (mapNr.intValue() - MAP_OFSET_25K) / MAP_NR_HORIZONTAL;
-		return new AreaRect2D(MAP_EAST_OF_FIRST + (MAP_WIDTH * horizontalNr), 
-		                      MAP_EAST_OF_FIRST + (MAP_WIDTH * (horizontalNr + 1)), 
-		                      MAP_NORTH_OF_FIRST - (MAP_HEIGHT * verticalNr), 
-		                      MAP_NORTH_OF_FIRST - (MAP_HEIGHT * (verticalNr + 1)));
-	}*/
-
 }

@@ -1,27 +1,25 @@
 package ch.speleo.scis.model.common;
 
-import java.io.Serializable;
+import java.io.*;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 
-import org.hibernate.envers.Audited;
-import org.openxava.annotations.Hidden;
+import org.hibernate.envers.*;
+import org.openxava.annotations.*;
+
+import lombok.*;
 
 /**
- * Class representing a generic technical Identity for the database.
+ * A generic technical Identity for the database.
  * 
  * @author florian
  */
 @MappedSuperclass
 @Audited
+@Getter @Setter
 public abstract class GenericIdentity implements Serializable {
-    /**
-     * Serial version UID.
-     */
-    private static final long serialVersionUID = 8404333762940955332L;
+
+	private static final long serialVersionUID = 8404333762940955332L;
     
     /**
      * Database ID.
@@ -32,18 +30,6 @@ public abstract class GenericIdentity implements Serializable {
     @Hidden
     private Long id;
         
-    /**
-     * @return Database ID.
-     */
-    public Long getId() {
-        return id;
-    }
-    /**
-     * @param id Database ID.
-     */
-    public void setId(Long id) {
-        this.id = id;
-    }
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -76,11 +62,11 @@ public abstract class GenericIdentity implements Serializable {
 		if (obj == null)
 			return false;
 		if (id == null)
-			return super.equals(obj);
+			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		GenericIdentity other = (GenericIdentity) obj;
-		return id.equals(other.id);
+		return (other.id != null) && id.equals(other.id);
 	}
     
 }

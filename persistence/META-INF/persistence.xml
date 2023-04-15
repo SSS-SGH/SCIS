@@ -1,70 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+
 <persistence xmlns="http://java.sun.com/xml/ns/persistence"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
              version="1.0">
              
-    <!-- Server-managed (Tomcat, etc.) connection on PostgreSQL -->
     <persistence-unit name="default">
     	<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     	<non-jta-data-source>java://comp/env/jdbc/SCISDS</non-jta-data-source>
+    	<class>org.openxava.session.GalleryImage</class>
+    	<class>org.openxava.web.editors.DiscussionComment</class>
         <properties>
-            <!--property name="hibernate.hbm2ddl.auto" value="update" /--><!-- only for testing or developing -->
-
+            <!--property name="javax.persistence.schema-generation.database.action" value="update"/--><!-- only for testing or developing -->
+            <!--property name="javax.persistence.create-database-schemas" value="true"/--> 
+            <!--property name="hibernate.default_schema" value="SCIS"/-->
+            <property name="hibernate.jdbc.use_streams_for_binary" value="true"/>
             <!-- database communication -->
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
-            
+            <!--property name="hibernate.dialect" value="org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect"/-->
             <!-- auditing / historisation (copied below) -->
-            <!--property name="org.hibernate.envers.audit_strategy" value="org.hibernate.envers.strategy.ValidityAuditStrategy" /-->
+            <property name="org.hibernate.envers.audit_table_suffix" value="_HIST" />
+            <property name="org.hibernate.envers.store_data_at_delete" value="true" />
+        </properties>
+    </persistence-unit>
+    
+    <!-- JUnit Hypersonic -->
+    <persistence-unit name="junit">
+    	<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    	<class>org.openxava.web.editors.DiscussionComment</class>
+        <properties>
+			<property name="hibernate.connection.driver_class" value="org.hsqldb.jdbcDriver"/>
+			<property name="hibernate.default_schema" value="SCIS"/>
+			<property name="hibernate.connection.url" value="jdbc:hsqldb:hsql://localhost:1666"/>
+            <!-- auditing / historisation (copied above) -->
             <property name="org.hibernate.envers.audit_table_suffix" value="_HIST" />
             <property name="org.hibernate.envers.store_data_at_delete" value="true" />
         </properties>
     </persistence-unit>    
-        
-    <!-- App-managed connection on local DB, for JUnit & Ant -->
-    <persistence-unit name="junit">
-    	<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <properties>
-            <property name="hibernate.hbm2ddl.auto" value="update" /><!-- only for testing or developing -->
-
-            <!-- database communication -->
-            <!-- PostgreSQL -->
-			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
-			<property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
-			<property name="hibernate.connection.url" value="jdbc:postgresql://localhost/sgharchiv"/>
-			<property name="hibernate.connection.username" value="sgharchiv_dev_scis"/>
-			<property name="hibernate.connection.password" value="Merci5mitmachen"/>
-            <!-- Hypersonic (light simple embedded DB) -->
-			<!--property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
-			<property name="hibernate.connection.driver_class" value="org.hsqldb.jdbcDriver"/>
-			<property name="hibernate.connection.url" value="jdbc:hsqldb:file:../data/sgharchiv_dev_scis"/-->
-
-            <!-- auditing / historisation (copied above) -->
-            <!--property name="org.hibernate.envers.audit_strategy" value="org.hibernate.envers.strategy.ValidityAuditStrategy" /-->
-            <property name="org.hibernate.envers.audit_table_suffix" value="_HIST" />
-            <property name="org.hibernate.envers.store_data_at_delete" value="true" />
-        </properties>
-    </persistence-unit> 
-        
-    <!-- App-managed remote connection on the prod, for standalone app like the importer -->
-    <persistence-unit name="remote">
-    	<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <properties>
-            <!-- database communication -->
-            <!-- PostgreSQL -->
-			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
-			<property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
-			<!--property name="hibernate.connection.url" value="jdbc:postgresql://sgharchiv.ogh.ch/sgharchiv"/-->
-			<property name="hibernate.connection.url" value="jdbc:postgresql://localhost:55432/sgharchiv"/><!-- then use a SSH tunnel: ssh -L 55432:localhost:5432 sgharchiv@sgharchiv.ogh.ch -->
-			<property name="hibernate.connection.username" value="sgharchiv_prod_scis"/><!-- sgharchiv_test_scis or sgharchiv_prod_scis -->
-			<property name="hibernate.connection.password" value=""/><!-- do not publish the password -->
-
-            <!-- auditing / historisation (copied above) -->
-            <!--property name="org.hibernate.envers.audit_strategy" value="org.hibernate.envers.strategy.ValidityAuditStrategy" /-->
-            <property name="org.hibernate.envers.audit_table_suffix" value="_HIST" />
-            <property name="org.hibernate.envers.store_data_at_delete" value="true" />
-        </properties>
-    </persistence-unit> 
-        
+    
 </persistence>

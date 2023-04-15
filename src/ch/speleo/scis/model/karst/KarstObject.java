@@ -1,53 +1,23 @@
 package ch.speleo.scis.model.karst;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
+import java.io.*;
+import java.sql.*;
 import java.util.Date;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import javax.persistence.Version;
+import javax.persistence.*;
 
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
-import org.openxava.annotations.AsEmbedded;
-import org.openxava.annotations.DefaultValueCalculator;
-import org.openxava.annotations.Depends;
-import org.openxava.annotations.DisplaySize;
-import org.openxava.annotations.Hidden;
-import org.openxava.annotations.ReadOnly;
-import org.openxava.annotations.ReferenceView;
-import org.openxava.annotations.Required;
-import org.openxava.annotations.RowStyle;
-import org.openxava.annotations.Stereotype;
-import org.openxava.annotations.Tab;
-import org.openxava.annotations.View;
-import org.openxava.calculators.CurrentDateCalculator;
-import org.openxava.calculators.TrueCalculator;
-import org.openxava.util.Labels;
+import org.hibernate.envers.*;
+import org.openxava.annotations.*;
+import org.openxava.calculators.*;
+import org.openxava.util.*;
 
-import ch.speleo.scis.model.common.GenericIdentityWithDeleted;
-import ch.speleo.scis.model.common.Identifiable;
-import ch.speleo.scis.model.common.Karstologist;
+import ch.speleo.scis.model.common.*;
+import ch.speleo.scis.persistence.audit.*;
+import ch.speleo.scis.persistence.audit.ScisUserUtils.*;
+import lombok.*;
 
 /**
- * Class representing an object in the cave (generic object like an entrance, 
- * a cave system, a spring, etc.).
- * 
- * @author miguel
- * @version 1.0
+ * Any object to document on or in the cave (generic object like an entrance, a cave system, a spring, etc).
  */
 @Entity
 @Table(name = "KARST_OBJECT")
@@ -56,18 +26,17 @@ import ch.speleo.scis.model.common.Karstologist;
 @Tab(properties = "name, translatedType, deleted", 
 	rowStyles = {@RowStyle(style="deletedData", property="deleted", value="true")})
 @View(name = "Short", members = "name, translatedType, deleted")
+@Getter @Setter
 public class KarstObject 
 extends GenericIdentityWithDeleted implements Serializable, Identifiable {
-    /**
-     * Serial version UID.
-     */
-    private static final long serialVersionUID = 11992881712762616L;
+
+	private static final long serialVersionUID = 11992881712762616L;
 
     /**
      * Name of the karst object.
      */
     @Column(name = "NAME", length=100, nullable = false)
-	@DisplaySize(value=50, forViews="Short") 
+	@DisplaySize(value=50, forViews="Short, ShortWithId") 
     @Required
     private String name;
     /**
@@ -117,6 +86,7 @@ extends GenericIdentityWithDeleted implements Serializable, Identifiable {
     @OneToOne(mappedBy = "object", optional = true, cascade = {CascadeType.ALL}, orphanRemoval=true)
     @ReferenceView(value = "Short")
     @AsEmbedded
+    @NoSearch @NoCreate @NoModify
     private KarstObjectDocument document;
     /**
      * Any files and folders
@@ -132,101 +102,11 @@ extends GenericIdentityWithDeleted implements Serializable, Identifiable {
     @DefaultValueCalculator(TrueCalculator.class)
     private Boolean verified;
 
-    /**
-     * Empty constructor.
-     */
-    public KarstObject() { }
-
-	/**
-     * @return name of the karst object.
-     */
-    public String getName() {
-        return name;
-    }
 	@Depends("name")
 	@Hidden
 	public String getBusinessId() {
 		return getName();
 	}
-    /**
-     * @param name name of the karst object.
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-    /**
-     * @return Comment about the karst object.
-     */
-    public String getComment() {
-        return comment;
-    }
-    /**
-     * @param comment Comment about the karst object.
-     */
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-    
-    /**
-     * @return manager of the karst object.
-     */
-    public Karstologist getManager() {
-        return manager;
-    }
-    /**
-     * @param manager manager of the karst object.
-     */
-    public void setManager(Karstologist manager) {
-        this.manager = manager;
-    }
-    
-    /**
-     * @return Date when the karst object ...
-     */
-	public Date getCreationDate() {
-		return creationDate;
-	}
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
-
-    /**
-     * @return Date of the last modification
-     */
-	public Timestamp getLastModifDate() {
-		return lastModifDate;
-	}
-	public void setLastModifDate(Timestamp lastModifDate) {
-		this.lastModifDate = lastModifDate;
-	}
-
-	/**
-	 * @return Literature, references, publication
-	 */
-	public String getLiterature() {
-		return literature;
-	}
-	public void setLiterature(String literature) {
-		this.literature = literature;
-	}
-
-	/**
-	 * @return History of the available data
-	 */
-	public String getDataHistory() {
-		return dataHistory;
-	}
-	public void setDataHistory(String dataHistory) {
-		this.dataHistory = dataHistory;
-	}
-
-    /**
-     * @return Document(s) available for this object. 
-     */
-    public KarstObjectDocument getDocument() {
-		return document;
-	}
-
 	public void setDocument(KarstObjectDocument document) {
 		if (this.document != null) {
 			this.document.setObject(null);
@@ -237,14 +117,6 @@ extends GenericIdentityWithDeleted implements Serializable, Identifiable {
 		}
 	}
 	
-	public String getEdataFolderName() {
-		return edataFolderName;
-	}
-
-	public void setEdataFolderName(String eFolderName) {
-		this.edataFolderName = eFolderName;
-	}
-
 	/**
 	 * @return The translation of the object's type, if it exists, otherwise of the class name
 	 */
@@ -253,21 +125,22 @@ extends GenericIdentityWithDeleted implements Serializable, Identifiable {
 		return Labels.get(text);
 	}
 	
-	public Boolean getVerified() {
-		return verified;
-	}
-
-	public void setVerified(Boolean verified) {
-		this.verified = verified;
+	@PrePersist @PreUpdate @PreDelete
+	public void onPrePersistAndUpdate() {
+		removeEmptyDocument();
+		handlePermissionsOnWrite();
 	}
 	
-	@PrePersist @PreUpdate
 	public void removeEmptyDocument() {
 		if (document != null && document.isEmpty()) {
 			document = null;
 		}
 	}
 
+    public void handlePermissionsOnWrite() {
+        ScisUserUtils.checkRoleInCurrentUser(ScisRole.SGH_ARCHIVAR);
+    }
+    
 	@Override
 	protected void writeFields(StringBuilder builder) {
 		super.writeFields(builder);

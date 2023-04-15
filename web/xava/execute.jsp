@@ -23,11 +23,9 @@ if (browser == null) {
 	browser = request.getHeader("user-agent");
 	request.setAttribute("xava.portlet.user-agent", browser);
 }
-Locales.setCurrent(request);
 
 org.openxava.controller.ModuleManager manager = (org.openxava.controller.ModuleManager) context.get(request, "manager", "org.openxava.controller.ModuleManager");
 manager.setSession(session);
-manager.resetPersistence();
 
 org.openxava.tab.Tab t = (org.openxava.tab.Tab) context.get(request, "xava_tab");
 request.setAttribute("tab", t);
@@ -52,9 +50,11 @@ if (deselected != null){
 <% } %>
 
 <%
+  
 manager.setApplicationName(request.getParameter("application"));
 manager.setModuleName(request.getParameter("module"));
-manager.executeBeforeEachRequestActions(request, errors, messages);
+boolean loadingModulePage = "true".equals(request.getParameter("loadingModulePage"));
+if (!loadingModulePage) manager.executeBeforeEachRequestActions(request, errors, messages); 
 view.setRequest(request);
 view.setErrors(errors);
 view.setMessages(messages);
@@ -69,7 +69,7 @@ for (Iterator it = previousViews.iterator(); it.hasNext(); ) {
 
 tab.setRequest(request);
 tab.setErrors(errors); 
-if (manager.isListMode() || manager.isSplitMode() && manager.getDialogLevel() == 0) {   
+if (manager.isListMode()) {   
 	tab.setModelName(manager.getModelName());
 	if (tab.getTabName() == null) { 
 		tab.setTabName(manager.getTabName());
@@ -82,17 +82,24 @@ if (manager.isXavaView(request)) {
 		view.assignValuesToWebView();
 	}
 }
-manager.initModule(request, errors, messages);
-manager.executeOnEachRequestActions(request, errors, messages); 
-if (hasProcessRequest) {
-	manager.execute(request, errors, messages);	
-	if (manager.isListMode() || manager.isSplitMode() && manager.getDialogLevel() == 0) { // here and before execute the action
-		tab.setModelName(manager.getModelName());	
-		if (tab.getTabName() == null) { 
-			tab.setTabName(manager.getTabName());
+if (!(loadingModulePage && manager.isCoreViaAJAX(request))) { 
+	manager.initModule(request, errors, messages);
+	manager.executeOnEachRequestActions(request, errors, messages); 
+	if (hasProcessRequest) {
+		manager.execute(request, errors, messages);	
+		if (manager.isListMode()) { // here and before execute the action
+			tab.setModelName(manager.getModelName());	
+			if (tab.getTabName() == null) { 
+				tab.setTabName(manager.getTabName());
+			}
 		}
 	}
+	//after-each-request
+	manager.executeAfterEachRequestActions(request, errors, messages);	
+}  
+
+if ("true".equals(request.getParameter("firstRequest")) && manager.isCoreViaAJAX(request)) { 
+	manager.executeBeforeLoadPage(request, errors, messages);
 }
-//after-each-request
-manager.executeAfterEachRequestActions(request, errors, messages);
+if (manager.isDetailMode()) view.setRequest(request);   
 %>

@@ -13,9 +13,8 @@
 <%@ page import="org.openxava.web.Ids" %>
 <%@ page import="org.openxava.web.Collections" %>
 
-
 <%
-	String collectionName = request.getParameter("collectionName");
+String collectionName = request.getParameter("collectionName");
 String viewObject = request.getParameter("viewObject");
 View view = (View) context.get(request, viewObject);
 View collectionView = view.getSubview(collectionName);
@@ -29,6 +28,7 @@ if (!collectionView.isCollectionFromModel()) {
 		String tabObject = Collections.tabObject(collectionId);
 		tab.setTabObject(tabObject);		
 		tab.setRequest(request);  
+		tab.setConditionParameters(); 
 		tab.reset();
 		request.setAttribute(Tab.TAB_RESETED_PREFIX + tab, Boolean.TRUE);
 	}

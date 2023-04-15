@@ -1,17 +1,15 @@
 package ch.speleo.scis.ui.actions;
 
-import java.util.Map;
+import java.util.*;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openxava.actions.IModelAction;
-import org.openxava.actions.TabBaseAction;
-import org.openxava.jpa.XPersistence;
-import org.openxava.model.MapFacade;
-import org.openxava.validators.ValidationException;
-import org.openxava.view.View;
+import org.apache.commons.logging.*;
+import org.openxava.actions.*;
+import org.openxava.jpa.*;
+import org.openxava.model.*;
+import org.openxava.validators.*;
+import org.openxava.view.*;
 
-import ch.speleo.scis.model.common.GenericIdentityWithDeleted;
+import ch.speleo.scis.model.common.*;
 
 /** OpenXava Action that marks as deleted the selected elements */
 public class MarkDeletedSelectedAction extends TabBaseAction implements IModelAction {
@@ -42,11 +40,11 @@ public class MarkDeletedSelectedAction extends TabBaseAction implements IModelAc
 					                      .append("> marked as deleted").toString());
 				}
 				catch (ValidationException ex) {
-					addError("no_delete_row", new Integer(i), key);
+					addError("no_delete_row", i, key);
 					addErrors(ex.getErrors());
 				}								
 				catch (Exception ex) { 
-					addError("no_delete_row", new Integer(i), key);
+					addError("no_delete_row", i, key);
 				}						
 			}
 		} else {						
@@ -56,11 +54,11 @@ public class MarkDeletedSelectedAction extends TabBaseAction implements IModelAc
 					MapFacade.remove(model, key);				
 				}
 				catch (ValidationException ex) {
-					addError("no_delete_row", new Integer(i), key);
+					addError("no_delete_row", i, key);
 					addErrors(ex.getErrors());
 				}								
 				catch (Exception ex) { 
-					addError("no_delete_row", new Integer(i), key);
+					addError("no_delete_row", i, key);
 				}						
 			}
 		}

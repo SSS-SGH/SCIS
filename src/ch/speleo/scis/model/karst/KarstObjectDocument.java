@@ -1,30 +1,19 @@
 package ch.speleo.scis.model.karst;
 
-import java.io.Serializable;
-import java.util.Date;
+import java.io.*;
+import java.util.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.envers.Audited;
-import org.openxava.annotations.DefaultValueCalculator;
-import org.openxava.annotations.DescriptionsList;
-import org.openxava.annotations.Hidden;
-import org.openxava.annotations.ReferenceView;
-import org.openxava.annotations.Stereotype;
-import org.openxava.annotations.View;
-import org.openxava.annotations.Views;
-import org.openxava.calculators.FalseCalculator;
+import org.apache.commons.lang.*;
+import org.hibernate.envers.*;
+import org.openxava.annotations.*;
+import org.openxava.calculators.*;
 
-import ch.speleo.scis.model.common.GenericIdentity;
-import ch.speleo.scis.model.common.Karstologist;
+import ch.speleo.scis.model.common.*;
+import ch.speleo.scis.persistence.audit.*;
+import ch.speleo.scis.persistence.audit.ScisUserUtils.*;
+import lombok.*;
 
 @Entity
 @Table(name = "KARST_OBJECT_DOCUMENT")
@@ -33,12 +22,10 @@ import ch.speleo.scis.model.common.Karstologist;
 	@View(name = "Short", members = "transmissionDate, rolledMap, suspensionFolder; contact; remarks; "), 
 	@View(members = "transmissionDate, rolledMap, suspensionFolder; object; contact; remarks; ")
 })
+@Getter @Setter
 public class KarstObjectDocument
 extends GenericIdentity implements Serializable {
 	
-	/**
-     * Serial version UID.
-	 */
 	private static final long serialVersionUID = 3695081938559929106L;
 
 	/**
@@ -80,61 +67,7 @@ extends GenericIdentity implements Serializable {
     @DefaultValueCalculator(FalseCalculator.class)
     private Boolean suspensionFolder;
 
-    
-	/**
-	 * @return The object to which this document refers. 
-	 */
-	public KarstObject getObject() {
-		return object;
-	}
-	public void setObject(KarstObject object) {
-		this.object = object;
-	}
-
-	/**
-	 * @return The person who transmitted this document or the contact for this document. 
-	 */
-	public Karstologist getContact() {
-		return contact;
-	}
-	public void setContact(Karstologist contact) {
-		this.contact = contact;
-	}
-
-	public Date getTransmissionDate() {
-		return transmissionDate;
-	}
-	public void setTransmissionDate(Date transmissionDate) {
-		this.transmissionDate = transmissionDate;
-	}
-
-	public String getRemarks() {
-		return remarks;
-	}
-	public void setRemarks(String remarks) {
-		this.remarks = remarks;
-	}
-
-    /**
-     * @return if this document is (among others) a rolled map. 
-     */
-	public Boolean getRolledMap() {
-		return rolledMap;
-	}
-	public void setRolledMap(Boolean rolledMap) {
-		this.rolledMap = rolledMap;
-	}
-
-    /**
-     * @return if this document is (among others) in a suspension folder. 
-     */
-	public Boolean getSuspensionFolder() {
-		return suspensionFolder;
-	}
-	public void setSuspensionFolder(Boolean suspensionFolder) {
-		this.suspensionFolder = suspensionFolder;
-	}
-	
+    	
 	@Hidden
 	public boolean isEmpty() {
 		return contact == null && 
@@ -143,6 +76,11 @@ extends GenericIdentity implements Serializable {
 		       !rolledMap && 
 		       !suspensionFolder;
 	}
+    
+	@PrePersist @PreUpdate @PreDelete
+    public void handlePermissionsOnWrite() {
+        ScisUserUtils.checkRoleInCurrentUser(ScisRole.SGH_ARCHIVAR);
+    }
     
     @Override
 	protected void writeFields(StringBuilder builder) {

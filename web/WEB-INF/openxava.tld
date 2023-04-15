@@ -128,7 +128,27 @@
        <name>param</name>
        <required>false</required>
        <rtexprvalue>true</rtexprvalue>
-    </attribute>    
+    </attribute>
+    <attribute>
+       <name>param1</name>
+       <required>false</required>
+       <rtexprvalue>true</rtexprvalue>
+    </attribute>
+	<attribute>
+       <name>param2</name>
+       <required>false</required>
+       <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+       <name>param3</name>
+       <required>false</required>
+       <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+       <name>param4</name>
+       <required>false</required>
+       <rtexprvalue>true</rtexprvalue>
+    </attribute>
     <attribute>
        <name>intParam</name>
        <required>false</required>
@@ -146,11 +166,6 @@
        <required>true</required>
        <rtexprvalue>true</rtexprvalue>
     </attribute>
-    <attribute>
-       <name>qualified</name>
-       <required>false</required>
-       <rtexprvalue>true</rtexprvalue>
-    </attribute>    
   </tag>         
 
   <tag>
@@ -161,6 +176,11 @@
     <attribute>
        <name>reference</name>
        <required>true</required>
+       <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+       <name>readOnlyAsLabel</name>
+       <required>false</required>
        <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag> 

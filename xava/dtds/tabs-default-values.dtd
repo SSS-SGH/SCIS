@@ -5,6 +5,9 @@
 <!ELEMENT tab
    (filter?, row-style*, properties?, base-condition?, default-order?, (for-model* | except-for-model* | for-all-models) )
 >
+<!ATTLIST tab
+ editors CDATA #IMPLIED
+>
 
 <!ELEMENT base-condition
    (#PCDATA)

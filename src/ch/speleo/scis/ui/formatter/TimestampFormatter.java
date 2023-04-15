@@ -1,28 +1,23 @@
 package ch.speleo.scis.ui.formatter;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.text.*;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.*;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openxava.formatters.IFormatter;
-import org.openxava.util.Dates;
-import org.openxava.util.Is;
-import org.openxava.util.XavaResources;
+import org.apache.commons.logging.*;
+import org.openxava.formatters.*;
+import org.openxava.util.*;
 
 public class TimestampFormatter implements IFormatter {
+
+	private static final Log loger = LogFactory.getLog(TimestampFormatter.class);
 	
 	// inspired from org.openxava.formatters.DateTimeCombinedFormatter
 	
-	Log loger;
 	String dateFormatStr;
 	
 	public TimestampFormatter() {
 		dateFormatStr = "dd.MM.yyyy HH:mm:ss.SSS";
-		loger = LogFactory.getLog(TimestampFormatter.class);
 	}
 
 	public String format(HttpServletRequest request, Object date) {

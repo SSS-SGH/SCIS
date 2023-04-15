@@ -5,6 +5,7 @@
 <%@ page import="org.openxava.util.Is" %>
 <%@ page import="org.openxava.util.Labels" %>
 <%@ page import="org.openxava.web.Charts"%>
+<%@ page import="org.openxava.tab.Tab"%> 
 
 <jsp:useBean id="context" class="org.openxava.controller.ModuleContext" scope="session"/>
 <jsp:useBean id="style" class="org.openxava.web.style.Style" scope="request"/>
@@ -48,28 +49,45 @@ if (editable) {
 <%
 		
 	%>
+	<% if (Is.emptyString(value)) { %>
 	<option value="" >&nbsp;</option>
+	<% } %>
 	<%
 	// current user
 	for (java.util.Iterator it = columns.iterator(); it.hasNext(); ) {
 		String column = (String) it.next();
 		String selected = "";
-		MetaProperty property = tab.getMetaTab().getMetaModel().getMetaProperty(column);
-		if (showOnlyNumericColumns && !property.isNumber()) {
+		MetaProperty property = null; 
+		try {
+			property = tab.getMetaProperty(column);
+		}
+		catch (org.openxava.util.ElementNotFoundException ex) {
+			if (Is.emptyString(tab.getGroupBy())) {
+				property = tab.getMetaTab().getMetaModel().getMetaProperty(column);
+			}
+			else continue;
+		}	
+		if (showOnlyNumericColumns && !(property.isNumber() && !property.hasValidValues())) { 	
 			continue;
 		}
 		if (column.equals(value)) {
 			selected = "selected"; 
 		}
 	%>
-		<option value="<%=column%>" <%=selected%>><%=property.getLabel()%></option>
+		<option value="<%=column%>" <%=selected%>><%=property.getQualifiedLabel(request)%></option>
 	<%
-		}
-		if (!showAllColumns) {
+	}
+	if (!Is.emptyString(tab.getGroupBy())) {
+		String selected = Tab.GROUP_COUNT_PROPERTY.equals(value)?"selected":"";
+	%>	
+		<option value="<%=Tab.GROUP_COUNT_PROPERTY%>" <%=selected%>><xava:label key="<%=Tab.GROUP_COUNT_PROPERTY%>"/></option>
+	<%	
+	}
+	if (!showAllColumns) {
 	%>
 		<option value="<%=OnChangeChartColumnNameAction.SHOW_MORE%>"><xava:message key="my_report_show_more_columns"/></option>
 	<%
-		} else {
+	} else {
 	%>
 		<option value="<%=OnChangeChartColumnNameAction.SHOW_LESS%>"><xava:message key="my_chart_show_less_columns"/></option>
 	<% 

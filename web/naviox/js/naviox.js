@@ -4,16 +4,6 @@ naviox.init = function() {
 		
 	naviox.watchSearch(); 
 	
-	$( "#show_modules" ).click(function() {			
-		if ($("#modules_list" ).css("display") == "none") {
-			naviox.showModules();
-		}
-		else {
-			naviox.hideModules();
-		}
-		return false;
-	});
-	
 	if (naviox.locked) {
 		naviox.lockUser();
 	}
@@ -21,6 +11,8 @@ naviox.init = function() {
 		naviox.watchForIdleUser();
 		openxava.postRefreshPage = naviox.watchForIdleUser;
 	}
+	
+	$('#modules_list_core').css('height', 'calc(100vh - ' + $('#modules_list_top').height() + 'px)'); 
 }
 
 naviox.watchForIdleUser = function() {
@@ -45,32 +37,20 @@ naviox.watchSearch = function() {
 	});	
 }
 
-naviox.hideModules = function() { 
-	$("#modules_list").fadeOut();			
-	$("#show_modules").removeClass("show-modules-selected");
-}
-
-naviox.showModules = function() {  
-	$("#modules_list").fadeIn();			
-	$("#modules_list").show(); // For IE8
-	$("#show_modules").addClass("show-modules-selected");	
-}
-
 naviox.bookmark = function() {
-	var bookmark = $('#bookmark'); 
-	var src = bookmark.attr('src');
-	if (naviox.changeBookmark(bookmark, src, "off", "on")) {
+	var bookmark = $('#bookmark').children(":first"); 
+	var bookmarkClass = bookmark.attr('class');
+	if (naviox.changeBookmark(bookmark, bookmarkClass, "star-outline", "star")) {
 		Modules.bookmarkCurrentModule();
 	}
-	else if (naviox.changeBookmark(bookmark, src, "on", "off")) {
+	else if (naviox.changeBookmark(bookmark, bookmarkClass, "star", "star-outline")) {
 		Modules.unbookmarkCurrentModule();
-	}	
+	}		
 }
 
-naviox.changeBookmark = function(bookmark, src, from, to) {
-	var idx = src.indexOf("bookmark-" + from + ".png"); 
-	if (idx >= 0) {
-		bookmark.attr('src', src.substring(0, idx) + "bookmark-" + to + ".png");
+naviox.changeBookmark = function(bookmark, bookmarkClass, from, to) {
+	if (bookmarkClass == "mdi mdi-" + from) {
+		bookmark.attr('class', "mdi mdi-" + to);
 		return true;
 	}	
 	return false;
@@ -86,6 +66,24 @@ naviox.displayModulesList = function() {
 
 naviox.displayAllModulesList = function(searchWord) {  
 	Modules.displayAllModulesList(searchWord, naviox.refreshModulesList);  
+}
+
+naviox.hideModulesList = function(application, module) {
+	$('#modules_list_hide').hide();
+	$('#module_header_menu_button').show();
+	$('#module_extended_title').show();
+	$('#modules_list').toggle("slide", function() { 
+		openxava.resetListsSize(application, module); 
+	});
+}
+
+naviox.showModulesList = function(application, module) {
+	$('#module_header_menu_button').hide();
+	$('#module_extended_title').hide();
+	$('#modules_list').toggle("slide", function() { 
+		$('#modules_list_hide').fadeIn();
+		openxava.resetListsSize(application, module);
+	});
 }
 
 naviox.goFolder = function(folderOid) {
@@ -118,7 +116,7 @@ naviox.refreshSearchModulesList = function(modulesList) {
 
 naviox.refreshFolderModulesList = function(modulesList) {
 	if (modulesList == null) {
-		window.location=openxava.location=".."
+		window.location=openxava.location="../m/SignIn";
 		return;
 	}
 	$('#modules_list_content').append("<td></td>"); 

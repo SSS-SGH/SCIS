@@ -11,7 +11,7 @@ openxava.addEditorInitFunction(function() {
 		if ($(idPrefix + 'type').length) {
 			var chartType = $(idPrefix + 'type').val();
 			var grouped = $(idPrefix + 'grouped').val();
-			var specification = chartDataEditor.render(applicationName, moduleName, chartType, grouped, xavaChartPrefix);
+			var specification = chartDataEditor.render(applicationName, moduleName, chartType, xavaChartPrefix); 
 			if (specification != 'empty') {
 				c3.generate(specification);
 			}
@@ -19,7 +19,7 @@ openxava.addEditorInitFunction(function() {
 	}
 });
 
-chartDataEditor.render = function(application, module, chartType, grouped, xavaChartPrefix) { 
+chartDataEditor.render = function(application, module, chartType, xavaChartPrefix) { 
 	var idPrefix = "#" + xavaChartPrefix;
 	var rowCount = $(idPrefix + "rowCount").val();
 	var columnCount = $(idPrefix + "columnCount").val();
@@ -28,41 +28,62 @@ chartDataEditor.render = function(application, module, chartType, grouped, xavaC
 		specification = {
 				bindto:idPrefix + "container",
 				data:{
-					x:'x',
 					columns:[],
-					type:chartType},
+					type:chartType
+				},
 				axis: {
 					x: {
 						type: 'categories'
 					}
-				}
+				},
+				pie: {
+			        label: {
+			            format: function (value, ratio, id) {
+			                return value;
+			            }
+			        }
+			    }
 		};
-		var index = 0;
-		specification.data.columns[0]=['x'];
-		for (index = 0; index < columnCount; index++) {
-			var category = $(idPrefix + "dataset_" + index + "_title").val();
-			specification.data.columns[index + 1]=[];
-			var rowIndex = 0;
-			for (rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-				var label = $(idPrefix + "title_" + rowIndex).val();
-				if (index == 0) {
-					specification.data.columns[0][rowIndex + 1] = label;
+		if (chartType == "pie") {
+			var labels = [];
+			for (var index = 0; index < rowCount; index++) {
+				specification.data.columns[index]=[];
+				var label = $(idPrefix + "title_" + index).val();
+				var value = $(idPrefix + "dataset_0_value_" + index).val();
+				var existingIndex = labels.indexOf(label); 
+				if (existingIndex < 0) {
+					labels.push(label);
+					specification.data.columns[index][0]=label;
+					specification.data.columns[index][1]=new Number(value);
 				}
-				if (rowIndex == 0) {
-					specification.data.columns[index + 1][0] = category;
+				else {
+					specification.data.columns[existingIndex][0]=label;
+					specification.data.columns[existingIndex][specification.data.columns[existingIndex].length]=new Number(value);					
 				}
-				var value = $(idPrefix + "dataset_" + index + "_value_" + rowIndex).val();
-				specification.data.columns[index + 1][rowIndex + 1]=new Number(value);
-			}
+			}		
 		}
-		if ("true" == grouped) {
-			index = 1;
-			specification.data["groups"] = [];
-			specification.data.groups[0] = [];
-			for (index = 1; index < specification.data.columns.length; index++) {
-				specification.data.groups[0][index - 1] = specification.data.columns[index][0];
+		else {
+			specification.data.x = 'x';
+			var index = 0;		
+			specification.data.columns[0]=['x'];
+			for (index = 0; index < columnCount; index++) {
+				var category = $(idPrefix + "dataset_" + index + "_title").val();
+				specification.data.columns[index + 1]=[];
+				var rowIndex = 0;
+				for (rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+					var label = $(idPrefix + "title_" + rowIndex).val();
+					if (index == 0) {
+						specification.data.columns[0][rowIndex + 1] = label;
+					}
+					if (rowIndex == 0) {
+						specification.data.columns[index + 1][0] = category;
+					}
+					var value = $(idPrefix + "dataset_" + index + "_value_" + rowIndex).val();
+					specification.data.columns[index + 1][rowIndex + 1]=new Number(value);
+				}
 			}
-		}
+		} 
+		
 	}
 	return specification;
 }

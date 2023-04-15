@@ -40,7 +40,7 @@ boolean sortable = subview.isCollectionSortable();
 		onSelectCollectionElementAction, idCollection, propertyPrefix, 
 		selectedRowStyle, rowStyle, tabObject);
 	%>
-	<INPUT type="CHECKBOX" name="<xava:id name='xava_selected_all'/>" value="<%=propertyPrefix%>selected_all" <%=actionOnClickAll%> />
+	<input type="checkbox" name="<xava:id name='xava_selected_all'/>" value="<%=propertyPrefix%>selected_all" <%=actionOnClickAll%> />
 	</th>
 <%
 	// Heading
@@ -88,8 +88,7 @@ for (int f=0; itAggregates.hasNext(); f++) {
 <td class="<%=cssCellClass%>" style="vertical-align: middle;text-align: center;padding-right: 2px; <%=style.getListCellStyle()%>">
 <nobr>
 	<%if (sortable) { %>
-	<img class="xava_handle" align='absmiddle'
-		src='<%=request.getContextPath()%>/<%=style.getImagesFolder()%>/<%=style.getMoveRowImage()%>' border='0' />
+	<i class="xava_handle mdi mdi-swap-vertical"></i>	
 	<%}%>	
 <xava:action action="<%=lineAction%>" argv='<%="row="+f + ",viewObject="+viewName%>'/>
 <% 
@@ -112,7 +111,7 @@ for (int f=0; itAggregates.hasNext(); f++) {
 		onSelectCollectionElementMetaAction, tabObject);
 %>
 <td class="<%=cssCellClass%>" width="5" style="<%=style.getListCellStyle()%>">
-<input type="CHECKBOX" name="<xava:id name='xava_selected'/>" value="<%=propertyPrefix%>__SELECTED__:<%=f%>" <%=actionOnClick%>/>
+<input type="checkbox" name="<xava:id name='xava_selected'/>" value="<%=propertyPrefix%>__SELECTED__:<%=f%>" <%=actionOnClick%>/>
 </td>
 <%
 	it = subview.getMetaPropertiesList().iterator();	
@@ -125,19 +124,8 @@ for (int f=0; itAggregates.hasNext(); f++) {
 		String fvalue = null;
 		Object value = null;
 		String propertyName = p.getName();
-		value = Maps.getValueFromQualifiedName(row, propertyName);		
-		if (p.hasValidValues()) {
-			if (value instanceof Number) {
-				fvalue = p.getValidValueLabel(request, ((Number) value).intValue());
-			}
-			else {
-				// In this case value is a enum type
-				fvalue = p.getValidValueLabel(request, value);
-			}
-		}
-		else {
-			fvalue = WebEditors.format(request, p, value, errors, view.getViewName(), true);	
-		}
+		value = Maps.getValueFromQualifiedName(row, propertyName);
+		fvalue = WebEditors.format(request, p, value, errors, view.getViewName(), true);	
 		Object title = WebEditors.formatTitle(request, p, value, errors, view.getViewName(), true); 
 %>
 	<td class="<%=cssCellClass%>" style="<%=cellStyle%>; padding-right: 0px">

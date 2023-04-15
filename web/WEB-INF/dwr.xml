@@ -26,6 +26,14 @@
       <param name="class" value="com.openxava.naviox.web.dwr.Folders"/>
     </create>    
     
+    <create creator="new" javascript="PhoneList">
+      <param name="class" value="com.openxava.phone.web.dwr.PhoneList"/>
+    </create>
+    
+    <create creator="new" javascript="Discussion">
+      <param name="class" value="org.openxava.web.dwr.Discussion"/>
+    </create>
+        
     <convert converter="bean" match="org.openxava.web.dwr.Result"/>    
     <convert converter="bean" match="org.openxava.web.dwr.StrokeAction"/>
         

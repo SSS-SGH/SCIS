@@ -1,35 +1,22 @@
 package ch.speleo.scis.model.karst;
 
-import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Date;
+import java.io.*;
+import java.util.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.envers.Audited;
-import org.openxava.annotations.Depends;
-import org.openxava.annotations.DisplaySize;
-import org.openxava.annotations.Editor;
-import org.openxava.annotations.EntityValidator;
-import org.openxava.annotations.Hidden;
-import org.openxava.annotations.View;
-import org.openxava.annotations.Views;
-import org.openxava.annotations.PropertyValue;
+import org.apache.commons.lang.*;
+import org.hibernate.envers.*;
+import org.openxava.annotations.*;
 
-import ch.speleo.scis.business.utils.PrivacyValidator;
-import ch.speleo.scis.model.common.GenericIdentity;
+import ch.speleo.scis.business.utils.*;
+import ch.speleo.scis.model.common.*;
+import ch.speleo.scis.persistence.audit.*;
+import ch.speleo.scis.persistence.audit.ScisUserUtils.*;
+import lombok.*;
 
 /**
- * Class representing a privacy (restriction of access to an information) using Hibernate
- * Annotation.
- * 
- * @author miguel
- * @version 1.0
+ * Privacy, a restriction of access to an information.
  */
 @Entity
 @Table(name = "PRIVACY")
@@ -44,12 +31,11 @@ import ch.speleo.scis.model.common.GenericIdentity;
 	@PropertyValue(name="reason"),
 	@PropertyValue(name="protector")
 })
+@Getter @Setter
 public class Privacy 
 extends GenericIdentity implements Serializable {
-    /**
-     * Serial version UID.
-     */
-    private static final long serialVersionUID = -1299394812743244046L;
+
+	private static final long serialVersionUID = -1299394812743244046L;
     
     /**
      * Date when the karst object started being protected.
@@ -85,58 +71,6 @@ extends GenericIdentity implements Serializable {
     private String protector;
     
     /**
-     * Empty constructor.
-     */
-    public Privacy() { }
-    /**
-     * @return date when the karst object started being protected.
-     */
-    public Date getStartDate() {
-        return startDate;
-    }
-    /**
-     * @param startDate date when the karst object started being protected.
-     */
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-    /**
-     * @return date when the protected is going to end.
-     */
-    public Date getEndDate() {
-        return endDate;
-    }
-    /**
-     * @param endDate date when the protected is going to end.
-     */
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-    /**
-     * @return why we decided to protect the given karst object.
-     */
-    public String getReason() {
-        return reason;
-    }
-    /**
-     * @param reason why we decided to protect the given karst object.
-     */
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-    /**
-     * @return who decided to protect the karst object.
-     */
-    public String getProtector() {
-        return protector;
-    }
-    /**
-     * @param protector who decided to protect the karst object.
-     */
-    public void setProtector(String protector) {
-        this.protector = protector;
-    }
-    /**
      * @return if the protection is currently active.
      */
 	@Depends("startDate, endDate")
@@ -144,9 +78,11 @@ extends GenericIdentity implements Serializable {
     public boolean isPrivateNow() {
 		return isPrivate(Calendar.getInstance());
     }
+
     /**
      * @return if the protection is active at a given time.
      */
+	@Depends("startDate, endDate")
     public boolean isPrivate(Calendar refTime) {
 		if (startDate == null || startDate.after(refTime.getTime())) 
 			return false; // not private yet
@@ -167,6 +103,11 @@ extends GenericIdentity implements Serializable {
 		       StringUtils.isBlank(reason) && 
 		       StringUtils.isBlank(protector);
 	}
+    
+	@PrePersist @PreUpdate @PreDelete
+    public void handlePermissionsOnWrite() {
+        ScisUserUtils.checkRoleInCurrentUser(ScisRole.SGH_ARCHIVAR);
+    }
     
    @Override
 	protected void writeFields(StringBuilder builder) {

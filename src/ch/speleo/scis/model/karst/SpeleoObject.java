@@ -5,6 +5,7 @@ import static ch.speleo.scis.persistence.typemapping.CodedEnumType.TYPE;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -12,13 +13,12 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.hibernate.envers.Audited;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import org.openxava.annotations.AsEmbedded;
 import org.openxava.annotations.Depends;
 import org.openxava.annotations.DisplaySize;
 import org.openxava.annotations.LabelFormat;
@@ -36,12 +36,11 @@ import org.openxava.util.Labels;
 import ch.speleo.scis.model.common.GenericIdentityWithRevision;
 import ch.speleo.scis.persistence.typemapping.CodedEnumType;
 import ch.speleo.scis.persistence.utils.SimpleQueries;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Class representing a subsurface object (a cave, a mine, etc.).
- * 
- * @author miguel
- * @version 1.0
+ * A subsurface object (a cave, a mine, etc.).
  */
 @Entity
 @Table(name = "SPELEO_OBJECT",
@@ -52,12 +51,14 @@ import ch.speleo.scis.persistence.utils.SimpleQueries;
 @Tab(properties = "systemNr, name, type, deleted", 
 	rowStyles = {@RowStyle(style="deletedData", property="deleted", value="true")})
 @Views({ 
-	@View(name = "Short", members = "systemNr, name, type, deleted"), 
+	@View(name = "Short", members = "name, type, length, depthAndElevation"), 
+	@View(name = "ShortWithId", members = "systemNr, name, type, deleted"), 
 	@View(members = "definition [name; systemNr; type; documentationState; comment; deleted] " +
 			"dimensions [length; depth; elevation; depthAndElevation, depthAndElevationComputed]; " +
-			"verified; manager; creationDate, lastModifDate; literature; dataHistory; document; entrances; "),
+			"verified; manager; creationDate, lastModifDate; literature; dataHistory; document; entrances; entrancesPermitted; "),
 	@View(name=GenericIdentityWithRevision.AUDIT_VIEW_NAME, members = " auditedValues")
 })
+@Getter @Setter
 public class SpeleoObject 
 extends KarstObject implements Serializable {
     /**
@@ -76,7 +77,7 @@ extends KarstObject implements Serializable {
     @Column(name = "TYPE", nullable = true, length=1)
     @Type(type=CodedEnumType.CLASSNAME,
     	parameters={ @Parameter(name=TYPE, value=SpeleoObjectTypeEnum.CLASSNAME)})
-	@DisplaySize(value=10, forViews="Short") 
+	@DisplaySize(value=30, forViews="Short, ShortWithId") 
     private SpeleoObjectTypeEnum type;
     /**
      * Length of the speleo object.
@@ -116,39 +117,20 @@ extends KarstObject implements Serializable {
     @OneToMany(mappedBy = "speleoObject", 
     		cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @ListProperties(value = "inventoryNr, baronNr, name, type, deleted")
-    @AsEmbedded
+    @RowStyle(style="deletedData", property="deleted", value="true")
     @ListAction("CollectionScis.add")
     private Collection<GroundObject> entrances = new LinkedList<GroundObject>();
 
-    /**
-     * Empty constructor.
-     */
-    public SpeleoObject() { }
-    
-    /**
-     * @return Number of the system (speleo object / cave network).
-     */
-    public Integer getSystemNr() {
-        return systemNr;
+    @ListProperties(value = "inventoryNr, baronNr, name, type, deleted")
+    @RowStyle(style="deletedData", property="deleted", value="true")
+    @ReadOnly
+    public Collection<GroundObject> getEntrancesPermitted() {
+    	if (getId() == null) {
+    		return List.of();
+    	}
+		return GroundObject.getPermittedBySpeleoObject(this);
     }
-    /**
-     * @param systemNr Number of the system (speleo object / cave network).
-     */
-    public void setSystemNr(Integer systemNr) {
-        this.systemNr = systemNr;
-    }
-    /**
-	 * @return Type of the speleo object: cave, mine, ...
-	 */
-	public SpeleoObjectTypeEnum getType() {
-		return type;
-	}
-	/**
-	 * @param type Type of the speleo object: cave, mine, ...
-	 */
-	public void setType(SpeleoObjectTypeEnum type) {
-		this.type = type;
-	}
+
 	@Depends("type")
 	public String getTranslatedType() {
 		if (type != null) {
@@ -158,54 +140,7 @@ extends KarstObject implements Serializable {
 			return super.getTranslatedType();
 		}
 	}
-    /**
-     * @return length of the speleo object.
-     */
-    public Integer getLength() {
-        return length;
-    }
-    /**
-     * @param length length of the speleo object.
-     */
-    public void setLength(Integer length) {
-        this.length = length;
-    }
-    /**
-     * @return elevation of the speleo object.
-     */
-    public Integer getElevation() {
-        return elevation;
-    }
-    /**
-     * @param elevation elevation of the speleo object.
-     */
-    public void setElevation(Integer elevation) {
-        this.elevation = elevation;
-    }
-    /**
-     * @return depth of the speleo object.
-     */
-    public Integer getDepth() {
-        return depth;
-    }
-    /**
-     * @param depth depth of the speleo object.
-     */
-    public void setDepth(Integer depth) {
-        this.depth = depth;
-    }
-	/**
-	 * @return Depth and elevation (total difference in altitude) of the speleo object.
-	 */
-	public Integer getDepthAndElevation() {
-		return depthAndElevation;
-	}
-	/**
-	 * @param depthAndElevation Depth and elevation (total difference in altitude) of the speleo object.
-	 */
-	public void setDepthAndElevation(Integer depthAndElevation) {
-		this.depthAndElevation = depthAndElevation;
-	}
+
 	@Depends("depth, elevation, depthAndElevation")
 	@Max(99999)
     @Stereotype("LABEL")
@@ -220,30 +155,7 @@ extends KarstObject implements Serializable {
 		} else {
 			return elevation;
 		}
-	}	/**
-	 * @return State of the documentation (description, topography) except location.
-	 */
-	public DocumentationStateEnum getDocumentationState() {
-		return documentationState;
 	}
-	/**
-	 * @param documentationState State of the documentation (description, topography) except location.
-	 */
-	public void setDocumentationState(DocumentationStateEnum documentationState) {
-		this.documentationState = documentationState;
-	}
-    /**
-     * @return list of connected entrances.
-     */
-    public Collection<GroundObject> getEntrances() {
-        return entrances;
-    }
-    /**
-     * @param entrances list of connected entrances.
-     */
-    public void setEntrances(Collection<GroundObject> entrances) {
-        this.entrances = entrances;
-    }
 
     @ListProperties("revision.modificationDate, revision.username, deleted, systemNr, name, type, documentationState, " +
     		"length, depth, elevation, depthAndElevation, verified; manager.initialsAndName, literature, dataHistory")
@@ -274,5 +186,5 @@ extends KarstObject implements Serializable {
     public static SpeleoObject getBySystemNr(Integer systemNr) {
     	return SimpleQueries.getByUniqueField(SpeleoObject.class, "systemNr", systemNr);
     }
-
+        
 }

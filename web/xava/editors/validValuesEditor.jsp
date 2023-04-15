@@ -6,7 +6,8 @@ if (editable) {
 %>
 <select id="<%=propertyKey%>" name="<%=propertyKey%>" tabindex="1" class=<%=style.getEditor()%> <%=script%> title="<%=p.getDescription(request)%>">
 <% 
-    if (!required) {
+	boolean isInElementCollection = request.getParameter("collectionName") != null;
+	if (isInElementCollection || !required) {
 %>
 	    <option value="<%=baseIndex==0?"":"0"%>"></option>
 <%
@@ -34,7 +35,7 @@ if (editable) {
 	type="text" 
 	title="<%=p.getDescription(request)%>"	
 	maxlength="<%=p.getSize()%>" 	
-	size="<%=p.getSize()%>" 
+	size="<%=description.toString().length() + 1%>" 
 	value="<%=description%>"
 	disabled
 	/>

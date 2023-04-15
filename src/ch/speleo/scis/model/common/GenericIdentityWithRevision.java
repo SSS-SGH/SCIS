@@ -1,24 +1,23 @@
 package ch.speleo.scis.model.common;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import javax.persistence.MappedSuperclass;
-import javax.persistence.OneToOne;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
-import org.hibernate.envers.Audited;
-import org.openxava.annotations.ReadOnly;
+import org.hibernate.envers.*;
+import org.openxava.annotations.*;
 
-import ch.speleo.scis.persistence.utils.SimpleQueries;
+import ch.speleo.scis.persistence.utils.*;
+import lombok.*;
 
 /**
- * Class representing a generic technical Identity for the database together with a "deleted" flag.
+ * A generic technical Identity for the database together with revision information (alias audit or log).
  * 
  * @author florian
  */
 @MappedSuperclass
 @Audited
+@Getter @Setter
 public abstract class GenericIdentityWithRevision 
 extends GenericIdentity {
 
@@ -34,22 +33,15 @@ extends GenericIdentity {
     @ReadOnly
     private RevisionInfo revision;
 
-    public RevisionInfo getRevision() {
-		return revision;
-	}
-
-    public void setRevision(RevisionInfo revision) {
-		this.revision = revision;
-	}
-
-    protected <T extends GenericIdentityWithRevision> List<T> loadAuditedValues() {
+    @SuppressWarnings("unchecked")
+	protected <T extends GenericIdentityWithRevision> List<T> loadAuditedValues() {
     	Class<? extends GenericIdentityWithRevision> entityClass = this.getClass();
     	List<Object[]> auditedValues = SimpleQueries.getAuditedInfosOfEntity(entityClass, getId());
     	List<T> result = new ArrayList<T>(auditedValues.size());
     	for (Object[] auditElement: auditedValues) {
     		T element = (T) auditElement[0];
     		Revision revision = (Revision) auditElement[1];
-    		element.revision = new RevisionInfo(revision);
+    		element.setRevision(new RevisionInfo(revision));
     		result.add(element);
     	}
     	return result;

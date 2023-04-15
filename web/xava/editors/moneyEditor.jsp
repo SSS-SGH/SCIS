@@ -1,8 +1,6 @@
 <%@page import="java.util.Currency"%>
 <%@page import="java.util.Locale"%>
 
-<%@ include file="textEditor.jsp"%>
-
 <% 
 String symbol = null;
 try {
@@ -13,4 +11,9 @@ catch (Exception ex) { // Because Locale.getDefault() may not contain the countr
 }
 %>
 
-<b> <%=symbol%></b>
+<jsp:useBean id="style" class="org.openxava.web.style.Style" scope="request"/>
+
+<span class="<%=style.getMoney()%>">
+<b><%=symbol%></b>
+<jsp:include page="textEditor.jsp"/>
+</span>

@@ -1,19 +1,14 @@
 package ch.speleo.scis.persistence.typemapping;
 
-import java.io.Serializable;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.EnumSet;
-import java.util.Properties;
-import java.util.regex.Pattern;
+import java.io.*;
+import java.sql.*;
+import java.util.*;
+import java.util.regex.*;
 
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
-import org.hibernate.usertype.ParameterizedType;
-import org.hibernate.usertype.UserType;
+import org.apache.commons.lang.*;
+import org.hibernate.*;
+import org.hibernate.engine.spi.*;
+import org.hibernate.usertype.*;
 
 // copied from http://www.intersult.com/wiki/Wiki.jsp?page=Hibernate%20EnumSet
 
@@ -36,13 +31,14 @@ implements UserType, ParameterizedType {
 			return y == null;
 		return x.equals(y);
 	}
+	@SuppressWarnings("unchecked")
 	public Object deepCopy(Object value) {
 		return ((EnumSet<Type>)value).clone();
 	}
 	public boolean isMutable() {
 		return true;
 	}
-	public Object nullSafeGet(ResultSet resultSet, String[] names, SessionImplementor sessionImplementor, Object owner) throws HibernateException,
+	public Object nullSafeGet(ResultSet resultSet, String[] names, SharedSessionContractImplementor sessionImplementor, Object owner) throws HibernateException,
 			SQLException {
 		String name = resultSet.getString(names[0]);
 		if (resultSet.wasNull())
@@ -56,7 +52,7 @@ implements UserType, ParameterizedType {
 		}
 		return enumSet;
 	}
-	public void nullSafeSet(PreparedStatement statement, Object value, int index, SessionImplementor sessionImplementor) throws HibernateException,
+	public void nullSafeSet(PreparedStatement statement, Object value, int index, SharedSessionContractImplementor sessionImplementor) throws HibernateException,
 			SQLException {
 		if (value == null) {
 			statement.setNull(index, Types.VARCHAR);
@@ -83,6 +79,7 @@ implements UserType, ParameterizedType {
 	public Object replace(Object original, Object target, Object owner) throws HibernateException {
 		return original;
 	}
+	@SuppressWarnings("unchecked")
 	public void setParameterValues(Properties parameters) {
 		String typeName = parameters.getProperty(TYPE);
 		try {

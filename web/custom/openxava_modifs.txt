@@ -1,0 +1,19 @@
+
+Modifications to OpenXava Framework:
+====================================
+
+
+Show more than 20 elements in the list
+--------------------------------------
+Edit listEditor.jsp and search rowCounts
+extends the list with more values:
+	int [] rowCounts = { 5, 10, 12, 15, 20, 50, 100 }; // The performance with more than 20 rows is poor for page reloading
+See commit dc7940746baa527bb06fa840b1606f2c4551615e
+
+Filter on empty numbers
+-----------------------
+See patch attached to
+https://sourceforge.net/p/openxava/feature-requests/512/
+See commit 85e3cabcca94cafee27990a112da9fe40d6d74f2 in comparatorsCombo.jsp (and listEditor.jsp)
+https://openxava.org/XavaProjects/o/OpenXava/m/Issue  -> Filter on empty numbers 
+
