@@ -1,13 +1,14 @@
 package ch.speleo.scis.model.common;
 
-import java.io.Serializable;
-import java.util.Date;
+import java.io.*;
+import java.util.*;
 
-import org.openxava.annotations.Hidden;
-import org.openxava.annotations.Stereotype;
-import org.openxava.annotations.View;
+import org.openxava.annotations.*;
+
+import lombok.*;
 
 @View(members = "modificationDate, username")
+@Getter @Setter
 public class RevisionInfo implements Serializable {
 
 	private static final long serialVersionUID = -6167475284113314078L;
@@ -26,31 +27,6 @@ public class RevisionInfo implements Serializable {
     	this.modificationDate = revision.getModificationDate();
     	this.username = revision.getUsername();
     }
-
-	/**
-	 * @return The time of the modification.
-	 */
-	public Date getModificationDate() {
-		return modificationDate;
-	}
-	/**
-	 * @param modificationDate The time of the modification.
-	 */
-	public void setModificationDate(Date modificationDate) {
-		this.modificationDate = modificationDate;
-	}
-	/**
-	 * @return Username of the user that does this change.
-	 */
-	public String getUsername() { 
-		return username; 
-	}
-	/**
-	 * @param username Username of the user that does this change.
-	 */
-	public void setUsername(String username) { 
-		this.username = username; 
-	}
 
 	@Override
 	public String toString() {

@@ -1,16 +1,11 @@
 package ch.speleo.scis.persistence.audit;
 
-import java.io.Serializable;
+import java.io.*;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.hibernate.envers.EntityTrackingRevisionListener;
-import org.hibernate.envers.RevisionType;
-import org.openxava.util.UserInfo;
-import org.openxava.util.Users;
+import org.apache.commons.logging.*;
+import org.hibernate.envers.*;
 
-import ch.speleo.scis.model.common.Revision;
+import ch.speleo.scis.model.common.*;
 
 public class EntityTrackingRevisionListenerImpl 
 implements EntityTrackingRevisionListener {
@@ -20,8 +15,7 @@ implements EntityTrackingRevisionListener {
     public void newRevision(Object revisionEntity) {
     	
     	Revision revision = (Revision) revisionEntity;
-		UserInfo userinfo = Users.getCurrentUserInfo();
-		String username = StringUtils.isNotBlank(userinfo.getNickName()) ? userinfo.getNickName() : userinfo.getId();
+		String username = ScisUserUtils.getCurrentUserName();
 		if (username != null) {
 			revision.setUsername(username);
 		} else {

@@ -3,16 +3,18 @@
 <%@ include file="validValueEditorCommon.jsp"%>
 
 <% 
-if (editable) {  
-
+if (editable) {
+%>
+<div class="<%=style.getRadioButtons()%>">
+<% 
 java.util.Iterator it = p.validValuesLabels(request); 
 for (int i = baseIndex; it.hasNext(); i++) { 
 String selected = value == i ?"checked":""; 
- 
 %> 
- 
-<input type="radio" name="<%=propertyKey%>" tabindex="1" value="<%=i%>" <%=script%> <%=selected%>> <%=it.next()%>
-
+<label>
+<input type="radio" name="<%=propertyKey%>" tabindex="1" value="<%=i%>" <%=script%> <%=selected%>> 
+<span id="<%=propertyKey %><%=i%>"><%=it.next()%></span> &nbsp;&nbsp;
+</label>
 <%
 String horizontal = request.getParameter("horizontal");
 Boolean isHorizontal = Boolean.valueOf(horizontal);
@@ -23,7 +25,7 @@ Boolean isHorizontal = Boolean.valueOf(horizontal);
 <% 
 } // while 
 %> 
- 
+ </div> 
 <%  
 } else {  
 description = p.getValidValueLabel(request, value);  

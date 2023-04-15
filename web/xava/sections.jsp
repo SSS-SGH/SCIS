@@ -1,16 +1,16 @@
 <%@ include file="imports.jsp"%>
 
-<%@ page import="org.openxava.view.meta.MetaView" %>
+<%@page import="org.openxava.view.meta.MetaView"%>
+<%@page import="org.openxava.view.View"%>
+<%@ page import="org.openxava.web.Ids"%>
 
-
-<%@page import="org.openxava.view.View"%><jsp:useBean id="context" class="org.openxava.controller.ModuleContext" scope="session"/>
+<jsp:useBean id="context" class="org.openxava.controller.ModuleContext" scope="session"/>
 <jsp:useBean id="style" class="org.openxava.web.style.Style" scope="request"/>
-<jsp:useBean id="layoutPainterManager" class="org.openxava.web.layout.LayoutPainterManager" scope="session"/>
 
 <%
 String viewObject = request.getParameter("viewObject");
 viewObject = (viewObject == null || viewObject.equals(""))?"xava_view":viewObject;
-org.openxava.view.View view = (org.openxava.view.View) context.get(request, viewObject);
+View view = (View) context.get(request, viewObject);
 java.util.Collection sections = view.getSections();
 int activeSection = view.getActiveSection();
 %>
@@ -27,10 +27,15 @@ int activeSection = view.getActiveSection();
 	int i=0;
 	while (itSections.hasNext()) {
 		MetaView section = (MetaView) itSections.next();
+		View sectionView = view.getSectionView(i);
+		String sectionName = sectionView.getTitle().equals("") ? section.getLabel(request) : sectionView.getTitle();
+		String collectionCountLabel = sectionView.getLabelDecoration();
+		String labelId = Ids.decorate(request, "label_" + sectionView.getViewObject() + "_sectionName");
 		if (activeSection == i) {
 	%>        
 			<%=style.getActiveSectionTabStartDecoration(i == 0, !itSections.hasNext())%>
-			<%=section.getLabel(request)%>
+			<span id="<%=labelId%>"><%=sectionName%></span> 
+			<span id="<xava:id name='<%=sectionView.getViewObject() + "_collectionSize"%>'/>"><%=collectionCountLabel%></span> 
 			<%=style.getActiveSectionTabEndDecoration()%>
     <%
 		}
@@ -41,8 +46,9 @@ int activeSection = view.getActiveSection();
 				String viewObjectArgv = "xava_view".equals(viewObject)?"":",viewObject=" + viewObject;
 				%>
 				<xava:link action='Sections.change' argv='<%="activeSection=" + i + viewObjectArgv%>' cssClass='<%=style.getSectionLink()%>' cssStyle='<%=style.getSectionLinkStyle()%>'>
-				<%=section.getLabel(request)%>
-				</xava:link>      
+				<span id="<%=labelId%>"><%=sectionName%></span>
+				<span id="<xava:id name='<%=sectionView.getViewObject() +  "_collectionSize"%>'/>"><%=collectionCountLabel%></span>
+				</xava:link>				
 			<%=style.getSectionTabEndDecoration()%>	
   	<%   	
 		}
@@ -56,13 +62,13 @@ int activeSection = view.getActiveSection();
 	
 	</td></tr>
 	
-	<tr><td class="<%=style.getActiveSection()%>">
+	<tr><td class="<%=style.getActiveSection()%> <%=view.isFlowLayout()?"ox-flow-layout":""%>">
 		<%
-			String viewName = viewObject + "_section" + activeSection;
-			context.put(request, viewName, view.getSectionView(activeSection));
-		%>		
+			View sectionView = view.getSectionView(activeSection);
+			context.put(request, sectionView.getViewObject(), sectionView);			
+		%>
 		<jsp:include page="detail.jsp"> 
-			<jsp:param name="viewObject" value="<%=viewName%>" />
+			<jsp:param name="viewObject" value="<%=sectionView.getViewObject()%>" />
 			<jsp:param name="representsSection" value="true" />
 		</jsp:include>
 	</td></tr>	

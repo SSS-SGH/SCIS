@@ -2,21 +2,64 @@
 Put here your own style
 */
 
+#stage_name {
+	font-size: 13px;
+	color: var(--application-name-color);
+	display: inline;
+	margin-left: 1em;
+}
+#stage_name.prod {
+	display:none;
+}
+#application_name {
+	display: inline;	
+}
+
 .deletedData
 {
     text-decoration: line-through;
 }
 
-/* Specialities for Baron Nr in Detail view*/ 
+/* Specialities for Baron Nr in Detail view */ 
 .CantonBaronLabelInDetail span {
 	display: none;
 }
 .CommuneBaronLabelInDetail {
 	display: none;
 }
-.CaveBaronLabelInDetail {
+.CaveBaronLabelInDetail > span {
 	display: none;
 }
-.CaveBaronLabelInDetail + span:before {
+.CaveBaronLabelInDetail::before {
 	content: '/';
+}
+
+/* tuning Podium page */ 
+table.podium td, .podium td {
+  padding: 3px;
+  border-bottom: 1px solid; 
+  font-size: 14px;
+}
+
+/* tuning Introduction / Sign-in page */ 
+#introduction {
+	padding-top: 10px;
+	margin-right: auto;
+	margin-left: auto;
+	width: 283px;
+	text-align: center;
+	font-size: 14px;
+}
+#introduction div {
+	margin-top: 10px;
+}
+#intro_welcome {
+	font-size: 16px;
+}
+#intro_dedication {
+	font-size: 13px;
+}
+
+#scis_map div.error {
+	text-align: center;
 }

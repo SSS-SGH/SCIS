@@ -179,7 +179,7 @@ input {
 	vertical-align: top;
 }
 
-.ox-button-bar-mode-button, .ox-section-tab, .ox-section-link {	
+.ox-section-tab, .ox-section-link {	
 	padding: 4px 9px 5px;			
 	border: 1px solid #51555B;
 	border-right: none; 
@@ -192,19 +192,19 @@ input {
 	text-shadow:0px 1px 1px white;  
 }
 
-.ox-active .ox-button-bar-mode-button, .ox-active .ox-section-tab {  	
+.ox-active .ox-section-tab {  	
 	background: -webkit-gradient(linear, left bottom, left top, from(#6B737E), to(#B2B5BB));	
 	color: white;	
 	text-shadow:0px -1px 1px rgba(0,0,0,0.75);  
 }
 
-.ox-first .ox-button-bar-mode-button, .ox-first .ox-section-tab {
+.ox-first .ox-section-tab {
 	border-left: 1px solid #51555B;		
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-bottom-left-radius: 5px;	
 }
 
-.ox-last .ox-button-bar-mode-button, .ox-last .ox-section-tab {
+.ox-last .ox-section-tab {
 	border-right: 1px solid #51555B;	
 	-webkit-border-top-right-radius: 5px;
 	-webkit-border-bottom-right-radius: 5px;	

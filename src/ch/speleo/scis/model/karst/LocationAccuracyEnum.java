@@ -1,6 +1,6 @@
 package ch.speleo.scis.model.karst;
 
-import ch.speleo.scis.model.common.Codeable;
+import ch.speleo.scis.model.common.*;
 
 /**
  * Categories for Speleo (underground) objects
@@ -23,7 +23,7 @@ implements Codeable {
 	 * List of 1-character codes, in the same order as the enumeration. 
 	 * Can be used with {@code indexOf} and {@code charAt} to map to the database. 
 	 * */
-	public static final String ORDERD_1CHAR_CODES = "012345";
+	static final String ORDERD_1CHAR_CODES = "012345";
 	
 	private final String code;
 	

@@ -21,10 +21,10 @@ if (!Is.emptyString(actionName)) {
 %>
 
 	<% if (style.isUseStandardImageActionForOnlyImageActionOnButtonBar() && action.hasImage() && Is.emptyString(label)) { %>
-<xava:image action="<%=action.getQualifiedName()%>" argv='<%=argv%>' cssClass="<%=style.getButtonBarImage()%>"/>	
+<xava:image action='<%=action.getQualifiedName()%>' argv='<%=argv %>' cssClass='<%=style.getButtonBarImage()%>'/>	
 	<% } else {  %>		
 <span class="<%=style.getButtonBarButton()%>">	
-	<xava:link action="<%=action.getQualifiedName()%>" argv='<%=argv%>'>
+<xava:link action="<%=action.getQualifiedName()%>" argv='<%=argv %>'>
 		<% 
 		boolean showLabel = (showLabels || !action.hasImage()) && !Is.emptyString(label);  
 		boolean showImage = showImages && action.hasImage() || action.hasImage() && Is.emptyString(label);
@@ -43,7 +43,7 @@ if (!Is.emptyString(actionName)) {
 		<%
 		}
 		if (showLabel) { %>			 				 			
-		<%=label%>
+		<span class="<%=style.getActionLabel()%>"><%=label%></span> 
 		<% } %>		
 	</xava:link>
 	<% } %>	

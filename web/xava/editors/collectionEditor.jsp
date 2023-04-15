@@ -14,6 +14,7 @@
 <%@ page import="org.openxava.model.meta.MetaProperty" %>
 <%@ page import="org.openxava.model.meta.MetaReference" %>
 <%@ page import="org.openxava.web.WebEditors" %>
+<%@ page import="org.openxava.controller.meta.MetaController"%>
 
 <%
 String collectionName = request.getParameter("collectionName");
@@ -42,11 +43,11 @@ else {
 }
 String propertyPrefix = propertyPrefixAccumulated == null?collectionName + ".":propertyPrefixAccumulated + collectionName + "."; 
 %>
-<table width="100%" class="<%=style.getList()%>" <%=style.getListCellSpacing()%>>
+<table width="100%" <%=style.getListCellSpacing()%>>
 <% if (XavaPreferences.getInstance().isDetailOnBottomInCollections()) { %>
 <tr><td>
 <% try { %>
-	<% if (!Is.emptyString(listEditor)) { %> 		
+	<% if (!Is.emptyString(listEditor)) { %>
 		<jsp:include page="<%=listEditor%>">
 			<jsp:param name="rowAction" value="<%=lineAction%>"/>	
 			<jsp:param name="viewObject" value="<%=viewName%>"/>
@@ -84,6 +85,12 @@ if (view.displayDetailInCollection(collectionName)) {
 <%
 	if (collectionEditable) {
 %>
+<% if (subview.isRepresentsEntityReference()) { %>
+<jsp:include page="../barButton.jsp">
+	<jsp:param name="action" value="<%=subview.getAddCollectionElementAction()%>"/>
+	<jsp:param name="argv" value='<%="viewObject="+viewName%>'/>
+</jsp:include>
+<% } %>
 <jsp:include page="../barButton.jsp">
 	<jsp:param name="action" value="<%=subview.getNewCollectionElementAction()%>"/>
 	<jsp:param name="argv" value='<%="viewObject="+viewName%>'/>
@@ -106,8 +113,17 @@ while (itListActions.hasNext()) {
 </jsp:include>
 <%
 	} // while list actions
+	
+	Collection<String> listSubcontrollers = subview.getSubcontrollersNamesList();
+	for(String listSubcontroller : listSubcontrollers){
+		%>
+		<jsp:include page="../subButton.jsp">
+			<jsp:param name="controller" value="<%=listSubcontroller%>"/>
+			<jsp:param name="argv" value='<%="viewObject="+viewName%>'/>
+		</jsp:include>
+		<%
+	}
 %>
-
 
 </td></tr>
 <%

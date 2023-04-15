@@ -72,6 +72,21 @@ TH.list {
 	background: #cccccc;
 }
 
+.portlet-section-header a {
+	color: #7b7c7f;
+}
+
+.portlet-section-header a:hover {
+	text-decoration: none;
+}
+
+.results-row .mdi-check {
+	color: green;
+	font-weight: bold;
+	font-size: 160%;
+	margin-left: -7px; 
+}
+
 .websphere-list-selected {
 	font-weight: bold;
 }
@@ -80,7 +95,7 @@ TH.list {
 	font-weight: bold;
 }
 
-.row-highlight A.row-highlight {
+.row-highlight {
 	font-weight: bold;
 	color: #3366ff;
 }
@@ -138,6 +153,29 @@ TD.frame {
 	font-size: 10pt;
 }
 
+.ox-messages-wrapper, .ox-errors-wrapper {
+	position: fixed;
+	top: 32px;
+	z-index: 9999999;
+}
+
+.ox-messages-wrapper {
+	left: 32px;
+}
+
+.ox-errors-wrapper {
+	right: 32px;
+}
+
+.portlet-msg-error .mdi-close, .portlet-msg-alert .mdi-close,
+.portlet-msg-success .mdi-close, .portlet-msg-info .mdi-close
+{
+	color: black;
+	font-weight: bold;
+	float: right;
+	margin-left: 10px;
+}
+
 #xava_processing_layer {
 	position:absolute;
 	right: calc(50% - 120px);
@@ -175,6 +213,10 @@ TD.list-title {
 
 .PTitleContent {
 	color: black;
+}
+
+.ox-sections { 
+	width: 100%;
 }
 
 .section {
@@ -215,17 +257,24 @@ TD.list-title {
 	display: inline;
 }
 
+.ox-resize-columns .results-header .mdi-close-circle {
+	position: absolute;
+	right: 0px;
+	padding-right: 10px;
+}
+
 .liferay-xava-cell-wrapper {
 	border: 1px solid #CCCCCC;
 }
 
 .liferay-xava-editor-wrapper {
-	padding-right: 4px;
-	padding-bottom: 4px;
+	padding-right: 12px; 
+	padding-bottom: 6px;
 }
 	
 .liferay-xava-label {
-	padding-right: 4px;
+	padding-right: 5px; 
+	vertical-align: middle;
 }
 
 .liferay6-xava-label {
@@ -303,21 +352,14 @@ TD.list-title {
 	vertical-align: 3px;
 }
 
-.page-navigation-arrow {		
-	background-color: white;
+.page-navigation-arrow, .page-navigation-arrow:hover {
+	background-color: transparent;
+	border: none;
+	padding: 0;
 }
 
-.ie7 .page-navigation-arrow {	
-	padding: 1px 4px 2px 4px; 
-}
-
-.page-navigation:hover {
-	border-color: highlight;
-	background-color: white;
-}
-
-.page-navigation-arrow-disable:hover { 
-	border-color: buttonshadow;	
+.page-navigation-arrow-disable i { 
+	color: lightgrey;
 }
 
 .ox-button-bar {
@@ -331,7 +373,7 @@ TD.list-title {
 	width: 100%;
 }
 
-.ox-button-bar .ox-button-bar-button a, .ox-button-bar-mode-button {
+.ox-button-bar .ox-button-bar-button a, .ox-card { 
 	background: url() no-repeat 5px 50%; 	
 	border: 1px solid #F6F8FB;
 	color: #9EA8AD;
@@ -344,7 +386,7 @@ TD.list-title {
 }
 
 .ox-button-bar .ox-button-bar-button a:hover, 
-.ox-button-bar-mode-button:hover, .ox-list-formats i:hover, .ox-chart-type i:hover {  
+.ox-list-formats i:hover, .ox-chart-type i:hover, .ox-card:hover {   
 	border: 1px solid #A7CEDF;	
 	background-color: #DFF4FF;
 	color: #346799; 
@@ -356,51 +398,56 @@ TD.list-title {
 	padding: 6px;
 }
 
-.ox-button-bar-mode-button:focus {
-	text-decoration: none; 
-}
 
-.ox-button-bar-mode-button, .ox-button-bar-mode-button:hover { 
-	padding-right: 0px;
-}
 
-.green .ox-button-bar .ox-button-bar-button a:hover, .green .ox-button-bar-mode-button:hover {	
+.green .ox-button-bar .ox-button-bar-button a:hover {	
 	background-color: #D9F4CB;
 	border-color: #BBEAA4
 }
 
-.orange .ox-button-bar .ox-button-bar-button a:hover, .orange .ox-button-bar-mode-button:hover {
+.orange .ox-button-bar .ox-button-bar-button a:hover {
 	background-color: #F4EACB;
 	border-color: #EAD8A4;			
-}
-
-.ox-active .ox-button-bar-mode-button {
-	background-color: #CFD5D7; 
-	border: 1px solid #CFD5D7;
-	color: #000;
-}
-
-.ox-active .ox-button-bar-mode-button:hover {
-	background-color: #d6dcdd;
-	border-color: #B7C0C2;
 }
 
 .ox-button-bar-button span {
 	margin-right: -7px;  
 }
 
-i {
-	vertical-align: middle; 
+.ox-list-mode .ox-button-bar a[id*="new"], .ox-list-mode .ox-button-bar a[id*="new"] i,
+.ox-frame .ox-button-bar > span:nth-of-type(1) a, .ox-frame .ox-button-bar .ox-collection-list-actions > span:nth-of-type(1) i,
+.ox-sections .ox-button-bar > span:nth-of-type(1) a, .ox-sections .ox-button-bar .ox-collection-list-actions > span:nth-of-type(1) i
+{
+	color: black;
 }
 
-.ox-image-link i {
-	font-size: 140%;
+.ox-list-mode .ox-button-bar a[id*="new"]:hover, .ox-list-mode .ox-button-bar a[id*="new"]:hover i,
+.ox-frame .ox-button-bar > span:nth-of-type(1) a:hover, .ox-frame .ox-button-bar .ox-collection-list-actions > span:nth-of-type(1) a:hover i,
+.ox-sections .ox-button-bar > span:nth-of-type(1) a:hover, .ox-sections .ox-button-bar .ox-collection-list-actions > span:nth-of-type(1) a:hover i
+{
+	color: blue;
+}
+
+.portlet-content i {
+	vertical-align: middle; 
+	font-size: 140%; 
+	color: #9EA8AD; 
+}
+
+.portlet-content a:hover i  {   
+	color: #346799;
+}
+
+.page-navigation-arrow i { 
+	font-size: 250%; 
+}
+
+.ox-image-link i, .ox-customize-controls i {  
 	padding: 4px;
 }
 
 .ox-button-bar .ox-button-bar-button i, .ox-collection-list-actions i {
 	margin-left: 5px; 
-	font-size: 140%;
 	vertical-align: -2px; 
 }
 
@@ -415,19 +462,11 @@ i {
 	padding: 5px;  
 }
 
-.ox-list-formats a, .ox-chart-type a { 
+.ox-list-formats a, .ox-chart-type a, .ox-customize-controls a:hover, a.ox-image-link:hover {   
 	text-decoration: none;
 }
 
-.ox-list-formats i, .ox-image-link i, .ox-chart-type i {  
-	color: #9EA8AD;
-}
-
-.ox-list-formats i:hover, .ox-image-link i:hover  {   
-	color: #346799;
-}
-
-.ox-selected-list-format i, .ox-selected-list-format:hover i {
+.ox-selected-list-format i, .ox-selected-list-format:hover i, .ox-card { 
 	color: #000; 
 	background: white;
 	border-radius: 2px;
@@ -446,6 +485,10 @@ a.ox-selected-list-format, a.ox-selected-list-format:hover {
 	margin-right: -6px;
 }
 
+.ox-cut-row {
+	opacity: 0.3;
+}
+
 .ox-button-bar a:focus {
 	outline: none;
 }
@@ -453,6 +496,11 @@ a.ox-selected-list-format, a.ox-selected-list-format:hover {
 .ox-action-link {
 	margin-left: 7px;
 }
+
+.xava_editor .ox-action-link {
+	display: inline-block;
+	margin-left: 0px;
+} 
 
 .ox-help img {
 	border: 0;
@@ -465,7 +513,9 @@ a.ox-selected-list-format, a.ox-selected-list-format:hover {
 }
 
 .ox-label { 
-	text-align: left; 
+	text-align: left;
+	padding-right: 7px; 
+	vertical-align: middle;  	
 }
 
 .ox-frame-totals {
@@ -474,8 +524,14 @@ a.ox-selected-list-format, a.ox-selected-list-format:hover {
 
 .ox-frame-sibling {     
 	padding-left: 4px;
+	float: left;
 }
 
+.ox-frame {
+	 display: table;
+	 border-collapse: separate; 
+	 width: 100%;
+}
 
 .ox-frame-totals-label {
 	font-weight: normal;
@@ -488,6 +544,7 @@ a.ox-selected-list-format, a.ox-selected-list-format:hover {
 .ui-dialog { 
 	width: auto; 
 	z-index: 999;
+	overflow: visible !important;
 }
 		
 /* ---------- Styling for Default Layout Painter ---------- */
@@ -509,7 +566,19 @@ a.ox-selected-list-format, a.ox-selected-list-format:hover {
 	margin-right: -5px !important;
 }
 
-div.ox-subcontroller {
+.firefox div.ox-subcontroller, .ui-autocomplete {
+	padding: 0;
+	margin: 0;
+	margin-top: 14px; 
+	position: absolute; 
+	clear: both; 
+	background-color: rgb(246, 248, 251); 
+	display: none; 
+	z-index: 999;
+	box-shadow: 0px 3px 3px #DDDDDD;
+}
+
+div.ox-subcontroller, .ui-autocomplete {
 	padding: 0;
 	margin: 0;
 	margin-top: 26px; 
@@ -529,12 +598,12 @@ div.ox-subcontroller table{
 }
 
 div.ox-subcontroller table tr td{
-	float: right;
+	float: inherit;
 	width: 97%;	
 	text-align: left;
 	background-color: rgb(246, 248, 251);
 	z-index: 999; 
-	padding: 4px 4px 4px 4px;
+	padding: 4px;
 }
 
 div.ox-subcontroller table tr td a{
@@ -548,8 +617,15 @@ span.ox-subcontroller-select a{
 	border: 1px solid #A7CEDF !important;
 }
 
-.ox-charts {
-	width: 0px;
+.ui-dialog .ox-element-collection > div {
+	width: 100% !important; /* To avoid horizontal scroll bar in element collection inside dialog, such as Import dialog */
+}
+
+.ox-element-collection .form-text { 
+	width: 100%; 
+	box-sizing: border-box; 
+	-moz-box-sizing: border-box; 
+	-webkit-box-sizing: border-box;
 }
 
 .ct-chart {
@@ -577,9 +653,8 @@ span.ox-subcontroller-select a{
 
 .ox-chart-x-column select {
 	position: relative;
-	left: 780px;
-	top: -27px;
-	width: 180px; 
+	left: calc(45vw - 290px);
+	width: 270px; 
 }
 
 .ox-chart-type {
@@ -611,7 +686,7 @@ span.ox-subcontroller-select a{
 	box-shadow: 0px 0px 7px #CCCCCC inset;  
 }
 
-.ox-charts .portlet-section-header { 
+.ox-charts .portlet-section-header, .ox-charts .frame {  
 	display: none;
 }
 
@@ -620,6 +695,9 @@ span.ox-subcontroller-select a{
 	background-color: transparent !important;
 }
 
+.ct-chart { 
+	margin-top: 20px;
+}
 
 .ox-charts .ox-element-collection {
 	width: 200px;
@@ -650,3 +728,427 @@ span.ox-subcontroller-select a{
 	-webkit-border-radius: 15px;
 	outline: 0;
 }
+
+#xava_add_columns, .ox-icons-list {  
+	margin-bottom: 5px;	
+	padding: 1px;
+	max-height: 70vh;
+	overflow-y: auto;
+}
+
+.ox-frame table { /* To avoid a blank line produced by the error icon where an editor with frame uses a table as external container */
+	clear: none;
+}
+
+.ox-customize-controls i {
+	color: black;
+}
+
+.mdi-filter-remove {
+	margin-left: 1px;
+	margin-right: -1px;
+}
+
+i.ox-sort-indicator, i.ox-sort-indicator2 {
+	color: black;
+	vertical-align: middle;
+}
+
+i.ox-sort-indicator2 {
+	font-size: 100%;
+	padding: 1px;
+}
+
+i.mdi-eraser {
+	position: relative;
+	left: 25%;
+}
+
+.results-row .mdi-swap-vertical { 
+	color: black; 
+	font-weight: bold;
+}
+
+.ox-radio-buttons {
+	margin: 3px 0px 3px 0px;
+}
+
+input[type="radio"] {
+	margin: 2px 0px 4px 10px;
+	vertical-align: middle;
+}
+
+.xava_editor input[type="checkbox"] {
+	position: relative;
+	top: 5px;
+}
+
+.ui-autocomplete {
+    max-height: 350px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-color: #CCC !important;
+    z-index: 9999999999 !important;  
+ }
+ 
+.ui-autocomplete-input::-ms-clear, .ox-date-calendar ::-ms-clear, .ox-web-url ::-ms-clear {   
+ 	display: none; 
+ }
+ 
+.ui-menu-item:hover, .ui-widget-content .ui-state-focus {
+ 	border-color: #DFF4FF !important; 
+ 	background: #DFF4FF !important;
+}
+ 
+.ox-descriptions-list i {
+ 	position: relative; 
+ 	right: 28px; 
+ 	top: -1px;
+ 	margin-right: -26px; 	
+ 	padding: 5px;
+}
+
+.ox-element-collection .ox-descriptions-list input {
+ 	position: relative; 
+ 	top: 1px;
+}
+
+span[id*="reference_editor"] + .ox-layout-detail {
+	margin-top: 4px;
+}
+
+.ox-image-link .mdi-magnify {
+	color: black;
+	font-weight: bold;
+}
+
+.ox-required-editor input {
+	border-color: #56b4ef !important; /* To work in dialog */
+}
+
+.ox-error-editor input {
+	border-color: #DC4A38 !important; /* To work in dialog */
+}
+
+.ox-icon i {
+	position: relative;
+	left: -10px;	
+	top: 0px;
+	color: black;
+	z-index: 10;
+	margin-right: -14px;
+}
+
+.ox-icon i.mdi-crop-free {
+	position: relative;
+	top: 0px;
+	left: 0px;
+	font-size: 250%;
+	color: lightgray;
+}
+
+.ox-icon i.mdi-close-circle {
+	font-size: 110%;
+	position: relative;
+	left: -6px;
+	top: -9px;
+	margin-right: -20px;
+}
+
+.ox-icon i.mdi-plus {
+	font-weight: bolder;
+	color: lightgray;
+}
+
+.ox-icons-list {
+	max-width: 750px;
+}
+
+.ox-icons-list i:hover {
+	background: #DFF4FF;
+	border: 1px solid #EBEBEB; 
+	cursor: pointer;
+}
+
+.ox-icons-list i {
+	font-size: 300%; 
+	padding: 10px;
+	border: 1px solid transparent; 
+}
+
+.ox-icon-in-list i {
+	color: black;
+}
+
+a.cke_button_off {
+	opacity: .4;
+}
+
+.cke_toolgroup {
+	border: 0px !important;
+	background: transparent !important;
+}
+
+a.cke_button_off, a.cke_button_disabled, .cke_button_on {
+	padding: 4px 4px 4px 4px; !important;
+}
+
+a.cke_button_off, a.cke_button_disabled {
+	border: 1px solid transparent !important;
+}
+
+
+a.cke_button_off:hover, a.cke_button_off:focus, a.cke_button_off:active {
+	opacity: .6;
+	border: 1px solid #A7CEDF !important;	
+	background: #DFF4FF !important;
+	color: #346799 !important; 
+	box-shadow: none !important;  
+
+}
+
+a.cke_button_disabled:hover, a.cke_button_disabled:focus, a.cke_button_disabled:active {
+	background: transparent !important;
+	background-image: none !important;
+	box-shadow: none !important; 
+}
+
+.list-title { 
+	padding: 0px;
+	margin-bottom: 10px;
+	font-size: 15px;
+}
+
+.list-title i { 
+	font-size: 17px;
+	margin-left: 5px;
+	margin-right: 0px;
+	padding: 1px 0px 1px 0px;
+	vertical-align:top;
+}
+
+.list-title select {
+	margin-bottom: 5px;
+}
+
+.list-title select:nth-of-type(2) {
+	float: right;
+}
+
+.list-title select:nth-of-type(2) option {
+	text-align-last: left;
+}
+
+.list-title a { 
+	font-weight: normal;
+	font-size: 12px;
+}
+
+#list-title {
+	font-weight: bold;
+	margin-left: 20px;
+}
+
+.ox-money b {
+	width: 0px; 
+	position: relative;
+	left: 5px;
+	top: 5px;
+	float: left; 
+}
+
+.ox-two-collections-in-a-row {
+	overflow: auto; 
+	display: block; 
+	width: calc(50% - 16px);
+}
+
+.results-header span {
+	display: initial;
+}
+
+.ie .ox-cards {
+	width: 100vw;
+}
+
+.ox-cards {
+	display: inline-flex;
+	flex-wrap: wrap;
+	padding: 0px 5px 3px 5px;
+}
+
+.ox-card, .ox-card:hover {
+	color:  #9EA8AD;
+	flex: 0 1 330px;
+	margin: 6px;
+	padding: 8px 10px 5px 10px;
+}
+
+.ox-card:hover, .ox-card:hover .ox-card-header {
+	cursor: pointer;
+	color: #346799;
+}
+
+.ox-card-header {
+	color: black;
+	float: left;
+	font-size: larger;
+	font-weight: bold;
+}
+
+.ox-card-subheader {
+	float: right;
+}
+
+.ox-card-content {
+	font-weight: normal;
+	margin: 20px 0px 3px 0px;
+}
+
+#xava_loading_more_elements {
+	min-height: 20px;
+}
+
+#xava_loading_more_elements img {
+	vertical-align: bottom;
+}
+
+.ox-no-objects {
+	margin: 10px;
+	font-size: larger;
+	font-weight: bold;
+}
+
+.ui-tooltip, .arrow:after {
+	background: black !important;
+	border: 1px solid white;
+}
+
+.ui-tooltip {
+	padding: 10px 20px;
+	color: white !important;
+	border-radius: 4px;
+	font-weight: bold;
+	font-size: 12px;
+	box-shadow: 0 0 7px black;
+}
+
+.arrow {
+	width: 23px;
+	height: 26px;
+	overflow: hidden;
+	position: absolute;
+	left: 0px;
+	margin-left: -33px;
+	bottom: calc(30% - 5px);
+}
+
+.arrow.top {
+	top: 16px;
+	bottom: auto;
+}
+
+.arrow.left {
+	left: 10px;
+}
+
+.arrow:after {
+	content: "";
+	position: absolute;
+	left: 20px;
+	top: -2px;
+	width: 25px;
+	height: 25px;
+	box-shadow: 6px 5px 9px -9px black;
+	transform: rotate(135deg);
+}
+
+.arrow.top:after {
+	bottom: 20px;
+	top: auto;
+}
+
+.ox-subscribed i, .ox-unsubscribed i {
+	vertical-align: 3px;
+
+}
+
+.ox-subscribed i {
+	color: blue; 
+}
+
+.ox-unsubscribed i {
+	color: lightgray; 
+}
+
+.filepond--root {  
+	font-family: Arial,Helvetica,Verdana,sans-serif !important;
+	overflow: hidden; 
+}
+
+.filepond--item {
+	width: 190px;
+}
+
+.filepond--drop-label label {
+	white-space: normal;
+}
+
+.ox-image {
+	width: 220px;
+}
+
+.ox-image .filepond--drop-label label {
+	width: 190px;
+}
+
+.ox-file {
+	width: 330px;;
+}
+
+.ox-files {
+	width: calc(100vw - 400px);
+}
+
+.ox-file .filepond--item, .ox-files .filepond--item {
+	width: 300px;
+	cursor: pointer;
+}
+
+.filepond--panel-root {
+	border-radius: 4px !important;
+	background-color: white !important;
+}
+
+.filepond--file-action-button {
+    background: #6F6F6F !important;
+}
+
+.filepond--file-action-button:hover {
+	color: white;
+}
+
+.filepond--image-preview-overlay-success {
+	color: #6fc664 !important;
+}
+
+.filepond--image-preview-overlay-failure {
+	color: #ff0000 !important;
+}
+
+.filepond--image-preview-wrapper {
+	cursor: pointer;
+}
+
+.ox-image .filepond--file-info-main, .ox-gallery .filepond--file-info-main {
+	display: none !important;
+}
+
+.ox-element-collection .filepond--root { 
+	height: 180px;
+}
+
+.liferay-xava-cell-wrapper img {
+	max-height: 20px;
+}
+

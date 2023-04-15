@@ -1,36 +1,22 @@
 package ch.speleo.scis.model.common;
 
-import java.io.Serializable;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.validation.constraints.Size;
+import javax.persistence.*;
+import javax.validation.constraints.*;
 
-import org.apache.commons.lang3.text.StrBuilder;
-import org.hibernate.envers.Audited;
-import org.openxava.annotations.Depends;
-import org.openxava.annotations.DisplaySize;
-import org.openxava.annotations.Hidden;
-import org.openxava.annotations.LabelFormat;
-import org.openxava.annotations.LabelFormatType;
-import org.openxava.annotations.ListProperties;
-import org.openxava.annotations.ReadOnly;
-import org.openxava.annotations.Required;
-import org.openxava.annotations.RowStyle;
-import org.openxava.annotations.Tab;
-import org.openxava.annotations.View;
-import org.openxava.annotations.Views;
+import org.apache.commons.text.*;
+import org.hibernate.envers.*;
+import org.openxava.annotations.*;
 
-import ch.speleo.scis.persistence.utils.SimpleQueries;
+import ch.speleo.scis.persistence.audit.*;
+import ch.speleo.scis.persistence.audit.ScisUserUtils.*;
+import ch.speleo.scis.persistence.utils.*;
+import lombok.*;
 
 /**
- * Class representing a karstologist (a caver for example) using Hibernate
- * Annotation.
- * 
- * @author miguel
- * @version 1.0
+ * A karstologist in a very broad sense (a caver for example).
  */
 @Entity
 @Table(name = "KARSTOLOGIST",
@@ -43,6 +29,7 @@ import ch.speleo.scis.persistence.utils.SimpleQueries;
 	@View(members = "initials; firstname; lastname; club; comment; deleted"),
 	@View(name=GenericIdentityWithRevision.AUDIT_VIEW_NAME, members = " auditedValues")
 	})
+@Getter @Setter
 public class Karstologist 
 extends GenericIdentityWithDeleted implements Serializable, Identifiable {
     /**
@@ -85,52 +72,12 @@ extends GenericIdentityWithDeleted implements Serializable, Identifiable {
     private String comment;
     
     /**
-     * Empty constructor.
-     */
-    public Karstologist() { }
-    /**
-     * @return initials of the karstologist.
-     */
-    public String getInitials() {
-        return initials;
-    }
-    /**
-     * @param initials initials of the karstologist.
-     */
-    public void setInitials(String initials) {
-        this.initials = initials;
-    }
-    /**
-	 * @return first name of the karstologist.
-	 */
-	public String getFirstname() {
-	    return firstname;
-	}
-	/**
-	 * @param firstname first name of the karstologist.
-	 */
-	public void setFirstname(String firstname) {
-	    this.firstname = firstname;
-	}
-	/**
-     * @return name of the karstologist.
-     */
-    public String getLastname() {
-        return lastname;
-    }
-    /**
-     * @param name name of the karstologist.
-     */
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-    /**
      * @return initials, first and last name of the karstologist.
      */
 	@Depends("initials, firstname, lastname")
 	@LabelFormat(value = LabelFormatType.NO_LABEL, forViews = "Short")
     public String getInitialsAndName() {
-        StrBuilder text = new StrBuilder();
+		TextStringBuilder text = new TextStringBuilder();
         text.append("<").append(initials).append("> ");
         text.append(firstname).append(" ").append(lastname);
         return text.toString();
@@ -140,30 +87,6 @@ extends GenericIdentityWithDeleted implements Serializable, Identifiable {
 	public String getBusinessId() {
 		return getInitialsAndName();
 	}
-   /**
-     * @return club in which the karstologist is registred.
-     */
-    public String getClub() {
-        return club;
-    }
-    /**
-     * @param club club in which the karstologist is registred.
-     */
-    public void setClub(String club) {
-        this.club = club;
-    }
-    /**
-     * @return comments related to a karstologist.
-     */
-    public String getComment() {
-        return comment;
-    }
-    /**
-     * @param comments comments related to a karstologist.
-     */
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
     
     @ListProperties("revision.modificationDate, revision.username, deleted, initials, firstname, lastname, club, comment")
     @ReadOnly
@@ -171,6 +94,11 @@ extends GenericIdentityWithDeleted implements Serializable, Identifiable {
     	return loadAuditedValues();
     }
 
+	@PrePersist @PreUpdate @PreDelete
+    public void handlePermissionsOnWrite() {
+        ScisUserUtils.checkRoleInCurrentUser(ScisRole.SGH_ARCHIVAR);
+    }
+    
     @Override
 	protected void writeFields(StringBuilder builder) {
 		super.writeFields(builder);
@@ -189,10 +117,10 @@ extends GenericIdentityWithDeleted implements Serializable, Identifiable {
     public static Karstologist getByInitials(String initials) {
     	if (initials == null) 
     		throw new IllegalArgumentException("initials of "+Karstologist.class.getSimpleName()+" to search for should not be null");
-    	StrBuilder msg = new StrBuilder();
+    	TextStringBuilder msg = new TextStringBuilder();
     	msg.append(" while searching not deleted ").append(Karstologist.class.getSimpleName());
     	msg.append(" with ").append("initials").append(" = " ).append(initials);
-    	return SimpleQueries.getSingleResult(msg.toString(), Karstologist.class, "initials = ? and deleted = false", initials);
+    	return SimpleQueries.getSingleResult(msg.toString(), Karstologist.class, "initials = ?1 and deleted = false", initials);
     }
     
 }

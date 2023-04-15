@@ -6,6 +6,16 @@
 CREATE DATABASE sgharchiv
   WITH ENCODING = 'UTF8';
 
+CREATE ROLE sgharchiv
+  LOGIN PASSWORD '...'
+  SUPERUSER; -- restrain afterward
+
+-- Optionally enable Postgis
+-- Enable PostGIS (as of 3.0 contains just geometry/geography)
+CREATE EXTENSION postgis;
+-- Enable Topology
+CREATE EXTENSION postgis_topology;
+
 -- Connect to the database sgharchiv while executing the following!
 
 CREATE ROLE sgharchiv_dev_scis 

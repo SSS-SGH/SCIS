@@ -63,7 +63,7 @@ public class Podium {
 				"  case when depth is not null and elevation is not null then (depth + elevation) " +
 				"       when depthAndElevation is not null then depthAndElevation "+
 				"       when depth is not null then depth "+
-				"       else elevation end "; // in SQL sonst zu langsam anstatt blitzschnell
+				"       else elevation end "; // in SQL super-fast, otherwise too slow
 		StrBuilder queryStr = new StrBuilder();
 		queryStr.append("from ").append(SpeleoObject.class.getSimpleName());
 		queryStr.append(" where ").append("depthAndElevation").append(" is not null ");

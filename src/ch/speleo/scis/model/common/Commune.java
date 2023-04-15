@@ -1,30 +1,19 @@
 package ch.speleo.scis.model.common;
 
-import java.io.Serializable;
+import java.io.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 
-import org.hibernate.envers.Audited;
-import org.openxava.annotations.Depends;
-import org.openxava.annotations.DisplaySize;
-import org.openxava.annotations.Hidden;
-import org.openxava.annotations.Required;
-import org.openxava.annotations.RowStyle;
-import org.openxava.annotations.Tab;
-import org.openxava.annotations.View;
-import org.openxava.annotations.Views;
+import org.hibernate.envers.*;
+import org.openxava.annotations.*;
 
-import ch.speleo.scis.persistence.utils.SimpleQueries;
+import ch.speleo.scis.persistence.audit.*;
+import ch.speleo.scis.persistence.audit.ScisUserUtils.*;
+import ch.speleo.scis.persistence.utils.*;
+import lombok.*;
 
 /**
- * Class representing a commune (administrative district of a town) using Hibernate
- * Annotation.
- * 
- * @author miguel
- * @version 1.0
+ * Commune as an administrative district.
  */
 @Entity
 @Table(name = "COMMUNE",
@@ -37,12 +26,11 @@ import ch.speleo.scis.persistence.utils.SimpleQueries;
 	@View(name = "Short", members = "fsoNr, name"), 
 	@View(members = "fsoNr; name; district; canton; baronNr")
 })
+@Getter @Setter
 public class Commune 
 extends GenericIdentityWithDeleted implements Serializable, Identifiable {
-    /**
-     * Serial version UID.
-     */
-    private static final long serialVersionUID = 5644131353056129922L;
+
+	private static final long serialVersionUID = 5644131353056129922L;
     
     /**
      * FSO (Federal Statistic Office) number of the commune.
@@ -54,6 +42,7 @@ extends GenericIdentityWithDeleted implements Serializable, Identifiable {
     /**
      * Name of the commune.
      */
+    @Required
     @Column(name = "NAME", nullable = false, length=50)
 	@DisplaySize(value=30, forViews="Short") 
     private String name;
@@ -76,75 +65,17 @@ extends GenericIdentityWithDeleted implements Serializable, Identifiable {
     @Column(name = "BARON_NR", nullable = false, length=6)
     private String baronNr;
     
-    /**
-     * Empty constructor.
-     */
-    public Commune() { }
-    /**
-     * @return FSO (Federal Statistic Office) number of the commune.
-     */
-    public Integer getFsoNr() {
-        return fsoNr;
-    }
-    /**
-     * @param fsoNr FSO (Federal Statistic Office) number of the commune.
-     */
-    public void setFsoNr(Integer fsoNr) {
-        this.fsoNr = fsoNr;
-    }
-    /**
-     * @return name of the commune.
-     */
-    public String getName() {
-        return name;
-    }
-    /**
-     * @param name name of the commune.
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-    /**
-     * @return district in which the commune is.
-     */
-    public String getDistrict() {
-        return district;
-    }
-    /**
-     * @param district district in which the commune is.
-     */
-    public void setDistrict(String district) {
-        this.district = district;
-    }
-    /**
-     * @return Canton in which the commune is.
-     */
-    public String getCanton() {
-        return canton;
-    }
-    /**
-     * @param Canton canton in which the commune is.
-     */
-    public void setCanton(String canton) {
-        this.canton = canton;
-    }
-    /**
-	 * @return The number of the commune according to Baron, updated to the commune change.
-	 */
-	public String getBaronNr() {
-		return baronNr;
-	}
-	/**
-	 * @param baronNr The number of the commune according to Baron, updated to the commune change.
-	 */
-	public void setBaronNr(String baronNr) {
-		this.baronNr = baronNr;
-	}
 	@Depends("name")
 	@Hidden
 	public String getBusinessId() {
 		return getName();
 	}
+
+	@PrePersist @PreUpdate @PreDelete
+    public void handlePermissionsOnWrite() {
+        ScisUserUtils.checkRoleInCurrentUser(ScisRole.SGH_ARCHIVAR);
+    }
+    
 	@Override
 	protected void writeFields(StringBuilder builder) {
 		super.writeFields(builder);
@@ -162,17 +93,6 @@ extends GenericIdentityWithDeleted implements Serializable, Identifiable {
 
     public static Commune getByFsoNr(Integer fsoNr) {
     	return SimpleQueries.getByUniqueField(Commune.class, "fsoNr", fsoNr);
-    	/*if (fsoNr == null) throw new IllegalArgumentException("fsoNr to search should not be null");
-    	TypedQuery<Commune> query = 
-    			XPersistence.getManager().createQuery("from Commune where fsoNr = ?", 
-    					Commune.class);
-    	query.setParameter(1, fsoNr);
-    	try {
-    		return query.getSingleResult();
-    	} catch (PersistenceException e) { // or a subtype
-			throw new PersistenceException(e.getClass().getSimpleName() + 
-					" while searching Commune with fsoNr " + fsoNr, e);
-		}*/
     }
 
 }

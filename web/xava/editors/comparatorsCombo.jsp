@@ -43,11 +43,12 @@ if (propertyKey == null) {
 	name = Ids.decorate(request, prefix + "conditionComparator." + index);
 	script = Actions.getActionOnChangeComparator(name,idConditionValue,idConditionValueTo);
 	
-	if (org.openxava.util.XavaPreferences.getInstance().isFilterOnChange() & (isString || isDate)) {
+	if (org.openxava.util.XavaPreferences.getInstance().isFilterOnChange()) {
 		String collection = request.getParameter("collection"); 
 		String collectionArgv = Is.emptyString(collection)?"":"collection="+collection;
 		script = new StringBuilder(script.replace(")\"", "); "))
-				    .append("if (this.options[this.selectedIndex].value.indexOf('empty') > -1) { ")
+				    .append("var valueField = $(this).parent().next().find('input');")
+				    .append("if (valueField == null || valueField.is(':hidden') || this.options[this.selectedIndex].value.indexOf('range') < 0 && valueField.val() !== '') { ")
 				    .append("openxava.executeAction('")
 				    .append(request.getParameter("application"))	
 	 			    .append("', '")
@@ -68,11 +69,13 @@ else {
 	%>
 	<%
 	if (isString) {
-	%>						
+	%>				
+	<option value="<%=Tab.CONTAINS_COMPARATOR%>" <%=contains%>><xava:message key="<%=Tab.CONTAINS_COMPARATOR%>"/></option>		
 	<option value="<%=Tab.STARTS_COMPARATOR%>" <%=startsWith%>><xava:message key="<%=Tab.STARTS_COMPARATOR%>"/></option>
 	<option value="<%=Tab.ENDS_COMPARATOR%>" <%=endsWith%>><xava:message key="<%=Tab.ENDS_COMPARATOR%>"/></option>
-	<option value="<%=Tab.CONTAINS_COMPARATOR%>" <%=contains%>><xava:message key="<%=Tab.CONTAINS_COMPARATOR%>"/></option>	
 	<option value="<%=Tab.NOT_CONTAINS_COMPARATOR%>" <%=notContains%>><xava:message key="<%=Tab.NOT_CONTAINS_COMPARATOR%>"/></option>
+	<option value="<%=Tab.EMPTY_COMPARATOR%>" <%=empty%>><xava:message key="<%=Tab.EMPTY_COMPARATOR%>"/></option>
+	<option value="<%=Tab.NOT_EMPTY_COMPARATOR%>" <%=notEmpty%>><xava:message key="<%=Tab.NOT_EMPTY_COMPARATOR%>"/></option>
 	<%
 	}
 	%>
@@ -82,12 +85,12 @@ else {
 	<option value="<%=Tab.LE_COMPARATOR%>" <%=le%>><=</option>	
 	<option value="<%=Tab.GT_COMPARATOR%>" <%=gt%>>></option>
 	<option value="<%=Tab.LT_COMPARATOR%>" <%=lt%>><</option>
-	<option value="<%=Tab.EMPTY_COMPARATOR%>" <%=empty%>><xava:message key="<%=Tab.EMPTY_COMPARATOR%>"/></option>
-	<option value="<%=Tab.NOT_EMPTY_COMPARATOR%>" <%=notEmpty%>><xava:message key="<%=Tab.NOT_EMPTY_COMPARATOR%>"/></option>
 	
 	<%
 	if (isDate) {
 	%>
+	<option value="<%=Tab.EMPTY_COMPARATOR%>" <%=empty%>><xava:message key="<%=Tab.EMPTY_COMPARATOR%>"/></option>
+	<option value="<%=Tab.NOT_EMPTY_COMPARATOR%>" <%=notEmpty%>><xava:message key="<%=Tab.NOT_EMPTY_COMPARATOR%>"/></option>
 	<option value="<%=Tab.YEAR_COMPARATOR%>" <%=year%>><xava:message key="<%=Tab.YEAR_COMPARATOR%>"/></option>
 	<option value="<%=Tab.MONTH_COMPARATOR%>" <%=month%>><xava:message key="<%=Tab.MONTH_COMPARATOR%>"/></option>
 	<option value="<%=Tab.YEAR_MONTH_COMPARATOR%>" <%=yearMonth%>><xava:message key="<%=Tab.YEAR_MONTH_COMPARATOR%>"/></option>

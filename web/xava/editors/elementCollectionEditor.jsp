@@ -39,6 +39,8 @@ String collectionClass = subview.isEditable()?"class='" + style.getElementCollec
 boolean sortable = subview.isCollectionSortable();
 String removeSelectedAction = subview.getRemoveSelectedCollectionElementsAction();
 boolean suppressRemoveAction = removeSelectedAction != null && "".equals(removeSelectedAction);
+boolean labelOnEachCell = "true".equals(request.getParameter("labelOnEachCell"));
+boolean hideTotals = "true".equals(request.getParameter("hideTotals"));
 %>
 <div <%=collectionClass%>>
 <% if (resizeColumns && scrollSupported) { %> 
@@ -122,7 +124,7 @@ for (int f=0; f < rowCount; f++) {
 	String actionsStyle = subview.isCollectionEditable() && f >= rowCount - 2?"style='visibility:hidden;'":"";
 	String app = request.getParameter("application");
 	String module = request.getParameter("module");
-	boolean hasTotals = subview.getCollectionTotalsCount() > 0;
+	boolean hasTotals = subview.hasCollectionTotals();
 	String sortableClass = subview.isCollectionEditable() && f >= rowCount - 2?"":"xava_sortable_element_row";
 %>
 <tr id="<%=idRow%>" class="<%=cssClass%> <%=sortableClass%>" <%=events%> style="border-bottom: 1px solid; <%=newRowStyle%>">
@@ -130,8 +132,7 @@ for (int f=0; f < rowCount; f++) {
 	<td class="<%=cssCellClass%>" style="vertical-align: middle;text-align: center;padding-right: 2px; <%=style.getListCellStyle()%>">
 	<nobr <%=actionsStyle%>>
 	<%if (sortable) { %>
-	<img class="xava_handle" align='absmiddle'  
-		src='<%=request.getContextPath()%>/<%=style.getImagesFolder()%>/<%=style.getMoveRowImage()%>' border='0' />
+	<i class="xava_handle mdi mdi-swap-vertical"></i>
 	<%}%>
 	<%if (!Is.emptyString(removeSelectedAction)) {%>
 	<xava:action action='<%=removeSelectedAction%>' argv='<%="row=" + f + ",viewObject=" + viewName%>'/>
@@ -161,7 +162,7 @@ for (int f=0; f < rowCount; f++) {
 	for (int columnIndex = 0; it.hasNext(); columnIndex++) { 
 		MetaProperty p = (MetaProperty) it.next();
 		String align =p.isNumber() && !p.hasValidValues()?"vertical-align: middle;text-align: right; ":"vertical-align: middle; "; 
-		String cellStyle = style.getListCellStyle() + align; 
+		String cellStyle = style.getListCellStyle() + align;
 		int columnWidth = subview.getCollectionColumnWidth(columnIndex);
 		String width = columnWidth<0 || !resizeColumns?"":"width: " + columnWidth + "px";
 		String referenceName = null;
@@ -184,19 +185,26 @@ for (int f=0; f < rowCount; f++) {
 			fvalue = org.openxava.web.WebEditors.formatToStringOrArray(request, p, value, errors, view.getViewName(), false);
 		}
 %>
-	<td class="<%=cssCellClass%>" style="<%=cellStyle%>; padding-right: 0px">
+	<td class="<%=cssCellClass%> <%=style.getElementCollectionDataCell()%>" style="<%=cellStyle%>; padding-right: 0px">
+		<% if (labelOnEachCell) { %>
+			<span class="<%=style.getLabel()%>"><%=p.getQualifiedLabel(request)%></span>
+		<% } %>
 		<div class="<xava:id name='<%=idCollection%>'/>_col<%=columnIndex%>" style="overflow: hidden; <%=width%>" <%=lastRowEvent%>>
-		<%if (resizeColumns) {%><nobr><%}%>
+		<nobr> 
 		<% if (!subview.isCollectionMembersEditables()) {%>
-		<%=fvalue%>
+			<% if (referenceName == null) { %>
+				<%=fvalue%>&nbsp;
+			<% } else { %>
+				<xava:descriptionsList reference="<%=referenceName%>" readOnlyAsLabel="true"/>	
+			<% } %>
 		<% } else if (referenceName != null) { %>
 		<xava:descriptionsList reference="<%=referenceName%>"/>
 		<% } else { %>
 		<span id="<xava:id name='<%="editor_" + view.getPropertyPrefix() + propertyName%>'/>">
 		<xava:editor property="<%=propertyName%>" throwPropertyChanged="<%=throwPropertyChanged%>"/>
 		</span>
-		<% } %>		
-	 	<%if (resizeColumns) {%></nobr><%}%>
+		<% } %>	
+	 	</nobr>  
 		</div>
 	</td>		
 	<% if (searchAction != null && subview.isLastSearchKey(p.getName())) {	%>
@@ -209,7 +217,9 @@ for (int f=0; f < rowCount; f++) {
 }
 %>
 </tr>
-<jsp:include page="collectionTotals.jsp" />
+<% if (!hideTotals) { %> 
+	<jsp:include page="collectionTotals.jsp" />
+<% } %> 
 <% if (sortable) { %></tbody><% } %>
 </table>
 <% if (resizeColumns && scrollSupported) { %>

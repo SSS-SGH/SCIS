@@ -5,6 +5,9 @@
 <!ELEMENT tab
    (filtro?, estilo-fila*, propiedades?, condicion-base?, orden-defecto?, (para-modelo* | excepto-para-modelo* | para-todos-los-modelos) )
 >
+<!ATTLIST tab
+ editores CDATA #IMPLIED
+>
 
 <!ELEMENT condicion-base
    (#PCDATA)

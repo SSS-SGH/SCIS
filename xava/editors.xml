@@ -5,7 +5,7 @@
 <editors>
 
 	<!-- for big and unlimited texts without a huge area -->
-	<editor url="bigtextAreaEditor.jsp">
+	<editor url="../../custom/editors/bigtextAreaEditor.jsp">
 		<for-stereotype stereotype="BIGTEXT_AREA" />
 	</editor>
 
@@ -14,10 +14,14 @@
 		<for-stereotype stereotype="TIMESTAMP" />
 	</editor>
 
-    <editor name="DocumentLibrary" url="liferayDocumentLibraryEditor.jsp" always-reload="true">
+	<editor url="../../custom/editors/mapScis.jsp" name = "MapScis" icon="map">
+	    <!--for-tab model="GroundObject"/--><!-- do not set, otherwise used as default -->
+	</editor>
+
+    <!--editor name="DocumentLibrary" url="liferayDocumentLibraryEditor.jsp" always-reload="true">
         <property name="rootFolderNameOrId" value="SCIS"/>
         <property name="alsoDeleteFile" value="true"/>
         <for-stereotype stereotype="SCIS_DOCUMENT_LIBRARY" />
-    </editor>
+    </editor-->
 
 </editors>

@@ -2,18 +2,21 @@
 
 <!DOCTYPE controllers SYSTEM "dtds/controllers.dtd">
 
-<controllers> 
-	
+<controllers>
+    
 	<controller name="CollectionScis">	
 		<!--extends controller="Typical"/-->
 		<action name="add" 
 			icon="magnify"
 			image="search.gif"
 			class="org.openxava.actions.GoAddElementsToCollectionAction"/>					
+		<action name="loadAllData" hidden="true" 
+		    class="ch.speleo.scis.ui.actions.LoadAllDataAction"/>
 	</controller>
 	
 	<controller name="TypicalScis">	
 		<extends controller="Typical"/>
+		<extends controller="WithHistoryScis"/>
 		
 		<action name="delete" mode="detail" confirm="true"
 			class="ch.speleo.scis.ui.actions.MarkDeletedAction"
@@ -28,22 +31,36 @@
 			icon="delete"
 			image="delete.gif"
 			in-each-row="true"/>
-							
-		<action name="showAudit" mode="detail" 
-			class="ch.speleo.scis.ui.actions.ShowAuditAction"
-			icon="watch"
-			image="report.gif"/>
-							
 	</controller>
 	
-	<controller name="ReadOnlyScis">	
-		<extends controller="Search"/>
+	<controller name="ReadOnlyWithHistoryScis">	
+		<extends controller="ReadOnlyScis"/>
+		<extends controller="WithHistoryScis"/>
+	</controller>
+	
+	<controller name="ReadOnlyScis">
+		<!--extends controller="Search"/-->
 		<extends controller="Navigation"/>
 		<extends controller="Print"/>
 	</controller>
 	
-	<controller name="Geo">	
-		<action name="goToSwissMap" hidden="true" class="ch.speleo.scis.ui.actions.GoToSwissmapAction"/>
+	<controller name="WithHistoryScis">
+		
+		<action name="showAudit" mode="detail" 
+			class="ch.speleo.scis.ui.actions.ShowAuditAction"
+			by-default="never"
+			icon="watch"
+			image="report.gif"/>
 	</controller>
 	
+	<controller name="Geo">	
+		<action name="goToSwissMap" hidden="true" 
+		    class="ch.speleo.scis.ui.actions.GoToSwissmapAction"/>
+	</controller>
+	
+	<controller name="InitReadWrite">	
+		<action name="initReadWrite" on-init="true" on-each-request="true" hidden="true" 
+		    class="ch.speleo.scis.ui.actions.InitReadWriteAction"/>
+	</controller>
+		
 </controllers>

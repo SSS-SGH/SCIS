@@ -1,29 +1,19 @@
 package ch.speleo.scis.model.common;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.hibernate.envers.RevisionType;
-import org.openxava.annotations.ListProperties;
-import org.openxava.annotations.Tab;
-import org.openxava.annotations.View;
-import org.openxava.util.Labels;
+import javax.persistence.*;
 
-import ch.speleo.scis.persistence.utils.SimpleQueries;
+import org.apache.commons.logging.*;
+import org.hibernate.envers.*;
+import org.openxava.annotations.*;
+import org.openxava.util.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NoResultException;
-import javax.persistence.Table;
+import ch.speleo.scis.persistence.audit.*;
+import ch.speleo.scis.persistence.audit.ScisUserUtils.*;
+import ch.speleo.scis.persistence.utils.*;
+import lombok.*;
 
 /**
  * A revision change is a database modification of one object. 
@@ -36,6 +26,7 @@ import javax.persistence.Table;
 @Tab(properties = "revision.modificationDate, revision.username, action, entityNameTranslated, businessId", 
 		defaultOrder="${revision.modificationDate} desc")
 @View(members = "revision; entityNameTranslated, businessId; changesOfEntity")
+@Getter @Setter
 public class RevisionChanges implements Serializable {
 	
 	private static final Log loger = LogFactory.getLog(RevisionChanges.class);
@@ -55,6 +46,7 @@ public class RevisionChanges implements Serializable {
 	
 	@ManyToOne
 	@JoinColumn(name = "REVISION_ID", nullable = false)
+    @ReadOnly
 	private Revision revision;
 	
     @Column(name = "ENTITY_NAME", nullable = false)
@@ -72,58 +64,6 @@ public class RevisionChanges implements Serializable {
     @Column(name = "ACTION", nullable = false)
 	private RevisionType action;
 	
-    /**
-     * @return database ID.
-     */
-    public Long getId() {
-        return id;
-    }
-    /**
-     * @param id database ID.
-     */
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-	/**
-	 * @return the revision
-	 */
-	public Revision getRevision() {
-		return revision;
-	}
-	/**
-	 * @param revision the revision
-	 */
-	public void setRevision(Revision revision) {
-		this.revision = revision;
-	}
-
-	/**
-	 * @return the name of the entity (database table)
-	 */
-	public String getEntityName() {
-		return entityName;
-	}
-	/**
-	 * @param entityName the name of the entity (database table)
-	 */
-	public void setEntityName(String entityName) {
-		this.entityName = entityName;
-	}
-
-	/**
-	 * @return the classname of the entity
-	 */
-	public String getEntityClassName() {
-		return entityClassName;
-	}
-	/**
-	 * @param entityClassName the classname of the entity
-	 */
-	public void setEntityClassName(String entityClassName) {
-		this.entityClassName = entityClassName;
-	}
-	
 	/**
 	 * @return The translation of the object's type, if it exists, otherwise of the class name
 	 */
@@ -133,19 +73,13 @@ public class RevisionChanges implements Serializable {
 	}
 	
 	/**
-	 * @return the id of the changed entity
-	 */
-	public Long getEntityId() {
-		return entityId;
-	}
-	/**
 	 * @param entityId the id of the changed entity
 	 */
 	public void setEntityId(Serializable entityId) {
 		if (entityId instanceof Long) {
 			this.entityId = (Long) entityId;
-		} else if (entityId instanceof Integer) {
-			this.entityId = Long.valueOf((Integer) entityId);
+		} else if (entityId instanceof Number) {
+			this.entityId = ((Number) entityId).longValue();
 		} else {
 			Log logger = LogFactory.getLog(RevisionChanges.class);
 			logger.warn("entity id '"+entityId+"' couldn't be recognize as a number (Long or Integer)");
@@ -168,20 +102,8 @@ public class RevisionChanges implements Serializable {
 		return null;
 	}
 
-	/**
-	 * @return the action type (add, modify or delete)
-	 */
-	public RevisionType getAction() {
-		return action;
-	}
-	/**
-	 * @param action action type (add, modify or delete)
-	 */
-	public void setAction(RevisionType action) {
-		this.action = action;
-	}
-	
     @ListProperties("revision.modificationDate, revision.username, action")
+    @ReadOnly
 	public Collection<RevisionChanges> getChangesOfEntity() {
 		return getChangesOfEntity(entityClassName, entityId);
 	}
@@ -189,7 +111,7 @@ public class RevisionChanges implements Serializable {
     	List<RevisionChanges> relatedChanges = SimpleQueries.getMultipleResults(
 				" while searching related Changes ", 
 				RevisionChanges.class, 
-				"entityClassName=? and entityId=?", 
+				"entityClassName=?1 and entityId=?2", 
 				entityClassName, entityId);
 		Collections.sort(relatedChanges, new ModifDateComparator());
 		return relatedChanges;
@@ -198,6 +120,16 @@ public class RevisionChanges implements Serializable {
 		return getChangesOfEntity(entityClass.getCanonicalName(), entityId);
 	}
 	
+	@PrePersist @PreUpdate
+    public void handlePermissionsOnWrite() {
+        ScisUserUtils.checkRoleInCurrentUser(ScisRole.SGH_ARCHIVAR);
+    }
+    
+	@PreDelete
+    public void handlePermissionsOnDelete() {
+		throw new NoPermissionException(RevisionChanges.class.getSimpleName() + " shall never be deleted");
+    }
+    
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -232,11 +164,11 @@ public class RevisionChanges implements Serializable {
 		if (obj == null)
 			return false;
 		if (id == null)
-			return super.equals(obj);
+			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		RevisionChanges other = (RevisionChanges) obj;
-		return id.equals(other.id);
+		return (other.id != null) && id.equals(other.id);
 	}
     
     static class ModifDateComparator implements Comparator<RevisionChanges> {

@@ -1,24 +1,14 @@
 package ch.speleo.scis.persistence.utils;
 
-import java.util.List;
+import java.util.*;
 
-import javax.persistence.LockTimeoutException;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.PersistenceException;
-import javax.persistence.PessimisticLockException;
-import javax.persistence.QueryTimeoutException;
-import javax.persistence.TransactionRequiredException;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.text.StrBuilder;
-import org.hibernate.envers.AuditReader;
-import org.hibernate.envers.AuditReaderFactory;
-import org.hibernate.envers.query.AuditEntity;
-import org.hibernate.envers.query.AuditQuery;
-import org.hibernate.envers.query.AuditQueryCreator;
-import org.openxava.jpa.XPersistence;
+import org.apache.commons.lang.*;
+import org.apache.commons.lang.text.*;
+import org.hibernate.envers.*;
+import org.hibernate.envers.query.*;
+import org.openxava.jpa.*;
 
 /**
  * Utilities to easily execute database queries. 
@@ -44,7 +34,7 @@ public class SimpleQueries {
     	StrBuilder msg = new StrBuilder();
     	msg.append(" while searching ").append(resultClass.getSimpleName());
     	msg.append(" with ").append(fieldName).append(" = " ).append( value);
-    	return getSingleResult(msg.toString(), resultClass, fieldName+" = ?", value);
+    	return getSingleResult(msg.toString(), resultClass, fieldName+" = ?1", value);
 	}
 	
 	/**
@@ -118,7 +108,7 @@ public class SimpleQueries {
 	 */
 	public static <T> List<T> getMultipleResults(String infoForException, Class<T> resultClass, String criteria, Object... parameters) {
 		StrBuilder queryStr = new StrBuilder();
-		queryStr.append("from ").append(resultClass.getSimpleName());
+		queryStr.append("from ").append(resultClass.getSimpleName()).append(" e");
 		if (StringUtils.isNotBlank(criteria))
 			queryStr.append(" where ").append(criteria);
     	TypedQuery<T> query = XPersistence.getManager().createQuery(queryStr.toString(), resultClass);
@@ -154,6 +144,7 @@ public class SimpleQueries {
 	
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static <T> List<T> getAuditedValuesOfEntity(Class<T> entityClass, Object entityId) {
 		AuditQuery query = SimpleQueries.createAuditQuery()
 			    .forRevisionsOfEntity(entityClass, true, true)
@@ -162,6 +153,7 @@ public class SimpleQueries {
 		return results;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> List<Object[]> getAuditedInfosOfEntity(Class<T> entityClass, Object entityId) {
 		AuditQuery query = SimpleQueries.createAuditQuery()
 			    .forRevisionsOfEntity(entityClass, false, true)

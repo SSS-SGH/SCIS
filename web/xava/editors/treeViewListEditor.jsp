@@ -80,7 +80,7 @@ if(!Is.empty(key)){
 				%>
 				<tr id="<%=indexId%>">
 				  <td>
-				    <input type="CHECKBOX" name="<%=xavaId%>" id="<%=nodeId%>"
+				    <input type="checkbox" name="<%=xavaId%>" id="<%=nodeId%>"
 				        value = "<%=nodeValue%>" style="height:0px" />
 				    <a href = "<%=nodeRef%>">_</a>
 				  </td>

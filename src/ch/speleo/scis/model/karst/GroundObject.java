@@ -1,8 +1,10 @@
 package ch.speleo.scis.model.karst;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,7 +23,6 @@ import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.openxava.annotations.Action;
 import org.openxava.annotations.AsEmbedded;
-import org.openxava.annotations.Collapsed;
 import org.openxava.annotations.DefaultValueCalculator;
 import org.openxava.annotations.Depends;
 import org.openxava.annotations.DisplaySize;
@@ -30,6 +31,7 @@ import org.openxava.annotations.ListProperties;
 import org.openxava.annotations.NoCreate;
 import org.openxava.annotations.NoFrame;
 import org.openxava.annotations.NoModify;
+import org.openxava.annotations.NoSearch;
 import org.openxava.annotations.ReadOnly;
 import org.openxava.annotations.ReferenceView;
 import org.openxava.annotations.RowStyle;
@@ -37,52 +39,62 @@ import org.openxava.annotations.Stereotype;
 import org.openxava.annotations.Tab;
 import org.openxava.annotations.View;
 import org.openxava.annotations.Views;
+import org.openxava.filters.FilterException;
+import org.openxava.filters.IFilter;
 import org.openxava.util.Labels;
 
 import ch.speleo.scis.business.utils.Axis;
 import ch.speleo.scis.business.utils.InventoryNumberUtils;
 import ch.speleo.scis.business.utils.SwissCoordsUtils;
+import ch.speleo.scis.business.utils.SwissCoordsUtils.CoordsSystem;
 import ch.speleo.scis.business.utils.SwissCoordsUtils.SwissCoords;
 import ch.speleo.scis.model.common.Commune;
 import ch.speleo.scis.model.common.GenericIdentityWithRevision;
+import ch.speleo.scis.model.karst.GroundObject.GroundObjectFilter;
+import ch.speleo.scis.persistence.audit.ScisUserUtils;
+import ch.speleo.scis.persistence.audit.ScisUserUtils.ScisRole;
 import ch.speleo.scis.persistence.typemapping.CodedEnumType;
 import ch.speleo.scis.persistence.utils.SimpleQueries;
+import ch.speleo.scis.ui.editors.TabViewableOnMap;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Class representing a ground object (entrance, doline, spring, ...) 
- * using Hibernate Annotation.
- * 
- * @author miguel
- * @version 1.0
+ * An object on the ground (entrance, doline, spring, ...).
  */
 @Entity
 @Table(name = "GROUND_OBJECT", 
-	uniqueConstraints = {
-		@UniqueConstraint(columnNames = "INVENTORY_NR", name="UNIQUE_GROUND_OBJECT_INVENTORY_NR"), 
-		@UniqueConstraint(columnNames = {"CANTON_BARON", "COMMUNE_BARON_NR", "CAVE_BARON_NR"}, name="UNIQUE_GROUND_OBJECT_BARON_NR"), 
-		@UniqueConstraint(columnNames = "PRIVACY_ID") 
-	})
+uniqueConstraints = {
+	@UniqueConstraint(columnNames = "INVENTORY_NR", name="UNIQUE_GROUND_OBJECT_INVENTORY_NR"), 
+	@UniqueConstraint(columnNames = {"CANTON_BARON", "COMMUNE_BARON_NR", "CAVE_BARON_NR"}, name="UNIQUE_GROUND_OBJECT_BARON_NR"), 
+	@UniqueConstraint(columnNames = "PRIVACY_ID") 
+})
 @Audited
-@Tab(properties = "inventoryNr, baronNr, name, type, speleoObject.systemNr, deleted", 
-	rowStyles = {@RowStyle(style="deletedData", property="deleted", value="true")})
+@Tab(editor = "List", editors = "List, Charts, Cards, MapScis",
+    properties = "inventoryNr, baronNr, name, type, speleoObject.systemNr, deleted", 
+	rowStyles = {@RowStyle(style="deletedData", property="deleted", value="true")},
+    filter = GroundObjectFilter.class, baseCondition = GroundObjectFilter.CONDITION
+)
+@TabViewableOnMap(northColumnName = "coordNorthLv95", eastColumnName = "coordEastLv95", coordsSystemEpsgNr = 2056)
 @Views({ 
-	@View(name = "Short", members = "inventoryNr, baronNr, name, type, deleted"), 
+	@View(name = "Short", members = "name, type, commune.name"), 
+	@View(name = "ShortWithId", members = "inventoryNr, baronNr, name, type, deleted"), 
 	@View(members = "definition [name; inventoryNr, nextInventoryNrs; cantonBaron, communeBaronNr, caveBaronNr; type; comment; deleted], " +
-			"location [locationAccuracy; commune; coordEast, mapNr; coordNorth; coordAltitude]; " +
+			"location [locationAccuracy; commune; coordEast, coordEastLv95; coordNorth, coordNorthLv95; coordAltitude; mapNr]; " +
 			"verified; manager; creationDate, lastModifDate; literature; dataHistory; privacy; document; speleoObject; "),
 	@View(name=GenericIdentityWithRevision.AUDIT_VIEW_NAME, members = " auditedValues")
 })
+@Getter @Setter
 public class GroundObject 
 extends KarstObject implements Serializable {
-    /**
-     * Serial version UID.
-     */
+
     private static final long serialVersionUID = 5941071612297331566L;
     
     /**
      * Inventory number of the ground object.
      */
     @Column(name = "INVENTORY_NR", nullable = true, unique = true, precision=8)
+
     private Integer inventoryNr;
     /**
 	 * @return Type of the ground object
@@ -90,44 +102,26 @@ extends KarstObject implements Serializable {
     @Column(name = "TYPE", nullable = true, length=1)
     @Type(type=CodedEnumType.CLASSNAME,
 		parameters={ @Parameter(name=CodedEnumType.TYPE, value=GroundObjectTypeEnum.CLASSNAME)})
-	@DisplaySize(value=10, forViews="Short") 
+	@DisplaySize(value=30, forViews="Short, ShortWithId") 
 	private GroundObjectTypeEnum type;
-    /**
-     * East coordinate (Y for geometers, X for matematicians) of the ground object.
-     */
-    @Column(name = "COORD_EAST", nullable = true, precision=7)
-    @SwissCoords(axis = Axis.EAST)
-    private Integer coordEast;
-    /**
-     * North coordinate (X for geometers, Y for matematicians) of the ground object.
-     */
-    @Column(name = "COORD_NORTH", nullable = true, precision=7)
-    @SwissCoords(axis = Axis.NORTH)
-    @Action(value="Geo.goToSwissMap", alwaysEnabled=true)
-    private Integer coordNorth;
-    /**
-     * Altitude of the ground object.
-     */
-    @Column(name = "COORD_ALTITUDE", nullable = true, precision=5)
-    @SwissCoords(axis = Axis.ALTITUDE)
-    private Integer coordAltitude;
+
     /**
      * Accuracy of the coordinates and the access description.
      */
     @Column(name = "LOCATION_ACCURACY", nullable = true, length=2)
-    //@Type(type = "org.openxava.types.EnumLetterType", parameters = {
-    //    @Parameter(name="letters", value=LocationAccuracyEnum.ORDERD_1CHAR_CODES),
-    //    @Parameter(name="enumType", value=LocationAccuracyEnum.CLASSNAME) })
     @Type(type=CodedEnumType.CLASSNAME,
 		parameters={ @Parameter(name=CodedEnumType.TYPE, value=LocationAccuracyEnum.CLASSNAME)})
     private LocationAccuracyEnum locationAccuracy;
+
     /**
      * Information related to the privacy of a ground object.
      */
     @OneToOne(optional = true, cascade = {CascadeType.ALL}, orphanRemoval=true)
     @JoinColumn(name = "PRIVACY_ID", nullable = true, unique = true)
     @AsEmbedded
+    @NoSearch @NoCreate @NoModify
     private Privacy privacy;
+
     /**
      * The commune (administrative district of a town) where the entrance is located.
      */
@@ -137,6 +131,7 @@ extends KarstObject implements Serializable {
     @ReferenceView(value = "Short")
     @NoFrame
     private Commune commune;
+
     /**
 	 * The canton of 1974 (reference of Baron's list) where the entrance is located.
 	 */
@@ -164,24 +159,48 @@ extends KarstObject implements Serializable {
     /**
      * Connected speleo object.
      */
+
+    /**
+     * East coordinate (Y for geometers, X for matematicians) of the ground object.
+     */
+    @Column(name = "COORD_EAST", nullable = true, precision=7)
+    @SwissCoords(axis = Axis.EAST)
+    @ReadOnly
+    private Integer coordEast;
+    /**
+     * North coordinate (X for geometers, Y for matematicians) of the ground object.
+     */
+    @Column(name = "COORD_NORTH", nullable = true, precision=7)
+    @SwissCoords(axis = Axis.NORTH)
+    @ReadOnly
+    private Integer coordNorth;
+    /**
+     * Altitude of the ground object.
+     */
+    @Column(name = "COORD_ALTITUDE", nullable = true, precision=5)
+    @SwissCoords(axis = Axis.ALTITUDE)
+    @Action(value="Geo.goToSwissMap", alwaysEnabled=true)
+    private Integer coordAltitude;
+
+    /**
+     * East coordinate (Y for geometers, X for matematicians) of the ground object.
+     */
+    @Column(name = "COORD_EAST_LV95", nullable = true, precision=9, scale = 2)
+    @SwissCoords(axis = Axis.EAST, coordsSystem = CoordsSystem.LV95)
+    private BigDecimal coordEastLv95;
+    /**
+     * North coordinate (X for geometers, Y for matematicians) of the ground object.
+     */
+    @Column(name = "COORD_NORTH_LV95", nullable = true, precision=9, scale = 2)
+    @SwissCoords(axis = Axis.NORTH, coordsSystem = CoordsSystem.LV95)
+    private BigDecimal coordNorthLv95;
+
     @ManyToOne
     @JoinColumn(name = "SPELEO_OBJECT_ID", nullable = true)
-    @ReferenceView(value = "Short")
+    @ReferenceView(value = "ShortWithId")
     private SpeleoObject speleoObject;
     
 
-    /**
-     * @return inventory number of the ground object.
-     */
-    public Integer getInventoryNr() {
-        return inventoryNr;
-    }
-    /**
-     * @param noInventory inventory number of the ground object.
-     */
-    public void setInventoryNr(Integer noInventory) {
-        this.inventoryNr = noInventory;
-    }
     @Stereotype("LABEL")
     @DefaultValueCalculator(InventoryNumberUtils.NextNumbersCalculator.class)
     /**
@@ -190,19 +209,8 @@ extends KarstObject implements Serializable {
     public String getNextInventoryNrs() {
     	return InventoryNumberUtils.getNextUnusedNumbersAsString();
     }
-    /**
-	 * @return Type of the ground object
-	 */
-	public GroundObjectTypeEnum getType() {
-		return type;
-	}
-	/**
-	 * @param type Type of the ground object
-	 */
-	public void setType(GroundObjectTypeEnum type) {
-		this.type = type;
-	}
-	@Depends("type")
+
+    @Depends("type")
 	public String getTranslatedType() {
 		if (type != null) {
 			String text = type.name();
@@ -211,41 +219,19 @@ extends KarstObject implements Serializable {
 			return super.getTranslatedType();
 		}
 	}
-    /**
-     * @return East coordinate (Y for geometers, X for matematicians) of the ground object.
-     */
-    public Integer getCoordEast() {
-        return coordEast;
-    }
-    /**
-     * @param coordEast East coordinate (Y for geometers, X for matematicians) of the ground object.
-     */
-    public void setCoordEast(Integer coordEast) {
-    	this.coordEast = coordEast;
-    }
-    /**
-     * @return North coordinate (X for geometers, Y for matematicians) of the ground object.
-     */
-    public Integer getCoordNorth() {
-        return coordNorth;
-    }
-    /**
-     * @param coordNorth North coordinate (X for geometers, Y for matematicians) of the ground object.
-     */
-    public void setCoordNorth(Integer coordNorth) {
-    	this.coordNorth = coordNorth;
-    }
+    
+    
     /**
      * @return Number of the 1:25000 map from Swisstopo in which the ground
      * object is located, {@code null} if unknown. 
-     * @see SwissCoordsUtils#computeMapNr(int, int) the limits of computeMapNr
+     * @see SwissCoordsUtils#computeMapNr(int, int) the limits of the validity
      */
-	@Depends("coordEast, coordNorth")
+	@Depends("coordEastLv95, coordNorthLv95")
     public Integer getMapNr() {
-		if (coordEast == null || coordNorth == null)
+		if (coordEastLv95 == null || coordNorthLv95 == null)
 			return null;
 		else
-			return SwissCoordsUtils.computeMapNr(coordEast, coordNorth);
+			return SwissCoordsUtils.computeMapNr(coordEastLv95.intValue(), coordNorthLv95.intValue());
     }
     /**
      * @return The coordinates reference system (CRS) for the coordinates of this object, 
@@ -260,118 +246,33 @@ extends KarstObject implements Serializable {
 			return SwissCoordsUtils.getCoordReferenceSystem(coordEast, coordNorth);
     }
 	
-    /**
-     * @return Altitude of the ground object.
-     */
-    public Integer getCoordAltitude() {
-        return coordAltitude;
-    }
-    /**
-     * @param coordAltitude Altitude of the ground object.
-     */
-    public void setCoordAltitude(Integer coordAltitude) {
-        this.coordAltitude = coordAltitude;
-    }
-    
-    /**
-	 * @return Accuracy of the coordinates and the access description.
-	 */
-	public LocationAccuracyEnum getLocationAccuracy() {
-		return locationAccuracy;
-	}
-	/**
-	 * @param locationAccuracy Accuracy of the coordinates and the access description.
-	 */
-	public void setLocationAccuracy(LocationAccuracyEnum locationAccuracy) {
-		this.locationAccuracy = locationAccuracy;
-	}
-	
-	/**
-     * @return information related to the privacy of a ground object.
-     */
-    public Privacy getPrivacy() {
-        return privacy;
-    }
-    public void setPrivacy(Privacy privacy) {
-        this.privacy = privacy;
-    }
-
-	/**
-     * @return The commune (administrative district of a town) where the entrance is located.
-     */
-    public Commune getCommune() {
-        return commune;
-    }
-    /**
-     * @param commune The commune (administrative district of a town) where the entrance is located.
-     */
-    public void setCommune(Commune commune) {
-        this.commune = commune;
-    }
-    
-    /**
-	 * @return The canton of 1974 (reference of Baron's list) where the entrance is located.
-	 */
-	public String getCantonBaron() {
-	    return cantonBaron;
-	}
-	/**
-	 * @param cantonBaron The canton of 1974 (reference of Baron's list) 
-	 *                    where the entrance is located.
-	 */
-	public void setCantonBaron(String cantonBaron) {
-	    this.cantonBaron = cantonBaron;
-	}
-	/**
-     * @return The commune of 1974 (reference of Baron's list) where the entrance is locate
-     */
-    public Integer getCommuneBaronNr() {
-        return communeBaronNr;
-    }
-    /**
-     * @param communeBaronNr ID The commune of 1974 (reference of Baron's list) 
-     *                       where the entrance is locate
-     */
-    public void setCommuneBaronNr(Integer communeBaronNr) {
-        this.communeBaronNr = communeBaronNr;
-    }
-    /**
-	 * @return Cave number of the entrance on a commune (according to Baron's numbering system).
-	 */
-	public Integer getCaveBaronNr() {
-		return caveBaronNr;
-	}
-	/**
-	 * @param caveBaronNr Cave number of the entrance on a commune (according to Baron's numbering system).
-	 */
-	public void setCaveBaronNr(Integer caveBaronNr) {
-		this.caveBaronNr = caveBaronNr;
-	}
-	public String getBaronNr() {
-		return baronNr;
-	}
-	
-	/**
-     * @return connected speleo object.
-     */
-    public SpeleoObject getSpeleoObject() {
-        return speleoObject;
-    }
-    /**
-     * @param speleoObject connected speleo object.
-     */
-    public void setSpeleoObject(SpeleoObject speleoObject) {
-        this.speleoObject = speleoObject;
-    }
-
     @ListProperties("revision.modificationDate, revision.username, deleted, inventoryNr, baronNr, name, type, comment, " +
-    		"locationAccuracy, commune.name, coordEast, coordNorth, coordAltitude, verified, manager.initialsAndName, " +
+    		"locationAccuracy, commune.name, coordEast, coordNorth, coordEastLv95, coordNorthLv95, coordAltitude, verified, manager.initialsAndName, " +
     		"literature, dataHistory, privacy.startDate, privacy.endDate, speleoObject.systemNr")
     @ReadOnly
     public Collection<GroundObject> getAuditedValues() {
-    	return loadAuditedValues();
+    	Collection<GroundObject> auditedValues = loadAuditedValues();
+    	if (!ScisUserUtils.hasRoleInCurrentUser(ScisRole.SGH_ARCHIVAR)) {
+    		for (GroundObject auditedValue: auditedValues) {
+    			auditedValue.setCoordEast(null);
+    			auditedValue.setCoordNorth(null);
+    			auditedValue.setCoordAltitude(null);
+    			auditedValue.setCoordEastLv95(null);
+    			auditedValue.setCoordNorthLv95(null);
+    		}
+    	}
+    	return auditedValues;
     }
 
+	/*@PrePersist @PreUpdate
+    public void handlePermissionsOnWrite() {
+		coord = new GeometryFactory().createPoint(new Coordinate(
+				SwissCoordsUtils.toLV95(coordEast, Axis.EAST), 
+				SwissCoordsUtils.toLV95(coordNorth, Axis.NORTH),
+				coordAltitude
+			));
+    }*/
+    
 	@Override
 	protected void writeFields(StringBuilder builder) {
 		super.writeFields(builder);
@@ -379,12 +280,6 @@ extends KarstObject implements Serializable {
 		builder.append(inventoryNr);
 		builder.append(", type=");
 		builder.append(type);
-		builder.append(", coordEast=");
-		builder.append(coordEast);
-		builder.append(", coordNorth=");
-		builder.append(coordNorth);
-		builder.append(", coordAltitude=");
-		builder.append(coordAltitude);
 		builder.append(", locationAccuracy=");
 		builder.append(locationAccuracy);
 		builder.append(", privacy=");
@@ -435,4 +330,34 @@ extends KarstObject implements Serializable {
     			query.toString(), params.toArray());
     }
     
+    public static Collection<GroundObject> getPermittedBySpeleoObject(SpeleoObject speleoObject) {
+       	StrBuilder msg = new StrBuilder();
+    	msg.append(" while searching ").append(GroundObject.class.getSimpleName());
+    	msg.append(" with speleoObject.id = " ).append(speleoObject.getId()).append(" and role-based-permission");
+     	return SimpleQueries.getMultipleResults(
+     			msg.toString(), 
+    			GroundObject.class, 
+    			"speleoObject = ?3 and not exists (select p from Privacy p where e.privacy = p and p.startDate <= ?1 and p.endDate > ?2)", 
+    			new GroundObjectFilter().filter(new Object[]{speleoObject}));
+    }
+    
+    public static class GroundObjectFilter implements IFilter {
+   	
+		private static final long serialVersionUID = 3656925091277610151L;
+
+		public static final String CONDITION = "not exists (select p from Privacy p where e.privacy = p and p.startDate <= ? and p.endDate > ?)";
+        private static final int ONE_DAY = 24*3600*1000;
+
+		@Override
+		public Object[] filter(Object o) throws FilterException {
+			if (ScisUserUtils.hasRoleInCurrentUser(ScisRole.SGH_ARCHIVAR)) {
+				return ScisUserUtils.combineFilters(o, new Date(0), new Date(2 * ONE_DAY));
+			} else {
+				long now = System.currentTimeMillis();
+				return ScisUserUtils.combineFilters(o, new Date(now), new Date(now - ONE_DAY));
+			}
+		}
+   	
+   }
+   
 }

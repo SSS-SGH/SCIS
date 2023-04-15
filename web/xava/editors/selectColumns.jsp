@@ -47,7 +47,7 @@ for (Iterator it=tab.getColumnsToAdd().iterator(); it.hasNext();) {
 		<xava:action action='AddColumns.addColumn' argv='<%="property=" + property%>'/>
 	</td>		
 	<td class="<%=cssCellClass%>" style="<%=style.getListCellStyle()%>" width="5">
-		<INPUT type="CHECKBOX" name="<xava:id name='xava_selected'/>" value="selectedProperties:<%=property%>" <%=actionOnClick%>/>
+		<input type="checkbox" name="<xava:id name='xava_selected'/>" value="selectedProperties:<%=property%>" <%=actionOnClick%>/>
 	</td>
 	<td class="<%=cssCellClass%>" style="<%=style.getListCellStyle()%>"> 
 		<xava:link action='AddColumns.addColumn' argv='<%="property=" + property%>' cssStyle="text-decoration: none; outline: none;">

@@ -1,30 +1,16 @@
 package ch.speleo.scis.model.common;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Date;
-import java.util.LinkedList;
+import java.io.*;
+import java.util.*;
 
-import org.hibernate.envers.RevisionEntity;
-import org.hibernate.envers.RevisionNumber;
-import org.hibernate.envers.RevisionTimestamp;
-import org.hibernate.envers.RevisionType;
-import org.openxava.annotations.ListProperties;
-import org.openxava.annotations.Stereotype;
-import org.openxava.annotations.View;
-import org.openxava.annotations.Views;
+import javax.persistence.*;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import org.hibernate.envers.*;
+import org.openxava.annotations.*;
 
-import ch.speleo.scis.persistence.audit.EntityTrackingRevisionListenerImpl;
+import ch.speleo.scis.persistence.audit.*;
+import ch.speleo.scis.persistence.audit.ScisUserUtils.*;
+import lombok.*;
 
 /**
  * A revision is a database modification for one or several objects in a single transaction. 
@@ -38,6 +24,7 @@ import ch.speleo.scis.persistence.audit.EntityTrackingRevisionListenerImpl;
 		@View(members = "modificationDate, username; modifiedEntities"),
 		@View(name = "Short", members = "modificationDate, username")
 })
+@Getter @Setter
 public class Revision {
 
     /**
@@ -69,49 +56,11 @@ public class Revision {
      */
     @OneToMany(mappedBy="revision", cascade={CascadeType.PERSIST, CascadeType.REMOVE})
     @ListProperties("action, entityNameTranslated, businessId")
+    @ReadOnly
+    @Setter(AccessLevel.PRIVATE)
     private Collection<RevisionChanges> modifiedEntities =
                                               new LinkedList<RevisionChanges>();
 
-	/**
-	 * @return Database ID.
-	 */
-	public int getId() {
-		return id;
-	}
-    /**
-     * @param id database ID.
-     */
-    public void setId(int id) {
-        this.id = id;
-    }
-	/**
-	 * @return The time of the modification.
-	 */
-	public Date getModificationDate() {
-		return modificationDate;
-	}
-	/**
-	 * @param modificationDate The time of the modification.
-	 */
-	public void setModificationDate(Date modificationDate) {
-		this.modificationDate = modificationDate;
-	}
-	/**
-	 * @return Username of the user that does this change.
-	 */
-	public String getUsername() { 
-		return username; 
-	}
-	/**
-	 * @param username Username of the user that does this change.
-	 */
-	public void setUsername(String username) { 
-		this.username = username; 
-	}
-
-	public Collection<RevisionChanges> getModifiedEntities() {
-		return modifiedEntities;
-	}
 	/**
 	 * Add a modified entity for this revision. 
 	 * @param entityName
@@ -127,6 +76,16 @@ public class Revision {
 		revEntity.setEntityId(entityId);
 		revEntity.setAction(action);
 		modifiedEntities.add(revEntity);
+    }
+    
+	@PrePersist @PreUpdate
+    public void handlePermissionsOnWrite() {
+        ScisUserUtils.checkRoleInCurrentUser(ScisRole.SGH_ARCHIVAR);
+    }
+    
+	@PreDelete
+    public void handlePermissionsOnDelete() {
+		throw new NoPermissionException(Revision.class.getSimpleName() + " shall never be deleted");
     }
     
 	@Override

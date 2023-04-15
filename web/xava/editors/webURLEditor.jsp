@@ -1,10 +1,18 @@
 <%@ include file="../imports.jsp"%>
 
-<%@ include file="textEditor.jsp"%>
+<jsp:useBean id="style" class="org.openxava.web.style.Style" scope="request"/>
+
+<span class="<%=style.getWebURL()%>"> 
+<jsp:include page="textEditor.jsp"/>
 
 <%
-String viewObject = request.getParameter("viewObject");
-viewObject = (viewObject == null || viewObject.equals(""))?"xava_view":viewObject;
+String propertyKey = request.getParameter("propertyKey");
+String fvalue = (String) request.getAttribute(propertyKey + ".fvalue");
 %>
 
- <xava:action action='WebURL.go' argv='<%="property=" + p.getName() + ",viewObject=" + viewObject%>'/> 
+<a style="position: relative; right: 25px;" target="_blank" href="<%=fvalue%>"
+	onclick="var url=$('#<%=propertyKey%>').val(); if (url.substr(0, 7) !== 'http://' && url.substr(0, 8) !== 'https://') url = 'http://' + url; this.href=url"
+>
+	<i class="mdi mdi-open-in-new"></i>
+</a>
+</span> 
